@@ -1,0 +1,267 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:14-alpine
+    environment:
+      POSTGRES_DB: ecommerce_dev
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - ecommerce-network
+
+  # Redis for caching and sessions
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - ecommerce-network
+
+  # API Gateway Service
+  api-gateway:
+    build:
+      context: ./services/api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      RAILS_ENV: development
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/api_gateway_dev
+      REDIS_URL: redis://redis:6379/0
+      JWT_SECRET_KEY: your-secret-key-here
+      USER_SERVICE_URL: http://user-service:3001
+      PRODUCT_SERVICE_URL: http://product-service:3002
+      ORDER_SERVICE_URL: http://order-service:3003
+      CART_SERVICE_URL: http://cart-service:3004
+      WALLET_SERVICE_URL: http://wallet-service:3007
+      NOTIFICATION_SERVICE_URL: http://notification-service:3006
+    volumes:
+      - ./services/api-gateway:/app
+      - /app/tmp
+      - /app/log
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - ecommerce-network
+    command: rails server -b 0.0.0.0
+
+  # User Service
+  user-service:
+    build:
+      context: ./services/user-service
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      RAILS_ENV: development
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/user_service_dev
+      REDIS_URL: redis://redis:6379/1
+      JWT_SECRET_KEY: your-secret-key-here
+    volumes:
+      - ./services/user-service:/app
+      - /app/tmp
+      - /app/log
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - ecommerce-network
+    command: rails server -p 3001 -b 0.0.0.0
+
+  # Product Service
+  product-service:
+    build:
+      context: ./services/product-service
+      dockerfile: Dockerfile
+    ports:
+      - "3002:3002"
+    environment:
+      RAILS_ENV: development
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/product_service_dev
+      REDIS_URL: redis://redis:6379/2
+    volumes:
+      - ./services/product-service:/app
+      - /app/tmp
+      - /app/log
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - ecommerce-network
+    command: rails server -p 3002 -b 0.0.0.0
+
+  # Order Service
+  order-service:
+    build:
+      context: ./services/order-service
+      dockerfile: Dockerfile
+    ports:
+      - "3003:3003"
+    environment:
+      RAILS_ENV: development
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/order_service_dev
+      REDIS_URL: redis://redis:6379/3
+      JWT_SECRET_KEY: your-secret-key-here
+      USER_SERVICE_URL: http://user-service:3001
+      PRODUCT_SERVICE_URL: http://product-service:3002
+      STRIPE_PUBLISHABLE_KEY: your_stripe_publishable_key
+      STRIPE_SECRET_KEY: your_stripe_secret_key
+      STRIPE_WEBHOOK_SECRET: your_stripe_webhook_secret
+      EASYPOST_API_KEY: your_easypost_api_key
+    volumes:
+      - ./services/order-service:/app
+      - /app/tmp
+      - /app/log
+    depends_on:
+      - postgres
+      - redis
+      - user-service
+      - product-service
+    networks:
+      - ecommerce-network
+    command: rails server -p 3003 -b 0.0.0.0
+
+  # Cart Service
+  cart-service:
+    build:
+      context: ./services/cart-service
+      dockerfile: Dockerfile
+    ports:
+      - "3004:3004"
+    environment:
+      RAILS_ENV: development
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/cart_service_dev
+      REDIS_URL: redis://redis:6379/4
+      JWT_SECRET_KEY: your-secret-key-here
+      PRODUCT_SERVICE_URL: http://product-service:3002
+    volumes:
+      - ./services/cart-service:/app
+      - /app/tmp
+      - /app/log
+    depends_on:
+      - postgres
+      - redis
+      - product-service
+    networks:
+      - ecommerce-network
+    command: rails server -p 3004 -b 0.0.0.0
+
+  # Frontend React App
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3005:3005"
+    environment:
+      REACT_APP_API_URL: http://localhost:3000
+      REACT_APP_ENV: development
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - api-gateway
+    networks:
+      - ecommerce-network
+    command: npm start
+
+  # Admin Dashboard
+  admin-dashboard:
+    build:
+      context: ./admin-dashboard
+      dockerfile: Dockerfile
+    ports:
+      - "3008:3008"
+    environment:
+      REACT_APP_API_URL: http://localhost:3000
+      REACT_APP_ENV: development
+      PORT: 3008
+    volumes:
+      - ./admin-dashboard:/app
+      - /app/node_modules
+    depends_on:
+      - api-gateway
+    networks:
+      - ecommerce-network
+    command: npm start
+
+  # Notification Service
+  notification-service:
+    build:
+      context: ./services/notification-service
+      dockerfile: Dockerfile
+    ports:
+      - "3006:3006"
+    environment:
+      RAILS_ENV: development
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/notification_service_dev
+      REDIS_URL: redis://redis:6379/5
+      JWT_SECRET_KEY: your-secret-key-here
+      MAILGUN_API_KEY: your_mailgun_api_key
+      MAILGUN_DOMAIN: your_mailgun_domain
+      SENDGRID_API_KEY: your_sendgrid_api_key
+      TWILIO_ACCOUNT_SID: your_twilio_account_sid
+      TWILIO_AUTH_TOKEN: your_twilio_auth_token
+      TWILIO_PHONE_NUMBER: your_twilio_phone_number
+      FCM_SERVER_KEY: your_fcm_server_key
+      VAPID_PUBLIC_KEY: your_vapid_public_key
+      VAPID_PRIVATE_KEY: your_vapid_private_key
+      SMTP_HOST: smtp.gmail.com
+      SMTP_PORT: 587
+      SMTP_USERNAME: your-email@gmail.com
+      SMTP_PASSWORD: your-app-password
+    volumes:
+      - ./services/notification-service:/app
+      - /app/tmp
+      - /app/log
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - ecommerce-network
+    command: rails server -p 3006 -b 0.0.0.0
+
+  # Wallet Service
+  wallet-service:
+    build:
+      context: ./services/wallet-service
+      dockerfile: Dockerfile
+    ports:
+      - "3007:3007"
+    environment:
+      RAILS_ENV: development
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/wallet_service_dev
+      REDIS_URL: redis://redis:6379/6
+      JWT_SECRET_KEY: your-secret-key-here
+      STRIPE_PUBLISHABLE_KEY: your_stripe_publishable_key
+      STRIPE_SECRET_KEY: your_stripe_secret_key
+      STRIPE_WEBHOOK_SECRET: your_stripe_webhook_secret
+      LOCKBOX_MASTER_KEY: your_lockbox_master_key
+      WALLET_MIN_BALANCE: 0
+      WALLET_MAX_BALANCE: 10000
+      WALLET_TRANSACTION_LIMIT: 1000
+      WALLET_DAILY_LIMIT: 5000
+    volumes:
+      - ./services/wallet-service:/app
+      - /app/tmp
+      - /app/log
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - ecommerce-network
+    command: rails server -p 3007 -b 0.0.0.0
+
+volumes:
+  postgres_data:
+
+networks:
+  ecommerce-network:
+    driver: bridge
