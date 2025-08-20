@@ -5,6 +5,8 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 import './App.css';
 
 const App: React.FC = () => {
+  console.log('App component rendering...');
+  
   return (
     <AdminAuthProvider>
       <div className="App">

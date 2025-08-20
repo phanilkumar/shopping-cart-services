@@ -1,8 +1,5 @@
 FROM node:18-alpine
 
-# Install Docker CLI for container management
-RUN apk add --no-cache docker-cli
-
 WORKDIR /app
 
 # Copy package files
@@ -15,7 +12,7 @@ RUN npm install
 COPY . .
 
 # Expose port for Vite dev server
-EXPOSE 3008
+EXPOSE 3005
 
 # Start Vite development server
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "3005"]

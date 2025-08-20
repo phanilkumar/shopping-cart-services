@@ -1,13 +1,6 @@
 import axios from 'axios';
 import { Microservice, ServiceMetrics, DashboardStats, LogEntry } from '../types';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3001';
-
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 10000,
-});
-
 // Microservices configuration - Updated to include all running services (excluding admin-dashboard itself)
 export const MICROSERVICES = [
   { id: 'api-gateway', name: 'API Gateway', port: 3000, healthEndpoint: '/health' },

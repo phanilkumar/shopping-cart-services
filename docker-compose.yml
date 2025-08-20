@@ -151,19 +151,17 @@ services:
       - ecommerce-network
     command: ./bin/rails server -p 3004 -b 0.0.0.0
 
-  # Frontend React App
+  # Frontend React App (Vite)
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     ports:
-      - "3005:3000"
+      - "3005:3005"
     environment:
-      REACT_APP_API_URL: http://localhost:3000
-      REACT_APP_ENV: development
-      PORT: 3000
-      WDS_SOCKET_HOST: localhost
-      WDS_SOCKET_PORT: 3005
+      VITE_API_URL: http://localhost:3000
+      VITE_ENV: development
+      PORT: 3005
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -171,18 +169,18 @@ services:
       - api-gateway
     networks:
       - ecommerce-network
-    command: sh -c "npm start -- --host 0.0.0.0 --port 3000"
+    command: sh -c "npm run dev -- --host 0.0.0.0 --port 3005"
 
-  # Admin Dashboard
+  # Admin Dashboard (Vite)
   admin-dashboard:
     build:
       context: ./admin-dashboard
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     ports:
       - "3008:3008"
     environment:
-      REACT_APP_API_URL: http://localhost:3000
-      REACT_APP_ENV: development
+      VITE_API_URL: http://localhost:3000
+      VITE_ENV: development
       PORT: 3008
     volumes:
       - ./admin-dashboard:/app
@@ -191,7 +189,7 @@ services:
       - api-gateway
     networks:
       - ecommerce-network
-    command: npm start
+    command: sh -c "npm run dev -- --host 0.0.0.0 --port 3008"
 
   # Admin Dashboard API Server
   admin-dashboard-api:
@@ -211,6 +209,7 @@ services:
       - admin-dashboard
     networks:
       - ecommerce-network
+    command: node src/server.js
 
   # Notification Service
   notification-service:
