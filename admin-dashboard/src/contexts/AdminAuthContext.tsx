@@ -59,6 +59,9 @@ export const AdminAuthProvider: React.FC<AdminAuthProviderProps> = ({ children }
     localStorage.removeItem('adminUser');
     setUser(null);
     setIsAuthenticated(false);
+    
+    // Show logout success message
+    console.log('Successfully logged out');
   };
 
   const value: AdminAuthContextType = {

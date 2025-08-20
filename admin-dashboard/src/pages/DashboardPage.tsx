@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Microservice, DashboardStats } from '../types';
 import { microservicesApi } from '../services/api';
+import { useAdminAuth } from '../contexts/AdminAuthContext';
 import ServiceCard from '../components/ServiceCard';
 import StatsCard from '../components/StatsCard';
 import ServiceLogs from '../components/ServiceLogs';
 
 const DashboardPage: React.FC = () => {
+  const { user, logout } = useAdminAuth();
   const [services, setServices] = useState<Microservice[]>([]);
   const [stats, setStats] = useState<DashboardStats>({
     totalServices: 0,
@@ -59,6 +61,12 @@ const DashboardPage: React.FC = () => {
     }
   };
 
+  const handleLogout = () => {
+    if (window.confirm('Are you sure you want to logout?')) {
+      logout();
+    }
+  };
+
   if (loading) {
     return (
       <div className="container" style={{ paddingTop: '20px' }}>
@@ -89,18 +97,59 @@ const DashboardPage: React.FC = () => {
 
   return (
     <div className="container" style={{ paddingTop: '20px' }}>
-      <div style={{ marginBottom: '30px' }}>
-        <h1 style={{ 
-          margin: '0 0 10px 0', 
-          fontSize: '32px', 
-          fontWeight: '700', 
-          color: '#333' 
-        }}>
-          Microservices Admin Dashboard
-        </h1>
-        <p style={{ margin: '0', color: '#666', fontSize: '16px' }}>
-          Monitor and manage your microservices infrastructure
-        </p>
+      {/* Header with logout button */}
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'flex-start', 
+        marginBottom: '30px',
+        paddingBottom: '20px',
+        borderBottom: '1px solid #eee'
+      }}>
+        <div>
+          <h1 style={{ 
+            margin: '0 0 10px 0', 
+            fontSize: '32px', 
+            fontWeight: '700', 
+            color: '#333' 
+          }}>
+            Microservices Admin Dashboard
+          </h1>
+          <p style={{ margin: '0', color: '#666', fontSize: '16px' }}>
+            Monitor and manage your microservices infrastructure
+          </p>
+          {user && (
+            <p style={{ margin: '10px 0 0 0', color: '#888', fontSize: '14px' }}>
+              Logged in as: <strong>{user.full_name}</strong> ({user.email})
+            </p>
+          )}
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <button 
+            className="btn btn-outline-secondary"
+            onClick={handleLogout}
+            style={{
+              padding: '8px 16px',
+              fontSize: '14px',
+              border: '1px solid #6c757d',
+              borderRadius: '4px',
+              backgroundColor: 'transparent',
+              color: '#6c757d',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease'
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.backgroundColor = '#6c757d';
+              e.currentTarget.style.color = 'white';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+              e.currentTarget.style.color = '#6c757d';
+            }}
+          >
+            Logout
+          </button>
+        </div>
       </div>
 
       <StatsCard stats={stats} />
