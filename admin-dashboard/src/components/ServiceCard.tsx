@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Microservice } from '../types';
 import { microservicesApi } from '../services/api';
 
@@ -8,6 +8,8 @@ interface ServiceCardProps {
 }
 
 const ServiceCard: React.FC<ServiceCardProps> = ({ service, onRestart }) => {
+  const [restarting, setRestarting] = useState(false);
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'online':
@@ -25,6 +27,15 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service, onRestart }) => {
     if (health >= 80) return '#28a745';
     if (health >= 60) return '#ffc107';
     return '#dc3545';
+  };
+
+  const handleRestart = async () => {
+    setRestarting(true);
+    try {
+      await onRestart(service.id);
+    } finally {
+      setRestarting(false);
+    }
   };
 
   return (
@@ -92,13 +103,27 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service, onRestart }) => {
         </button>
         <button 
           className="btn btn-danger"
-          onClick={() => onRestart(service.id)}
-          disabled={service.status === 'offline'}
+          onClick={handleRestart}
+          disabled={service.status === 'offline' || restarting}
           style={{ flex: '1' }}
+          title="Restart this microservice using Docker Compose. This will stop and start the service container."
         >
-          Restart
+          {restarting ? 'Restarting...' : 'Restart'}
         </button>
       </div>
+      
+      {service.status === 'offline' && (
+        <div style={{ 
+          marginTop: '10px', 
+          padding: '8px', 
+          backgroundColor: '#f8d7da', 
+          color: '#721c24', 
+          borderRadius: '4px', 
+          fontSize: '12px' 
+        }}>
+          <strong>Service Offline:</strong> This service is not responding. Use the restart button to attempt recovery.
+        </div>
+      )}
     </div>
   );
 };

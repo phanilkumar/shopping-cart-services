@@ -8,11 +8,17 @@ const api = axios.create({
   timeout: 10000,
 });
 
-// Microservices configuration
+// Microservices configuration - Updated to include all running services
 export const MICROSERVICES = [
-  { id: 'auth-service', name: 'Auth Service', port: 3001, healthEndpoint: '/health' },
-  { id: 'oauth-service', name: 'OAuth Service', port: 3002, healthEndpoint: '/health' },
-  { id: 'user-service', name: 'User Service', port: 3003, healthEndpoint: '/health' },
+  { id: 'api-gateway', name: 'API Gateway', port: 3000, healthEndpoint: '/health' },
+  { id: 'user-service', name: 'User Service', port: 3001, healthEndpoint: '/health' },
+  { id: 'product-service', name: 'Product Service', port: 3002, healthEndpoint: '/health' },
+  { id: 'order-service', name: 'Order Service', port: 3003, healthEndpoint: '/health' },
+  { id: 'cart-service', name: 'Cart Service', port: 3004, healthEndpoint: '/health' },
+  { id: 'frontend', name: 'Frontend', port: 3005, healthEndpoint: '/' },
+  { id: 'notification-service', name: 'Notification Service', port: 3006, healthEndpoint: '/health' },
+  { id: 'wallet-service', name: 'Wallet Service', port: 3007, healthEndpoint: '/health' },
+  { id: 'admin-dashboard', name: 'Admin Dashboard', port: 3008, healthEndpoint: '/' },
 ];
 
 export const microservicesApi = {
@@ -25,14 +31,25 @@ export const microservicesApi = {
             timeout: 5000,
           });
           
+          // Parse health data from response
+          let health = 100;
+          let uptime = 'Unknown';
+          let version = '1.0.0';
+          
+          if (response.data) {
+            health = response.data.health || response.data.status === 'healthy' ? 100 : 0;
+            uptime = response.data.uptime || 'Unknown';
+            version = response.data.version || '1.0.0';
+          }
+          
           return {
             id: service.id,
             name: service.name,
             port: service.port,
             status: 'online' as const,
-            health: response.data.health || 100,
-            uptime: response.data.uptime || 'Unknown',
-            version: response.data.version || '1.0.0',
+            health,
+            uptime,
+            version,
             lastCheck: new Date(),
             endpoints: [],
             logs: [],
@@ -127,11 +144,23 @@ export const microservicesApi = {
     }
   },
 
-  // Restart service
+  // Restart service - Updated to use Docker Compose
   async restartService(serviceId: string): Promise<boolean> {
     try {
-      const response = await api.post(`/admin/services/${serviceId}/restart`);
-      return response.data.success;
+      // Use Docker Compose to restart the service
+      const response = await fetch('/api/admin/restart-service', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ serviceId }),
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        return result.success;
+      }
+      return false;
     } catch (error) {
       console.error('Failed to restart service:', error);
       return false;

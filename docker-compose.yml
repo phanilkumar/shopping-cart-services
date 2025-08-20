@@ -193,6 +193,25 @@ services:
       - ecommerce-network
     command: npm start
 
+  # Admin Dashboard API Server
+  admin-dashboard-api:
+    build:
+      context: ./admin-dashboard
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3009:3009"
+    environment:
+      NODE_ENV: development
+      PORT: 3009
+    volumes:
+      - ./admin-dashboard:/app
+      - /app/node_modules
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - admin-dashboard
+    networks:
+      - ecommerce-network
+
   # Notification Service
   notification-service:
     build:
