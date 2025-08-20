@@ -149,6 +149,13 @@ docker-compose.override.yml
 *.backup
 *.old
 
+# Temporary files
+* 2.*
+*_2.*
+* backup.*
+* temp.*
+* temporary.*
+
 # Compiled files
 *.com
 *.class
