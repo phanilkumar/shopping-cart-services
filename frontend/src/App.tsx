@@ -1,29 +1,54 @@
-import React from 'react';
-import { Box, Typography, Container } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Box, Typography, Container, Button, Alert } from '@mui/material';
+import { UserProvider, useUser } from './contexts/UserContext';
+import AuthPage from './pages/AuthPage';
+import DashboardPage from './pages/DashboardPage';
+import UserProfile from './components/user/UserProfile';
 
+// Main App Content
+const AppContent: React.FC = () => {
+  const { state } = useUser();
+  const [currentPage, setCurrentPage] = useState<'auth' | 'dashboard' | 'profile'>('auth');
+
+  // Auto-redirect based on authentication status
+  useEffect(() => {
+    if (state.isAuthenticated && currentPage === 'auth') {
+      setCurrentPage('dashboard');
+    } else if (!state.isAuthenticated && currentPage !== 'auth') {
+      setCurrentPage('auth');
+    }
+  }, [state.isAuthenticated, currentPage]);
+
+  // Show loading state
+  if (state.isLoading) {
+    return (
+      <Container maxWidth="lg">
+        <Box sx={{ py: 4, textAlign: 'center' }}>
+          <Typography variant="h6">Loading...</Typography>
+        </Box>
+      </Container>
+    );
+  }
+
+  // Render appropriate page based on current state
+  switch (currentPage) {
+    case 'auth':
+      return <AuthPage />;
+    case 'dashboard':
+      return <DashboardPage />;
+    case 'profile':
+      return <UserProfile />;
+    default:
+      return <AuthPage />;
+  }
+};
+
+// Main App Component with User Provider
 function App() {
   return (
-    <Container maxWidth="lg">
-      <Box sx={{ py: 4 }}>
-        <Typography variant="h3" component="h1" gutterBottom>
-          🎉 Frontend is Working!
-        </Typography>
-        <Typography variant="h5" color="text.secondary" gutterBottom>
-          React + TypeScript + Material-UI Frontend
-        </Typography>
-        <Typography variant="body1" sx={{ mt: 2 }}>
-          This is a test to verify that the frontend is working correctly.
-        </Typography>
-        <Box sx={{ mt: 4, p: 3, bgcolor: 'primary.main', color: 'white', borderRadius: 2 }}>
-          <Typography variant="h6">
-            ✅ Basic Setup Complete
-          </Typography>
-          <Typography variant="body2" sx={{ mt: 1 }}>
-            The frontend is now running successfully. You can now add the full microservices integration.
-          </Typography>
-        </Box>
-      </Box>
-    </Container>
+    <UserProvider>
+      <AppContent />
+    </UserProvider>
   );
 }
 

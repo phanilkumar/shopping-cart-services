@@ -1,5 +1,15 @@
 import authService, { User, AuthResponse, LoginCredentials, RegisterData } from './authAPI';
 import oauthService, { OAuthUser, OAuthResponse, OAuthAccount } from './oauthAPI';
+import userService, { 
+  User as UserServiceUser, 
+  AuthResponse as UserAuthResponse, 
+  LoginCredentials as UserLoginCredentials,
+  CreateUserData,
+  UpdateUserData,
+  UserListResponse,
+  UserResponse,
+  HealthCheckResponse
+} from './userAPI';
 
 // Unified API service that combines both Auth and OAuth services
 export const apiService = {
@@ -94,12 +104,50 @@ export const apiService = {
     },
   },
 
-  // Health checks for both services
+  // User Service methods
+  user: {
+    // Authentication
+    login: userService.login,
+    register: userService.register,
+    logout: userService.logout,
+    refreshToken: userService.refreshToken,
+
+    // User Management
+    getCurrentUser: userService.getCurrentUser,
+    getUserById: userService.getUserById,
+    updateProfile: userService.updateProfile,
+    changePassword: userService.changePassword,
+
+    // Admin Functions
+    getAllUsers: userService.getAllUsers,
+    createUser: userService.createUser,
+    updateUser: userService.updateUser,
+    deleteUser: userService.deleteUser,
+    activateUser: userService.activateUser,
+    deactivateUser: userService.deactivateUser,
+    suspendUser: userService.suspendUser,
+
+    // Password Management
+    forgotPassword: userService.forgotPassword,
+    resetPassword: userService.resetPassword,
+
+    // Utility Functions
+    isAuthenticated: userService.isAuthenticated,
+    getStoredUser: userService.getStoredUser,
+    setStoredUser: userService.setStoredUser,
+    clearStoredUser: userService.clearStoredUser,
+
+    // Health Check
+    healthCheck: userService.healthCheck,
+  },
+
+  // Health checks for all services
   health: {
     checkAll: async () => {
       const results = {
         auth: null as any,
         oauth: null as any,
+        user: null as any,
       };
 
       try {
@@ -114,16 +162,32 @@ export const apiService = {
         console.error('OAuth service health check failed:', error);
       }
 
+      try {
+        results.user = await userService.healthCheck();
+      } catch (error) {
+        console.error('User service health check failed:', error);
+      }
+
       return results;
     },
   },
 };
 
 // Export individual services for direct use
-export { authService, oauthService };
+export { authService, oauthService, userService };
 
 // Export types
 export type { User, AuthResponse, LoginCredentials, RegisterData };
 export type { OAuthUser, OAuthResponse, OAuthAccount };
+export type { 
+  UserServiceUser, 
+  UserAuthResponse, 
+  UserLoginCredentials,
+  CreateUserData,
+  UpdateUserData,
+  UserListResponse,
+  UserResponse,
+  HealthCheckResponse
+};
 
 export default apiService;
