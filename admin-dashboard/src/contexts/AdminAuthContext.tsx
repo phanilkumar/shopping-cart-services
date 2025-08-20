@@ -1,13 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-
-interface AdminUser {
-  id: number;
-  email: string;
-  first_name: string;
-  last_name: string;
-  role: string;
-  status: string;
-}
+import { AdminUser } from '../types';
 
 interface AdminAuthContextType {
   isAuthenticated: boolean;

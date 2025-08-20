@@ -1,3 +1,17 @@
+export interface AdminUser {
+  id: number;
+  email: string;
+  first_name: string;
+  last_name: string;
+  full_name: string;
+  phone: string;
+  status: number;
+  role: number;
+  last_login_at: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Microservice {
   id: string;
   name: string;

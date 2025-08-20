@@ -24,9 +24,15 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
 
       const { data } = response.data;
       
-      // Check if user has admin role
-      if (data.user.role !== 'admin') {
+      // Check if user has admin role (role = 1)
+      if (data.user.role !== 1) {
         setError('Access denied. Admin privileges required.');
+        return;
+      }
+
+      // Check if user is active (status = 1)
+      if (data.user.status !== 1) {
+        setError('Access denied. Account is not active.');
         return;
       }
 
