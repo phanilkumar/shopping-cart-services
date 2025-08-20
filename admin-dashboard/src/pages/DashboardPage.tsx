@@ -47,18 +47,9 @@ const DashboardPage: React.FC = () => {
   }, []);
 
   const handleRestart = async (serviceId: string) => {
-    try {
-      const success = await microservicesApi.restartService(serviceId);
-      if (success) {
-        // Refresh data after restart
-        setTimeout(fetchData, 2000);
-      } else {
-        alert('Failed to restart service');
-      }
-    } catch (err) {
-      console.error('Error restarting service:', err);
-      alert('Failed to restart service');
-    }
+    // This function is now called by ServiceCard after successful restart
+    // We just need to refresh the data
+    setTimeout(fetchData, 2000);
   };
 
   const handleLogout = () => {

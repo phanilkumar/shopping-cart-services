@@ -8,6 +8,12 @@ const PORT = process.env.PORT || 3009;
 app.use(cors());
 app.use(express.json());
 
+// Services that should not be restarted via the dashboard
+const RESTART_BLACKLIST = [
+  'admin-dashboard', // Prevents self-restart
+  'admin-dashboard-api', // Prevents API server restart
+];
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({
@@ -24,6 +30,15 @@ app.post('/api/admin/restart-service', async (req, res) => {
   
   if (!serviceId) {
     return res.status(400).json({ success: false, error: 'Service ID is required' });
+  }
+
+  // Check if service is in restart blacklist
+  if (RESTART_BLACKLIST.includes(serviceId)) {
+    return res.status(403).json({ 
+      success: false, 
+      error: `Restarting ${serviceId} is not allowed for security reasons.`,
+      message: 'This service is critical for dashboard operation and cannot be restarted via the dashboard.'
+    });
   }
 
   try {
