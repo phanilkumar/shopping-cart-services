@@ -2,6 +2,9 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
+  # Callbacks
+  before_create :set_default_values
+
   # Basic validations for existing fields
   validates :email, presence: true, uniqueness: true
   validates :phone, presence: true, if: :phone_required?
@@ -46,5 +49,12 @@ class User < ApplicationRecord
 
   def generate_refresh_token
     SecureRandom.hex(32)
+  end
+
+  private
+
+  def set_default_values
+    self.status ||= 1  # Set to active by default
+    self.role ||= 0    # Set to user by default
   end
 end

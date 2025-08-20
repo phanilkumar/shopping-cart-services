@@ -72,8 +72,8 @@ const UserProfile: React.FC = () => {
 
     if (!formData.phone) {
       newErrors.phone = 'Phone number is required';
-    } else if (!/^[6-9]\d{9}$/.test(formData.phone)) {
-      newErrors.phone = 'Please enter a valid 10-digit Indian phone number';
+    } else if (!/^\+91[6-9]\d{9}$/.test(formData.phone)) {
+      newErrors.phone = 'Please enter a valid Indian phone number with +91 prefix (e.g., +919876543210)';
     }
 
     setErrors(newErrors);
@@ -116,31 +116,50 @@ const UserProfile: React.FC = () => {
     });
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status: number) => {
     switch (status) {
-      case 'active':
+      case 1: // active
         return 'success';
-      case 'inactive':
+      case 0: // inactive
         return 'error';
-      case 'pending':
+      case 2: // pending
         return 'warning';
-      case 'suspended':
+      case 3: // suspended
         return 'error';
       default:
         return 'default';
     }
   };
 
-  const getRoleColor = (role: string) => {
+  const getRoleColor = (role: number) => {
     switch (role) {
-      case 'admin':
+      case 1: // admin
         return 'error';
-      case 'moderator':
+      case 2: // moderator
         return 'warning';
-      case 'user':
+      case 0: // user
         return 'primary';
       default:
         return 'default';
+    }
+  };
+
+  const getStatusLabel = (status: number) => {
+    switch (status) {
+      case 1: return 'active';
+      case 0: return 'inactive';
+      case 2: return 'pending';
+      case 3: return 'suspended';
+      default: return 'unknown';
+    }
+  };
+
+  const getRoleLabel = (role: number) => {
+    switch (role) {
+      case 1: return 'admin';
+      case 2: return 'moderator';
+      case 0: return 'user';
+      default: return 'unknown';
     }
   };
 
@@ -189,13 +208,13 @@ const UserProfile: React.FC = () => {
               </Typography>
               <Box sx={{ mt: 1 }}>
                 <Chip
-                  label={state.user.status}
+                  label={getStatusLabel(state.user.status)}
                   color={getStatusColor(state.user.status) as any}
                   size="small"
                   sx={{ mr: 1 }}
                 />
                 <Chip
-                  label={state.user.role}
+                  label={getRoleLabel(state.user.role)}
                   color={getRoleColor(state.user.role) as any}
                   size="small"
                 />

@@ -48,8 +48,8 @@ export interface User {
   last_name: string;
   full_name: string;
   phone: string;
-  status: 'active' | 'inactive' | 'pending' | 'suspended';
-  role: 'user' | 'admin' | 'moderator';
+  status: number; // 0 = inactive, 1 = active, 2 = pending, 3 = suspended
+  role: number; // 0 = user, 1 = admin, 2 = moderator
   last_login_at: string | null;
   created_at: string;
   updated_at: string;

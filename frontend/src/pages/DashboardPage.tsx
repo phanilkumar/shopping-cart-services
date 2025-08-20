@@ -108,13 +108,13 @@ const DashboardPage: React.FC = () => {
             </Box>
             <Box>
               <Chip
-                label={state.user.role}
-                color={state.user.role === 'admin' ? 'error' : 'primary'}
+                label={state.user.role === 1 ? 'admin' : 'user'}
+                color={state.user.role === 1 ? 'error' : 'primary'}
                 sx={{ mr: 1 }}
               />
               <Chip
-                label={state.user.status}
-                color={state.user.status === 'active' ? 'success' : 'warning'}
+                label={state.user.status === 1 ? 'active' : 'inactive'}
+                color={state.user.status === 1 ? 'success' : 'warning'}
               />
             </Box>
           </Box>

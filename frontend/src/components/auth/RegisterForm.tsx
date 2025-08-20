@@ -67,8 +67,8 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onSwitchToLogin 
 
     if (!formData.phone) {
       newErrors.phone = 'Phone number is required';
-    } else if (!/^[6-9]\d{9}$/.test(formData.phone)) {
-      newErrors.phone = 'Please enter a valid 10-digit Indian phone number';
+    } else if (!/^\+91[6-9]\d{9}$/.test(formData.phone)) {
+      newErrors.phone = 'Please enter a valid Indian phone number with +91 prefix (e.g., +919876543210)';
     }
 
     if (!formData.password) {
@@ -196,11 +196,11 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onSwitchToLogin 
               label="Phone Number"
               name="phone"
               autoComplete="tel"
-              placeholder="9876543210"
+              placeholder="+919876543210"
               value={formData.phone}
               onChange={handleInputChange('phone')}
               error={!!errors.phone}
-              helperText={errors.phone || "Enter 10-digit mobile number"}
+              helperText={errors.phone || "Enter Indian mobile number with +91 prefix"}
               disabled={state.isLoading}
             />
 
