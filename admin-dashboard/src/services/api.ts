@@ -8,7 +8,7 @@ const api = axios.create({
   timeout: 10000,
 });
 
-// Microservices configuration - Updated to include all running services
+// Microservices configuration - Updated to include all running services (excluding admin-dashboard itself)
 export const MICROSERVICES = [
   { id: 'api-gateway', name: 'API Gateway', port: 3000, healthEndpoint: '/health' },
   { id: 'user-service', name: 'User Service', port: 3001, healthEndpoint: '/health' },
@@ -18,7 +18,6 @@ export const MICROSERVICES = [
   { id: 'frontend', name: 'Frontend', port: 3005, healthEndpoint: '/' },
   { id: 'notification-service', name: 'Notification Service', port: 3006, healthEndpoint: '/health' },
   { id: 'wallet-service', name: 'Wallet Service', port: 3007, healthEndpoint: '/health' },
-  { id: 'admin-dashboard', name: 'Admin Dashboard', port: 3008, healthEndpoint: '/' },
 ];
 
 export const microservicesApi = {

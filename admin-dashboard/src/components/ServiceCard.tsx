@@ -30,6 +30,15 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service, onRestart }) => {
   };
 
   const handleRestart = async () => {
+    // Add confirmation dialog
+    const confirmed = window.confirm(
+      `Are you sure you want to restart ${service.name}?\n\nThis will cause a brief downtime for this service.`
+    );
+    
+    if (!confirmed) {
+      return;
+    }
+
     setRestarting(true);
     try {
       await onRestart(service.id);

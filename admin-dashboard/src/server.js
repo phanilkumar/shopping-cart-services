@@ -27,7 +27,7 @@ app.post('/api/admin/restart-service', async (req, res) => {
   }
 
   try {
-    // Map service IDs to Docker container names
+    // Map service IDs to Docker container names (excluding admin-dashboard itself)
     const containerMap = {
       'api-gateway': 'shopping_cart-api-gateway-1',
       'user-service': 'shopping_cart-user-service-1',
@@ -36,8 +36,7 @@ app.post('/api/admin/restart-service', async (req, res) => {
       'cart-service': 'shopping_cart-cart-service-1',
       'frontend': 'shopping_cart-frontend-1',
       'notification-service': 'shopping_cart-notification-service-1',
-      'wallet-service': 'shopping_cart-wallet-service-1',
-      'admin-dashboard': 'shopping_cart-admin-dashboard-1'
+      'wallet-service': 'shopping_cart-wallet-service-1'
     };
 
     const containerName = containerMap[serviceId];
