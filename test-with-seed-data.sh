@@ -255,3 +255,5 @@ echo "5. Monitor analytics and reports"
 echo -e "\n${GREEN}🎉 Application testing with seed data completed!${NC}"
 echo -e "${GREEN}Your e-commerce platform is ready for use! 🚀${NC}"
 
+
+

@@ -442,3 +442,5 @@ curl -X POST http://localhost:3000/api/v1/auth/login \
 - **Full Microservices**: Complete setup, all 7 services
 - **Hybrid Approach**: Start simple, add complexity later
 
+
+

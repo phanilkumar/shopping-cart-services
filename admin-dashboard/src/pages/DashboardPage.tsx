@@ -1,318 +1,169 @@
-import React from 'react';
-import {
-  Grid,
-  Card,
-  CardContent,
-  Typography,
-  Box,
-  Chip,
-  IconButton,
-  useTheme,
-} from '@mui/material';
-import {
-  TrendingUp,
-  TrendingDown,
-  People,
-  ShoppingCart,
-  Inventory,
-  AccountBalanceWallet,
-  Notifications,
-  MoreVert,
-  Visibility,
-  VisibilityOff,
-} from '@mui/icons-material';
-import {
-  LineChart,
-  Line,
-  AreaChart,
-  Area,
-  BarChart,
-  Bar,
-  PieChart,
-  Pie,
-  Cell,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from 'recharts';
-import { useQuery } from 'react-query';
-import { Helmet } from 'react-helmet-async';
-
-import { adminAPI } from '../services/api/adminAPI';
-import StatCard from '../components/dashboard/StatCard';
-import RecentActivity from '../components/dashboard/RecentActivity';
-import QuickActions from '../components/dashboard/QuickActions';
+import React, { useState, useEffect } from 'react';
+import { Microservice, DashboardStats } from '../types';
+import { microservicesApi } from '../services/api';
+import ServiceCard from '../components/ServiceCard';
+import StatsCard from '../components/StatsCard';
+import ServiceLogs from '../components/ServiceLogs';
 
 const DashboardPage: React.FC = () => {
-  const theme = useTheme();
+  const [services, setServices] = useState<Microservice[]>([]);
+  const [stats, setStats] = useState<DashboardStats>({
+    totalServices: 0,
+    onlineServices: 0,
+    totalRequests: 0,
+    averageResponseTime: 0,
+    errorRate: 0,
+  });
+  const [loading, setLoading] = useState(true);
+  const [selectedService, setSelectedService] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  // Fetch dashboard data
-  const { data: dashboardData, isLoading, error } = useQuery('dashboardData', () =>
-    adminAPI.getDashboardData()
-  );
-
-  // Use API data or fallback to mock data
-  const apiStats = dashboardData?.stats || {
-    total_revenue: 124563,
-    total_orders: 1234,
-    total_users: 8456,
-    total_products: 156
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const [servicesData, statsData] = await Promise.all([
+        microservicesApi.getServicesStatus(),
+        microservicesApi.getDashboardStats(),
+      ]);
+      
+      setServices(servicesData);
+      setStats(statsData);
+      setError(null);
+    } catch (err) {
+      setError('Failed to fetch dashboard data');
+      console.error('Error fetching dashboard data:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Chart data from API or fallback
-  const salesData = dashboardData?.chart_data?.sales || [
-    { name: 'Jan', sales: 4000, orders: 2400 },
-    { name: 'Feb', sales: 3000, orders: 1398 },
-    { name: 'Mar', sales: 2000, orders: 9800 },
-    { name: 'Apr', sales: 2780, orders: 3908 },
-    { name: 'May', sales: 1890, orders: 4800 },
-    { name: 'Jun', sales: 2390, orders: 3800 },
-  ];
+  useEffect(() => {
+    fetchData();
+    const interval = setInterval(fetchData, 30000); // Refresh every 30 seconds
 
-  const userData = [
-    { name: 'New Users', value: 400, color: '#8884d8' },
-    { name: 'Active Users', value: 300, color: '#82ca9d' },
-    { name: 'Inactive Users', value: 200, color: '#ffc658' },
-  ];
+    return () => clearInterval(interval);
+  }, []);
 
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+  const handleRestart = async (serviceId: string) => {
+    try {
+      const success = await microservicesApi.restartService(serviceId);
+      if (success) {
+        // Refresh data after restart
+        setTimeout(fetchData, 2000);
+      } else {
+        alert('Failed to restart service');
+      }
+    } catch (err) {
+      console.error('Error restarting service:', err);
+      alert('Failed to restart service');
+    }
+  };
 
-  const stats = [
-    {
-      title: 'Total Revenue',
-      value: `$${apiStats.total_revenue?.toLocaleString() || '124,563'}`,
-      change: '+12.5%',
-      trend: 'up' as const,
-      icon: <TrendingUp />,
-      color: 'success.main',
-    },
-    {
-      title: 'Total Orders',
-      value: apiStats.total_orders?.toLocaleString() || '1,234',
-      change: '+8.2%',
-      trend: 'up' as const,
-      icon: <ShoppingCart />,
-      color: 'primary.main',
-    },
-    {
-      title: 'Total Users',
-      value: apiStats.total_users?.toLocaleString() || '8,456',
-      change: '+15.3%',
-      trend: 'up' as const,
-      icon: <People />,
-      color: 'info.main',
-    },
-    {
-      title: 'Total Products',
-      value: apiStats.total_products?.toLocaleString() || '567',
-      change: '+3.1%',
-      trend: 'up' as const,
-      icon: <Inventory />,
-      color: 'warning.main',
-    },
-    {
-      title: 'Active Wallets',
-      value: '2,345',
-      change: '+5.7%',
-      trend: 'up' as const,
-      icon: <AccountBalanceWallet />,
-      color: 'secondary.main',
-    },
-    {
-      title: 'Pending Notifications',
-      value: '23',
-      change: '-2.1%',
-      trend: 'down' as const,
-      icon: <Notifications />,
-      color: 'error.main',
-    },
-  ];
-
-  if (isLoading) {
+  if (loading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-        <Typography>Loading dashboard...</Typography>
-      </Box>
+      <div className="container" style={{ paddingTop: '20px' }}>
+        <div style={{ textAlign: 'center', padding: '40px' }}>
+          <div style={{ fontSize: '18px', color: '#666' }}>Loading dashboard...</div>
+        </div>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-        <Typography color="error">Error loading dashboard data: {(error as any)?.message || 'Unknown error'}</Typography>
-      </Box>
+      <div className="container" style={{ paddingTop: '20px' }}>
+        <div style={{ textAlign: 'center', padding: '40px', color: '#dc3545' }}>
+          <div style={{ fontSize: '18px', marginBottom: '10px' }}>Error</div>
+          <div>{error}</div>
+          <button 
+            className="btn btn-primary" 
+            onClick={fetchData}
+            style={{ marginTop: '20px' }}
+          >
+            Retry
+          </button>
+        </div>
+      </div>
     );
   }
 
   return (
-    <>
-      <Helmet>
-        <title>Dashboard - Admin Panel</title>
-      </Helmet>
-      
-      <Box>
-        {/* Page Header */}
-        <Box sx={{ mb: 3 }}>
-          <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 600 }}>
-            Dashboard
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
-            Welcome back! Here's what's happening with your store today.
-          </Typography>
-        </Box>
+    <div className="container" style={{ paddingTop: '20px' }}>
+      <div style={{ marginBottom: '30px' }}>
+        <h1 style={{ 
+          margin: '0 0 10px 0', 
+          fontSize: '32px', 
+          fontWeight: '700', 
+          color: '#333' 
+        }}>
+          Microservices Admin Dashboard
+        </h1>
+        <p style={{ margin: '0', color: '#666', fontSize: '16px' }}>
+          Monitor and manage your microservices infrastructure
+        </p>
+      </div>
 
-        {/* Stats Cards */}
-        <Grid container spacing={3} sx={{ mb: 4 }}>
-          {stats.map((stat, index) => (
-            <Grid item xs={12} sm={6} md={4} lg={2} key={index}>
-              <StatCard
-                title={stat.title}
-                value={stat.value}
-                change={stat.change}
-                trend={stat.trend}
-                icon={stat.icon}
-                color={stat.color}
-              />
-            </Grid>
+      <StatsCard stats={stats} />
+
+      <div style={{ marginBottom: '30px' }}>
+        <h2 style={{ 
+          margin: '0 0 20px 0', 
+          fontSize: '24px', 
+          fontWeight: '600', 
+          color: '#333' 
+        }}>
+          Services
+        </h2>
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', 
+          gap: '20px' 
+        }}>
+          {services.map((service) => (
+            <ServiceCard 
+              key={service.id} 
+              service={service} 
+              onRestart={handleRestart}
+            />
           ))}
-        </Grid>
+        </div>
+      </div>
 
-        {/* Charts Section */}
-        <Grid container spacing={3} sx={{ mb: 4 }}>
-          {/* Sales Chart */}
-          <Grid item xs={12} lg={8}>
-            <Card>
-              <CardContent>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                  <Typography variant="h6" component="h2">
-                    Sales Overview
-                  </Typography>
-                  <IconButton size="small">
-                    <MoreVert />
-                  </IconButton>
-                </Box>
-                <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={salesData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Line
-                      type="monotone"
-                      dataKey="sales"
-                      stroke={theme.palette.primary.main}
-                      strokeWidth={2}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="orders"
-                      stroke={theme.palette.secondary.main}
-                      strokeWidth={2}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-          </Grid>
-
-          {/* User Distribution */}
-          <Grid item xs={12} lg={4}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" component="h2" gutterBottom>
-                  User Distribution
-                </Typography>
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={userData}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {userData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-
-        {/* Additional Charts */}
-        <Grid container spacing={3} sx={{ mb: 4 }}>
-          {/* Revenue by Category */}
-          <Grid item xs={12} md={6}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" component="h2" gutterBottom>
-                  Revenue by Category
-                </Typography>
-                <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={salesData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="sales" fill={theme.palette.primary.main} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-          </Grid>
-
-          {/* Orders Trend */}
-          <Grid item xs={12} md={6}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" component="h2" gutterBottom>
-                  Orders Trend
-                </Typography>
-                <ResponsiveContainer width="100%" height={250}>
-                  <AreaChart data={salesData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Area
-                      type="monotone"
-                      dataKey="orders"
-                      stackId="1"
-                      stroke={theme.palette.secondary.main}
-                      fill={theme.palette.secondary.light}
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-
-        {/* Bottom Section */}
-        <Grid container spacing={3}>
-          {/* Recent Activity */}
-          <Grid item xs={12} lg={8}>
-            <RecentActivity />
-          </Grid>
-
-          {/* Quick Actions */}
-          <Grid item xs={12} lg={4}>
-            <QuickActions />
-          </Grid>
-        </Grid>
-      </Box>
-    </>
+      <div style={{ marginBottom: '30px' }}>
+        <h2 style={{ 
+          margin: '0 0 20px 0', 
+          fontSize: '24px', 
+          fontWeight: '600', 
+          color: '#333' 
+        }}>
+          Service Logs
+        </h2>
+        <div style={{ marginBottom: '15px' }}>
+          <select 
+            value={selectedService || ''} 
+            onChange={(e) => setSelectedService(e.target.value || null)}
+            style={{
+              padding: '8px 12px',
+              border: '1px solid #ddd',
+              borderRadius: '4px',
+              fontSize: '14px',
+              minWidth: '200px'
+            }}
+          >
+            <option value="">Select a service to view logs</option>
+            {services.map((service) => (
+              <option key={service.id} value={service.id}>
+                {service.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        
+        {selectedService && (
+          <ServiceLogs serviceId={selectedService} />
+        )}
+      </div>
+    </div>
   );
 };
 

@@ -207,3 +207,5 @@ The **E-commerce Microservices Platform** is now **fully functional** with:
 **Access your admin dashboard now**: http://localhost:3008
 **Login with**: admin@ecommerce.com / password123
 
+
+

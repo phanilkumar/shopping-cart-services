@@ -168,3 +168,5 @@ echo -e "${GREEN}✅ You can access the dashboard in your browser${NC}"
 echo -e "\n${GREEN}🎉 Admin Dashboard Check Complete!${NC}"
 echo -e "${BLUE}Open http://localhost:3008 in your browser to test the interface.${NC}"
 
+
+

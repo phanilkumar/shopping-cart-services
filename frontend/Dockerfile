@@ -13,8 +13,10 @@ RUN npm install
 COPY . .
 
 # Expose port
-EXPOSE 3005
+EXPOSE 3000
 
-# Start development server
-CMD ["npm", "start"]
+# Start development server with host binding
+CMD ["sh", "-c", "npm start -- --host 0.0.0.0 --port 3000"]
+
+
 

@@ -61,3 +61,5 @@ echo "2. Test the login interface"
 echo "3. Explore all navigation sections"
 echo "4. Test responsive design on mobile/desktop"
 
+
+

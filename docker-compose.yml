@@ -32,7 +32,7 @@ services:
       - "3000:3000"
     environment:
       RAILS_ENV: development
-      DATABASE_URL: postgresql://postgres:password@postgres:5432/api_gateway_dev
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/user_service_dev
       REDIS_URL: redis://redis:6379/0
       JWT_SECRET_KEY: your-secret-key-here
       USER_SERVICE_URL: http://user-service:3001
@@ -50,7 +50,7 @@ services:
       - redis
     networks:
       - ecommerce-network
-    command: rails server -b 0.0.0.0
+    command: ./bin/rails server -b 0.0.0.0
 
   # User Service
   user-service:
@@ -73,7 +73,7 @@ services:
       - redis
     networks:
       - ecommerce-network
-    command: rails server -p 3001 -b 0.0.0.0
+    command: ./bin/rails server -p 3001 -b 0.0.0.0
 
   # Product Service
   product-service:
@@ -95,7 +95,7 @@ services:
       - redis
     networks:
       - ecommerce-network
-    command: rails server -p 3002 -b 0.0.0.0
+    command: ./bin/rails server -p 3002 -b 0.0.0.0
 
   # Order Service
   order-service:
@@ -126,7 +126,7 @@ services:
       - product-service
     networks:
       - ecommerce-network
-    command: rails server -p 3003 -b 0.0.0.0
+    command: ./bin/rails server -p 3003 -b 0.0.0.0
 
   # Cart Service
   cart-service:
@@ -151,7 +151,7 @@ services:
       - product-service
     networks:
       - ecommerce-network
-    command: rails server -p 3004 -b 0.0.0.0
+    command: ./bin/rails server -p 3004 -b 0.0.0.0
 
   # Frontend React App
   frontend:
@@ -159,10 +159,13 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "3005:3005"
+      - "3005:3000"
     environment:
       REACT_APP_API_URL: http://localhost:3000
       REACT_APP_ENV: development
+      PORT: 3000
+      WDS_SOCKET_HOST: localhost
+      WDS_SOCKET_PORT: 3005
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -170,7 +173,7 @@ services:
       - api-gateway
     networks:
       - ecommerce-network
-    command: npm start
+    command: sh -c "npm start -- --host 0.0.0.0 --port 3000"
 
   # Admin Dashboard
   admin-dashboard:
@@ -226,7 +229,7 @@ services:
       - redis
     networks:
       - ecommerce-network
-    command: rails server -p 3006 -b 0.0.0.0
+    command: ./bin/rails server -p 3006 -b 0.0.0.0
 
   # Wallet Service
   wallet-service:
@@ -257,7 +260,7 @@ services:
       - redis
     networks:
       - ecommerce-network
-    command: rails server -p 3007 -b 0.0.0.0
+    command: ./bin/rails server -p 3007 -b 0.0.0.0
 
 volumes:
   postgres_data:

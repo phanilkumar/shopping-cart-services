@@ -45,7 +45,7 @@ class Api::V1::UsersController < ApplicationController
   end
   
   def user_params
-    params.require(:user).permit(:first_name, :last_name, :phone)
+    params.require(:user).permit(:first_name, :last_name, :phone, :status, :role)
   end
   
   def user_serializer(user)

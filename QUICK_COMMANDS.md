@@ -175,3 +175,5 @@ open http://localhost:3008
 
 **💡 Pro Tip**: Use `./start-microservices.sh simple` for the fastest and most reliable startup!
 
+
+

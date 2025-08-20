@@ -446,3 +446,5 @@ Regular security updates are crucial:
    docker run --rm -v $(pwd):/app aquasec/trivy fs /app
    ```
 
+
+
