@@ -20,6 +20,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
       const response = await axios.post('http://localhost:3001/api/v1/auth/login', {
         email,
         password
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
       });
 
       const { data } = response.data;
@@ -42,6 +47,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
       
       onLoginSuccess(data.token, data.user);
     } catch (err: any) {
+      console.error('Login error:', err);
       setError(err.response?.data?.message || 'Login failed');
     } finally {
       setLoading(false);
