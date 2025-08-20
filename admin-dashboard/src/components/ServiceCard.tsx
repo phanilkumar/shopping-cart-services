@@ -1,17 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Microservice } from '../types';
-import { microservicesApi, RESTART_BLACKLIST } from '../services/api';
 
 interface ServiceCardProps {
   service: Microservice;
-  onRestart: (serviceId: string) => void;
+  onRestart: (serviceId: string) => void; // Keep for compatibility but won't be used
 }
 
-const ServiceCard: React.FC<ServiceCardProps> = ({ service, onRestart }) => {
-  const [restarting, setRestarting] = useState(false);
-  const [restartMessage, setRestartMessage] = useState<string | null>(null);
-  const [restartWarning, setRestartWarning] = useState<string | null>(null);
-
+const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'online':
@@ -29,70 +24,6 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service, onRestart }) => {
     if (health >= 80) return '#28a745';
     if (health >= 60) return '#ffc107';
     return '#dc3545';
-  };
-
-  const isRestartDisabled = () => {
-    return service.status === 'offline' || restarting || RESTART_BLACKLIST.includes(service.id);
-  };
-
-  const getRestartButtonText = () => {
-    if (restarting) return 'Restarting...';
-    if (RESTART_BLACKLIST.includes(service.id)) return 'Restart Disabled';
-    return 'Restart';
-  };
-
-  const getRestartButtonTitle = () => {
-    if (RESTART_BLACKLIST.includes(service.id)) {
-      return 'This service cannot be restarted via the dashboard for security reasons.';
-    }
-    return 'Restart this microservice using Docker Compose. This will stop and start the service container.';
-  };
-
-  const handleRestart = async () => {
-    // Clear previous messages
-    setRestartMessage(null);
-    setRestartWarning(null);
-
-    // Check if service is blacklisted
-    if (RESTART_BLACKLIST.includes(service.id)) {
-      setRestartWarning('This service is critical for dashboard operation and cannot be restarted via the dashboard.');
-      return;
-    }
-
-    // Add confirmation dialog
-    const confirmed = window.confirm(
-      `Are you sure you want to restart ${service.name}?\n\nThis will cause a brief downtime for this service.`
-    );
-    
-    if (!confirmed) {
-      return;
-    }
-
-    setRestarting(true);
-    try {
-      const result = await microservicesApi.restartService(service.id);
-      
-      if (result.success) {
-        setRestartMessage(result.message);
-        // Call the parent onRestart callback
-        onRestart(service.id);
-      } else {
-        setRestartWarning(result.message);
-        if (result.warning) {
-          setRestartWarning(prev => prev ? `${prev}\n\n${result.warning}` : result.warning);
-        }
-      }
-    } catch (error) {
-      setRestartWarning('Failed to restart service. Please try again.');
-    } finally {
-      setRestarting(false);
-    }
-
-    // Clear messages after 5 seconds
-    setTimeout(() => {
-      setRestartMessage(null);
-      setRestartWarning(null);
-    }, 5000);
   };
 
   return (
@@ -150,49 +81,13 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service, onRestart }) => {
         </p>
       </div>
 
-      {/* Restart Messages */}
-      {restartMessage && (
-        <div style={{ 
-          marginBottom: '10px', 
-          padding: '8px', 
-          backgroundColor: '#d4edda', 
-          color: '#155724', 
-          borderRadius: '4px', 
-          fontSize: '12px' 
-        }}>
-          <strong>Success:</strong> {restartMessage}
-        </div>
-      )}
-
-      {restartWarning && (
-        <div style={{ 
-          marginBottom: '10px', 
-          padding: '8px', 
-          backgroundColor: '#fff3cd', 
-          color: '#856404', 
-          borderRadius: '4px', 
-          fontSize: '12px' 
-        }}>
-          <strong>Warning:</strong> {restartWarning}
-        </div>
-      )}
-
       <div style={{ display: 'flex', gap: '10px' }}>
         <button 
           className="btn btn-primary"
           onClick={() => window.open(`http://localhost:${service.port}`, '_blank')}
-          style={{ flex: '1' }}
+          style={{ width: '100%' }}
         >
           View Service
-        </button>
-        <button 
-          className={`btn ${RESTART_BLACKLIST.includes(service.id) ? 'btn-secondary' : 'btn-danger'}`}
-          onClick={handleRestart}
-          disabled={isRestartDisabled()}
-          style={{ flex: '1' }}
-          title={getRestartButtonTitle()}
-        >
-          {getRestartButtonText()}
         </button>
       </div>
       
@@ -205,20 +100,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service, onRestart }) => {
           borderRadius: '4px', 
           fontSize: '12px' 
         }}>
-          <strong>Service Offline:</strong> This service is not responding. Use the restart button to attempt recovery.
-        </div>
-      )}
-
-      {RESTART_BLACKLIST.includes(service.id) && (
-        <div style={{ 
-          marginTop: '10px', 
-          padding: '8px', 
-          backgroundColor: '#e2e3e5', 
-          color: '#383d41', 
-          borderRadius: '4px', 
-          fontSize: '12px' 
-        }}>
-          <strong>Restart Disabled:</strong> This service cannot be restarted via the dashboard for security reasons.
+          <strong>Service Offline:</strong> This service is not responding.
         </div>
       )}
     </div>

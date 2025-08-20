@@ -46,12 +46,6 @@ const DashboardPage: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const handleRestart = async (serviceId: string) => {
-    // This function is now called by ServiceCard after successful restart
-    // We just need to refresh the data
-    setTimeout(fetchData, 2000);
-  };
-
   const handleLogout = () => {
     if (window.confirm('Are you sure you want to logout?')) {
       logout();
@@ -107,7 +101,7 @@ const DashboardPage: React.FC = () => {
             Microservices Admin Dashboard
           </h1>
           <p style={{ margin: '0', color: '#666', fontSize: '16px' }}>
-            Monitor and manage your microservices infrastructure
+            Monitor your microservices infrastructure
           </p>
           {user && (
             <p style={{ margin: '10px 0 0 0', color: '#888', fontSize: '14px' }}>
@@ -163,7 +157,7 @@ const DashboardPage: React.FC = () => {
             <ServiceCard 
               key={service.id} 
               service={service} 
-              onRestart={handleRestart}
+              onRestart={() => {}} // Empty function for compatibility
             />
           ))}
         </div>

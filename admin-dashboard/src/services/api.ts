@@ -20,12 +20,6 @@ export const MICROSERVICES = [
   { id: 'wallet-service', name: 'Wallet Service', port: 3007, healthEndpoint: '/health' },
 ];
 
-// Services that should not be restarted via the dashboard
-export const RESTART_BLACKLIST = [
-  'admin-dashboard', // Prevents self-restart
-  'admin-dashboard-api', // Prevents API server restart
-];
-
 export const microservicesApi = {
   // Get all microservices status
   async getServicesStatus(): Promise<Microservice[]> {
@@ -146,47 +140,6 @@ export const microservicesApi = {
       return response.data.logs || [];
     } catch (error) {
       return [];
-    }
-  },
-
-  // Restart service - Updated with safety checks
-  async restartService(serviceId: string): Promise<{ success: boolean; message: string; warning?: string }> {
-    // Check if service is in restart blacklist
-    if (RESTART_BLACKLIST.includes(serviceId)) {
-      return {
-        success: false,
-        message: `Restarting ${serviceId} is not allowed for security reasons.`,
-        warning: 'This service is critical for dashboard operation and cannot be restarted via the dashboard.'
-      };
-    }
-
-    try {
-      // Use Docker Compose to restart the service
-      const response = await fetch('/api/admin/restart-service', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ serviceId }),
-      });
-      
-      if (response.ok) {
-        const result = await response.json();
-        return {
-          success: result.success,
-          message: result.message || `Service ${serviceId} restarted successfully`
-        };
-      }
-      return {
-        success: false,
-        message: 'Failed to restart service'
-      };
-    } catch (error) {
-      console.error('Failed to restart service:', error);
-      return {
-        success: false,
-        message: 'Failed to restart service due to network error'
-      };
     }
   },
 
