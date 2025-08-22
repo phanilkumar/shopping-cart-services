@@ -1,4 +1,4 @@
-<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-12 px-4 sm:px-6 lg:px-8"
+<div class="min-h-screen flex flex-col bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-12 px-4 sm:px-6 lg:px-8"
      data-controller="unified-login">
   <!-- Background decoration -->
   <div class="absolute inset-0 overflow-hidden">
@@ -6,7 +6,9 @@
     <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-indigo-400/20 to-pink-400/20 rounded-full blur-3xl"></div>
   </div>
 
-  <div class="relative max-w-md w-full space-y-8">
+  <!-- Main content container -->
+  <div class="flex-1 flex items-center justify-center">
+    <div class="relative max-w-md w-full space-y-8">
     <!-- Logo/Brand Section -->
     <div class="text-center">
       <div class="mx-auto h-20 w-20 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 rounded-3xl flex items-center justify-center shadow-2xl mb-8 transform hover:scale-105 transition-all duration-300">
@@ -96,8 +98,12 @@
                      data-unified-login-target="passwordInput"
                      data-action="input->unified-login#hidePasswordError keydown->unified-login#handlePasswordKeydown"
                      required
+                     minlength="8"
+                     maxlength="16"
                      class="block w-full pl-12 pr-4 py-4 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-base"
                      placeholder="Enter your password">
+            </div>
+
             </div>
             <!-- Error message container -->
             <div data-unified-login-target="passwordError" class="hidden">
@@ -261,15 +267,15 @@
         <% end %>
       </div>
     </div>
+  </div>
 
-    <!-- Footer -->
-    <div class="text-center text-sm text-gray-500">
-      <p>By signing in, you agree to our</p>
-      <p class="mt-1">
-        <%= link_to "Terms of Service", terms_path, class: "text-blue-600 hover:text-blue-500 transition-colors duration-200" %>
-        and
-        <%= link_to "Privacy Policy", privacy_path, class: "text-blue-600 hover:text-blue-500 transition-colors duration-200" %>
-      </p>
+  <!-- Footer -->
+  <div class="text-center text-sm text-gray-500 mt-8">
+    <p>By signing in, you agree to our</p>
+    <div class="mt-1 space-x-1">
+      <%= link_to "Terms of Service", terms_path, class: "text-blue-600 hover:text-blue-500 transition-colors duration-200 underline" %>
+      <span>and</span>
+      <%= link_to "Privacy Policy", privacy_path, class: "text-blue-600 hover:text-blue-500 transition-colors duration-200 underline" %>
     </div>
   </div>
 </div>
