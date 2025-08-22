@@ -9,10 +9,10 @@ import {
   CircularProgress,
   Link,
   Container,
-  Grid,
 } from '@mui/material';
 import { useUser } from '../../contexts/UserContext';
 import { CreateUserData } from '../../services/api/userAPI';
+import CongratulationsPopup from './CongratulationsPopup';
 
 interface RegisterFormProps {
   onSuccess?: () => void;
@@ -30,6 +30,8 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onSwitchToLogin 
     phone: '',
   });
   const [errors, setErrors] = useState<Partial<CreateUserData>>({});
+  const [showCongratulations, setShowCongratulations] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState('');
 
   const handleInputChange = (field: keyof CreateUserData) => (
     event: React.ChangeEvent<HTMLInputElement>
@@ -39,7 +41,6 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onSwitchToLogin 
       [field]: event.target.value,
     }));
     
-    // Clear field error when user starts typing
     if (errors[field]) {
       setErrors(prev => ({
         ...prev,
@@ -61,20 +62,16 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onSwitchToLogin 
 
     if (!formData.email) {
       newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is invalid';
     }
 
     if (!formData.phone) {
       newErrors.phone = 'Phone number is required';
-    } else if (!/^\+91[6-9]\d{9}$/.test(formData.phone)) {
-      newErrors.phone = 'Please enter a valid Indian phone number with +91 prefix (e.g., +919876543210)';
+    } else if (!/^[6-9]\d{9}$/.test(formData.phone)) {
+      newErrors.phone = 'Please enter a valid 10-digit mobile number';
     }
 
     if (!formData.password) {
       newErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
     }
 
     if (!formData.password_confirmation) {
@@ -96,91 +93,88 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onSwitchToLogin 
 
     try {
       await register(formData);
-      onSuccess?.();
+      // Show congratulations popup
+      setRegisteredEmail(formData.email);
+      setShowCongratulations(true);
+      
+      // Clear the form
+      setFormData({
+        email: '',
+        password: '',
+        password_confirmation: '',
+        first_name: '',
+        last_name: '',
+        phone: '',
+      });
+      setErrors({});
     } catch (error) {
-      // Error is handled by the context
       console.error('Registration failed:', error);
     }
   };
 
+  const handleCloseCongratulations = () => {
+    setShowCongratulations(false);
+  };
+
+  const handleLoginFromCongratulations = () => {
+    setShowCongratulations(false);
+    onSwitchToLogin?.();
+  };
+
   return (
     <Container maxWidth="sm">
-      <Box
-        sx={{
-          marginTop: 8,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
-        <Paper
-          elevation={3}
-          sx={{
-            padding: 4,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            width: '100%',
-          }}
-        >
-          <Typography component="h1" variant="h4" gutterBottom>
+      <Box sx={{ marginTop: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <Paper elevation={2} sx={{ padding: 3, width: '100%', maxWidth: 400 }}>
+          <Typography variant="h5" align="center" gutterBottom>
             Create Account
-          </Typography>
-          
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-            Join us! Create your account to get started.
           </Typography>
 
           {state.error && (
-            <Alert severity="error" sx={{ width: '100%', mb: 2 }}>
+            <Alert severity="error" sx={{ mb: 2 }}>
               {state.error}
             </Alert>
           )}
 
-          <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%' }}>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="first_name"
-                  label="First Name"
-                  name="first_name"
-                  autoComplete="given-name"
-                  value={formData.first_name}
-                  onChange={handleInputChange('first_name')}
-                  error={!!errors.first_name}
-                  helperText={errors.first_name}
-                  disabled={state.isLoading}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="last_name"
-                  label="Last Name"
-                  name="last_name"
-                  autoComplete="family-name"
-                  value={formData.last_name}
-                  onChange={handleInputChange('last_name')}
-                  error={!!errors.last_name}
-                  helperText={errors.last_name}
-                  disabled={state.isLoading}
-                />
-              </Grid>
-            </Grid>
+          {state.success && (
+            <Alert severity="success" sx={{ mb: 2 }}>
+              {state.success}
+            </Alert>
+          )}
+
+          <Box component="form" onSubmit={handleSubmit}>
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              label="First Name"
+              name="first_name"
+              value={formData.first_name}
+              onChange={handleInputChange('first_name')}
+              error={!!errors.first_name}
+              helperText={errors.first_name}
+              disabled={state.isLoading}
+            />
 
             <TextField
               margin="normal"
               required
               fullWidth
-              id="email"
-              label="Email Address"
+              label="Last Name"
+              name="last_name"
+              value={formData.last_name}
+              onChange={handleInputChange('last_name')}
+              error={!!errors.last_name}
+              helperText={errors.last_name}
+              disabled={state.isLoading}
+            />
+
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              label="Email"
               name="email"
-              autoComplete="email"
+              type="email"
               value={formData.email}
               onChange={handleInputChange('email')}
               error={!!errors.email}
@@ -192,15 +186,13 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onSwitchToLogin 
               margin="normal"
               required
               fullWidth
-              id="phone"
-              label="Phone Number"
+              label="Mobile Number"
               name="phone"
-              autoComplete="tel"
-              placeholder="+919876543210"
+              placeholder="9876543210"
               value={formData.phone}
               onChange={handleInputChange('phone')}
               error={!!errors.phone}
-              helperText={errors.phone || "Enter Indian mobile number with +91 prefix"}
+              helperText={errors.phone || "Enter 10-digit mobile number"}
               disabled={state.isLoading}
             />
 
@@ -208,11 +200,9 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onSwitchToLogin 
               margin="normal"
               required
               fullWidth
-              name="password"
               label="Password"
               type="password"
-              id="password"
-              autoComplete="new-password"
+              name="password"
               value={formData.password}
               onChange={handleInputChange('password')}
               error={!!errors.password}
@@ -224,11 +214,9 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onSwitchToLogin 
               margin="normal"
               required
               fullWidth
-              name="password_confirmation"
               label="Confirm Password"
               type="password"
-              id="password_confirmation"
-              autoComplete="new-password"
+              name="password_confirmation"
               value={formData.password_confirmation}
               onChange={handleInputChange('password_confirmation')}
               error={!!errors.password_confirmation}
@@ -243,26 +231,30 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onSwitchToLogin 
               sx={{ mt: 3, mb: 2 }}
               disabled={state.isLoading}
             >
-              {state.isLoading ? (
-                <CircularProgress size={24} color="inherit" />
-              ) : (
-                'Create Account'
-              )}
+              {state.isLoading ? <CircularProgress size={20} /> : 'Create Account'}
             </Button>
 
-            <Box sx={{ textAlign: 'center', mt: 2 }}>
+            <Box sx={{ textAlign: 'center' }}>
               <Link
                 component="button"
                 variant="body2"
                 onClick={onSwitchToLogin}
                 sx={{ cursor: 'pointer' }}
               >
-                Already have an account? Sign In
+                Already have account? Login
               </Link>
             </Box>
           </Box>
         </Paper>
       </Box>
+      
+      {/* Congratulations Popup */}
+      <CongratulationsPopup
+        open={showCongratulations}
+        onClose={handleCloseCongratulations}
+        onLogin={handleLoginFromCongratulations}
+        userEmail={registeredEmail}
+      />
     </Container>
   );
 };

@@ -72,8 +72,8 @@ const UserProfile: React.FC = () => {
 
     if (!formData.phone) {
       newErrors.phone = 'Phone number is required';
-    } else if (!/^\+91[6-9]\d{9}$/.test(formData.phone)) {
-      newErrors.phone = 'Please enter a valid Indian phone number with +91 prefix (e.g., +919876543210)';
+    } else if (!/^[6-9]\d{9}$/.test(formData.phone)) {
+      newErrors.phone = 'Please enter a valid 10-digit mobile number';
     }
 
     setErrors(newErrors);

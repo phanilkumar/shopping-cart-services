@@ -115,6 +115,25 @@ export interface HealthCheckResponse {
   redis: string;
 }
 
+export interface OtpRequest {
+  phone: string;
+}
+
+export interface OtpVerify {
+  phone: string;
+  otp: string;
+}
+
+export interface OtpResponse {
+  status: string;
+  message: string;
+  data?: {
+    user?: User;
+    token?: string;
+    refresh_token?: string;
+  };
+}
+
 // User Service API
 export const userService = {
   // Authentication
@@ -219,6 +238,22 @@ export const userService = {
   // Health Check
   healthCheck: async (): Promise<HealthCheckResponse> => {
     const response = await userAPI.get('/health');
+    return response.data;
+  },
+
+  // OTP functionality
+  sendOtp: async (phone: string): Promise<OtpResponse> => {
+    const response = await userAPI.post('/auth/send-otp', { phone });
+    return response.data;
+  },
+
+  verifyOtp: async (phone: string, otp: string): Promise<OtpResponse> => {
+    const response = await userAPI.post('/auth/verify-otp', { phone, otp });
+    return response.data;
+  },
+
+  loginWithOtp: async (phone: string, otp: string): Promise<AuthResponse> => {
+    const response = await userAPI.post('/auth/login-with-otp', { phone, otp });
     return response.data;
   },
 

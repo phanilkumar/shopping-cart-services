@@ -15,13 +15,13 @@ export default defineConfig({
     port: 3005,
     host: true,
     proxy: {
-      '/api': {
-        target: 'http://localhost:3000',
+      '/api/v1': {
+        target: 'http://user-service:3001',
         changeOrigin: true,
         secure: false,
       },
-      '/api/v1': {
-        target: 'http://localhost:3001',
+      '/api': {
+        target: 'http://api-gateway:3000',
         changeOrigin: true,
         secure: false,
       },

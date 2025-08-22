@@ -12,9 +12,15 @@ const AppContent: React.FC = () => {
 
   // Auto-redirect based on authentication status
   useEffect(() => {
+    console.log('Auth state changed:', { isAuthenticated: state.isAuthenticated, currentPage });
+    
     if (state.isAuthenticated && currentPage === 'auth') {
+      console.log('Redirecting to dashboard');
       setCurrentPage('dashboard');
     } else if (!state.isAuthenticated && currentPage !== 'auth') {
+      // Only redirect to auth if we're not already on auth page
+      // This allows the congratulations popup to show properly
+      console.log('Redirecting to auth');
       setCurrentPage('auth');
     }
   }, [state.isAuthenticated, currentPage]);

@@ -452,3 +452,6 @@ For issues related to user-service integration:
 ## 📄 License
 
 This integration is part of the shopping cart microservices project.
+
+
+

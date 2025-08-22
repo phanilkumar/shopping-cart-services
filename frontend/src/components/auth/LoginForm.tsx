@@ -34,7 +34,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToRegister }) 
       [field]: event.target.value,
     }));
     
-    // Clear field error when user starts typing
     if (errors[field]) {
       setErrors(prev => ({
         ...prev,
@@ -48,14 +47,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToRegister }) 
 
     if (!formData.email) {
       newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is invalid';
     }
 
     if (!formData.password) {
       newErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
     }
 
     setErrors(newErrors);
@@ -73,55 +68,32 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToRegister }) 
       await login(formData);
       onSuccess?.();
     } catch (error) {
-      // Error is handled by the context
       console.error('Login failed:', error);
     }
   };
 
   return (
     <Container maxWidth="sm">
-      <Box
-        sx={{
-          marginTop: 8,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
-        <Paper
-          elevation={3}
-          sx={{
-            padding: 4,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            width: '100%',
-          }}
-        >
-          <Typography component="h1" variant="h4" gutterBottom>
-            Sign In
-          </Typography>
-          
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-            Welcome back! Please sign in to your account.
+      <Box sx={{ marginTop: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <Paper elevation={2} sx={{ padding: 3, width: '100%', maxWidth: 400 }}>
+          <Typography variant="h5" align="center" gutterBottom>
+            Login
           </Typography>
 
           {state.error && (
-            <Alert severity="error" sx={{ width: '100%', mb: 2 }}>
+            <Alert severity="error" sx={{ mb: 2 }}>
               {state.error}
             </Alert>
           )}
 
-          <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%' }}>
+          <Box component="form" onSubmit={handleSubmit}>
             <TextField
               margin="normal"
               required
               fullWidth
-              id="email"
-              label="Email Address"
+              label="Email"
               name="email"
               autoComplete="email"
-              autoFocus
               value={formData.email}
               onChange={handleInputChange('email')}
               error={!!errors.email}
@@ -133,10 +105,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToRegister }) 
               margin="normal"
               required
               fullWidth
-              name="password"
               label="Password"
               type="password"
-              id="password"
+              name="password"
               autoComplete="current-password"
               value={formData.password}
               onChange={handleInputChange('password')}
@@ -152,32 +123,17 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToRegister }) 
               sx={{ mt: 3, mb: 2 }}
               disabled={state.isLoading}
             >
-              {state.isLoading ? (
-                <CircularProgress size={24} color="inherit" />
-              ) : (
-                'Sign In'
-              )}
+              {state.isLoading ? <CircularProgress size={20} /> : 'Login'}
             </Button>
 
-            <Box sx={{ textAlign: 'center', mt: 2 }}>
+            <Box sx={{ textAlign: 'center' }}>
               <Link
                 component="button"
                 variant="body2"
                 onClick={onSwitchToRegister}
                 sx={{ cursor: 'pointer' }}
               >
-                Don't have an account? Sign Up
-              </Link>
-            </Box>
-
-            <Box sx={{ textAlign: 'center', mt: 1 }}>
-              <Link
-                component="button"
-                variant="body2"
-                onClick={() => {/* TODO: Implement forgot password */}}
-                sx={{ cursor: 'pointer' }}
-              >
-                Forgot your password?
+                New user? Create account
               </Link>
             </Box>
           </Box>

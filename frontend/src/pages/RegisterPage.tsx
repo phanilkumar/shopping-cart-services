@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Card,
@@ -13,7 +12,6 @@ import {
 import { useAuth } from '../contexts/AuthContext';
 
 const RegisterPage: React.FC = () => {
-  const navigate = useNavigate();
   const { register, isLoading } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
@@ -43,7 +41,8 @@ const RegisterPage: React.FC = () => {
 
     try {
       await register(formData);
-      navigate('/');
+      // Registration successful - the App.tsx will automatically redirect to dashboard
+      // due to the authentication state change
     } catch (err: any) {
       setError(err.message || 'Registration failed');
     }
@@ -145,7 +144,7 @@ const RegisterPage: React.FC = () => {
               Already have an account?{' '}
               <Button
                 variant="text"
-                onClick={() => navigate('/login')}
+                onClick={() => window.location.href = '/login'}
                 sx={{ p: 0, minWidth: 'auto' }}
               >
                 Sign in
