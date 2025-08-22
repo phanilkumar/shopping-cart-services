@@ -1,0 +1,81 @@
+# frozen_string_literal: true
+
+# Standardized Gemfile Template for all microservices
+# This ensures consistent dependencies across all services
+
+source 'https://rubygems.org'
+
+# Ruby version
+ruby '3.2.2'
+
+# Rails version
+gem 'rails', '~> 7.1.5'
+
+# Database
+gem 'pg', '~> 1.5'
+gem 'redis', '~> 5.0'
+
+# Authentication & Authorization
+gem 'devise', '~> 4.9'
+gem 'devise-jwt', '~> 0.11'
+gem 'bcrypt', '~> 3.1'
+gem 'jwt', '~> 2.7'
+
+# API & Serialization
+gem 'active_model_serializers', '~> 0.10'
+gem 'rack-cors', '~> 2.0'
+gem 'jbuilder', '~> 2.11'
+
+# Background Jobs
+gem 'sidekiq', '~> 7.0'
+gem 'redis-namespace', '~> 1.11'
+
+# Monitoring & Logging
+gem 'sentry-ruby', '~> 5.26'
+gem 'sentry-rails', '~> 5.26'
+gem 'lograge', '~> 0.12'
+
+# Pagination
+gem 'kaminari', '~> 1.2'
+
+# Validation & Sanitization
+gem 'dry-validation', '~> 1.10'
+gem 'sanitize', '~> 6.0'
+
+# HTTP Client
+gem 'httparty', '~> 0.21'
+gem 'faraday', '~> 2.7'
+
+# Testing
+group :development, :test do
+  gem 'rspec-rails', '~> 6.0'
+  gem 'factory_bot_rails', '~> 6.4'
+  gem 'faker', '~> 3.2'
+  gem 'shoulda-matchers', '~> 5.3'
+  gem 'database_cleaner-active_record', '~> 2.1'
+  gem 'vcr', '~> 6.1'
+  gem 'webmock', '~> 3.18'
+end
+
+# Development
+group :development do
+  gem 'rubocop', '~> 1.50'
+  gem 'rubocop-rails', '~> 2.20'
+  gem 'rubocop-rspec', '~> 2.20'
+  gem 'brakeman', '~> 6.1'
+  gem 'bullet', '~> 7.0'
+  gem 'annotate', '~> 3.2'
+  gem 'better_errors', '~> 2.10'
+  gem 'binding_of_caller', '~> 1.0'
+  gem 'pry-rails', '~> 0.3'
+  gem 'pry-byebug', '~> 3.10'
+end
+
+# Production
+group :production do
+  gem 'puma', '~> 6.3'
+  gem 'bootsnap', '~> 1.16'
+end
+
+gem "turbo-rails", "~> 2.0"
+gem "stimulus-rails", "~> 1.3"

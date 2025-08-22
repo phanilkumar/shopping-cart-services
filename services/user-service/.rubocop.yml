@@ -1,0 +1,300 @@
+# Standardized RuboCop configuration for user-service
+# This ensures consistent code style across all microservices
+
+require:
+  - rubocop-rails
+  - rubocop-rspec
+
+AllCops:
+  NewCops: enable
+  TargetRubyVersion: 3.2
+  Exclude:
+    - 'db/**/*'
+    - 'config/**/*'
+    - 'script/**/*'
+    - 'bin/**/*'
+    - 'vendor/**/*'
+    - 'node_modules/**/*'
+    - 'tmp/**/*'
+    - 'log/**/*'
+    - '*.gemspec'
+
+# Layout
+Layout/LineLength:
+  Max: 120
+  Exclude:
+    - 'spec/**/*'
+    - 'test/**/*'
+
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: indented
+
+Layout/ArrayAlignment:
+  EnforcedStyle: with_fixed_indentation
+
+Layout/HashAlignment:
+  EnforcedStyle: with_fixed_indentation
+
+# Lint
+Lint/UnusedMethodArgument:
+  AllowUnusedKeywordArguments: false
+
+Lint/UnusedBlockArgument:
+  AllowUnusedBlockArguments: false
+
+Lint/RedundantCopDisableDirective:
+  Enabled: true
+
+# Metrics
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
+    - 'test/**/*'
+    - 'config/routes.rb'
+    - 'config/application.rb'
+
+Metrics/MethodLength:
+  Max: 20
+
+Metrics/AbcSize:
+  Max: 30
+
+Metrics/ClassLength:
+  Max: 200
+
+Metrics/ModuleLength:
+  Max: 200
+
+# Naming
+Naming/VariableNumber:
+  EnforcedStyle: snake_case
+
+Naming/MethodName:
+  EnforcedStyle: snake_case
+
+# Style
+Style/Documentation:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: true
+  EnforcedStyle: always
+
+Style/StringLiterals:
+  EnforcedStyle: single_quotes
+
+Style/SymbolArray:
+  EnforcedStyle: percent
+  MinSize: 3
+
+Style/WordArray:
+  EnforcedStyle: percent
+  MinSize: 3
+
+Style/GuardClause:
+  MinBodyLength: 3
+
+Style/ConditionalAssignment:
+  Enabled: true
+
+Style/EachWithObject:
+  Enabled: true
+
+Style/RedundantBegin:
+  Enabled: true
+
+Style/RedundantReturn:
+  Enabled: true
+
+Style/RedundantSelf:
+  Enabled: true
+
+Style/SafeNavigation:
+  Enabled: true
+
+# Rails
+Rails:
+  Enabled: true
+
+Rails/ApplicationRecord:
+  Enabled: true
+
+Rails/ApplicationController:
+  Enabled: true
+
+Rails/BulkChangeTable:
+  Enabled: true
+
+Rails/CreateTableWithTimestamps:
+  Enabled: true
+
+Rails/Date:
+  EnforcedStyle: strict
+
+Rails/FilePath:
+  EnforcedStyle: arguments
+
+Rails/FindBy:
+  Enabled: true
+
+Rails/FindEach:
+  Enabled: true
+
+Rails/HasManyOrHasOneDependent:
+  Enabled: true
+
+Rails/I18nLocaleTexts:
+  Enabled: true
+
+Rails/IndexWith:
+  Enabled: true
+
+Rails/InverseOf:
+  Enabled: true
+
+Rails/LexicallyScopedActionFilter:
+  Enabled: true
+
+Rails/Output:
+  Exclude:
+    - 'db/seeds.rb'
+    - 'lib/tasks/**/*'
+
+Rails/PluralizationGrammar:
+  Enabled: true
+
+Rails/Presence:
+  Enabled: true
+
+Rails/RedundantPresenceValidationOnBelongsTo:
+  Enabled: true
+
+Rails/RedundantReceiverInWithOptions:
+  Enabled: true
+
+Rails/ReflectionClassName:
+  Enabled: true
+
+Rails/RelativeDateConstant:
+  Enabled: true
+
+Rails/RequestReferer:
+  Enabled: true
+
+Rails/ResponseParsedBody:
+  Enabled: true
+
+Rails/ReversibleMigration:
+  Enabled: true
+
+Rails/RootJoinChain:
+  Enabled: true
+
+Rails/SaveBang:
+  Enabled: true
+
+Rails/ScopeArgs:
+  Enabled: true
+
+Rails/SkipsModelValidations:
+  Enabled: true
+
+Rails/TimeZone:
+  EnforcedStyle: strict
+
+Rails/UniqBeforePluck:
+  Enabled: true
+
+Rails/Validation:
+  Enabled: true
+
+# RSpec
+RSpec:
+  Enabled: true
+
+RSpec/ExampleLength:
+  Max: 15
+
+RSpec/MultipleExpectations:
+  Max: 5
+
+RSpec/NestedGroups:
+  Max: 4
+
+RSpec/DescribedClass:
+  EnforcedStyle: described_class
+
+RSpec/EmptyExampleGroup:
+  Enabled: true
+
+RSpec/ExampleWithoutDescription:
+  Enabled: true
+
+RSpec/ExpectActual:
+  Enabled: true
+
+RSpec/FilePath:
+  EnforcedStyle: relative
+
+RSpec/Focus:
+  Enabled: true
+
+RSpec/ImplicitExpect:
+  Enabled: true
+
+RSpec/InstanceSpy:
+  Enabled: true
+
+RSpec/ItBehavesLike:
+  Enabled: true
+
+RSpec/LeadingSubject:
+  Enabled: true
+
+RSpec/LetSetup:
+  Enabled: true
+
+RSpec/MultipleDescribes:
+  Enabled: true
+
+RSpec/NamedSubject:
+  Enabled: true
+
+RSpec/NotToNot:
+  Enabled: true
+
+RSpec/OverwritingSetup:
+  Enabled: true
+
+RSpec/PredicateMatcher:
+  EnforcedStyle: inflected
+
+RSpec/ReceiveCounts:
+  Enabled: true
+
+RSpec/RepeatedDescription:
+  Enabled: true
+
+RSpec/RepeatedExample:
+  Enabled: true
+
+RSpec/ReturnFromStub:
+  Enabled: true
+
+RSpec/SharedExamples:
+  Enabled: true
+
+RSpec/SingleArgumentMessageChain:
+  Enabled: true
+
+RSpec/SubjectStub:
+  Enabled: true
+
+RSpec/VerifiedDoubles:
+  Enabled: true
+
+RSpec/VoidExpect:
+  Enabled: true
+
+RSpec/Yield:
+  Enabled: true

@@ -86,3 +86,4 @@ The User model uses the following fields from the database:
 - `email_verified_at` - Email verification timestamp
 - `encrypted_password` - Devise encrypted password
 - `created_at` / `updated_at` - Timestamps
+

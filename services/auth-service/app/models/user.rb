@@ -1,13 +1,20 @@
 class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable
+         :recoverable, :rememberable
 
-  # India-specific validations
-  validates :phone, presence: true, if: :phone_required?
-  validates :phone, format: { with: /\A\+91[6-9]\d{9}\z/ }, allow_blank: true
-  validates :email, presence: true, if: :email_required?
-  validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true
+  # Override Devise validations with custom messages
+  validates :email, presence: { message: 'Email is required' }, 
+            uniqueness: { message: 'Email address is already registered' },
+            format: { with: URI::MailTo::EMAIL_REGEXP, message: 'Please enter a valid email address' }
   
+  validates :password, presence: { message: 'Password is required' }, 
+            length: { minimum: 6, message: 'Password must be at least 6 characters' }, 
+            on: :create
+  
+  validates :phone, presence: { message: 'Phone number is required' }, if: :phone_required?
+  validates :phone, format: { with: /\A\+91[6-9]\d{9}\z/, message: 'Please enter a valid 10-digit mobile number' }, allow_blank: true
+  validates :phone, uniqueness: { message: 'Phone number is already registered' }, allow_blank: true
+
   # GST number validation (for business accounts)
   validates :gst_number, format: { 
     with: /\A\d{2}[A-Z]{5}\d{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}\z/ 
@@ -87,6 +94,34 @@ class User < ApplicationRecord
     else
       0 # No COD for rejected users
     end
+  end
+
+  def update_last_login
+    update(last_login_at: Time.current)
+  end
+
+  def generate_jwt_token
+    JWT.encode(
+      {
+        user_id: id,
+        email: email,
+        exp: 24.hours.from_now.to_i
+      },
+      Rails.application.credentials.secret_key_base,
+      'HS256'
+    )
+  end
+
+  def generate_refresh_token
+    SecureRandom.hex(32)
+  end
+
+  def admin?
+    role == 1
+  end
+
+  def active?
+    status == 1
   end
 
   private
