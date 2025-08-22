@@ -158,4 +158,36 @@
       <%= link_to "Terms of Service", terms_path, class: "inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-xl text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200" %>
     </div>
   </div>
+
+  <!-- Back to Top Button -->
+  <button id="back-to-top" 
+          class="fixed bottom-8 right-8 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white p-4 rounded-full shadow-lg transform hover:scale-110 transition-all duration-300 opacity-0 pointer-events-none z-50"
+          onclick="scrollToTop()">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+    </svg>
+  </button>
+
+  <!-- Back to Top JavaScript -->
+  <script>
+    // Show/hide back to top button based on scroll position
+    window.addEventListener('scroll', function() {
+      const backToTopButton = document.getElementById('back-to-top');
+      if (window.pageYOffset > 300) {
+        backToTopButton.classList.remove('opacity-0', 'pointer-events-none');
+        backToTopButton.classList.add('opacity-100', 'pointer-events-auto');
+      } else {
+        backToTopButton.classList.add('opacity-0', 'pointer-events-none');
+        backToTopButton.classList.remove('opacity-100', 'pointer-events-auto');
+      }
+    });
+
+    // Smooth scroll to top function
+    function scrollToTop() {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+  </script>
 </div>
