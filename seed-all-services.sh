@@ -133,3 +133,6 @@ echo "Wallet Service: http://localhost:3007"
 echo ""
 echo "✅ Ready for testing! Run 'docker-compose logs -f' to monitor services."
 
+
+
+

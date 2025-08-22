@@ -442,3 +442,6 @@ docker compose up
 **Migration completed successfully! 🚀**
 
 Both frontend applications now use Vite for faster development and optimized production builds.
+
+
+

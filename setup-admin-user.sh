@@ -59,3 +59,6 @@ echo "   docker-compose restart user-service"
 echo ""
 echo -e "${GREEN}✅ Setup script completed!${NC}"
 
+
+
+

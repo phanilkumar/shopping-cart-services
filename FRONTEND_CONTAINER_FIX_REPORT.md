@@ -281,3 +281,6 @@ The platform is now ready for:
 **Platform:** Docker Compose  
 **Architecture:** Microservices (Ruby on Rails + React)
 
+
+
+

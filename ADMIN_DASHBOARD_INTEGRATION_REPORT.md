@@ -325,3 +325,6 @@ The admin dashboard is now ready for:
 **Architecture:** Microservices (Ruby on Rails + React)  
 **Admin Dashboard:** React + TypeScript
 
+
+
+

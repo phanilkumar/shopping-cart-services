@@ -285,3 +285,6 @@ The only remaining task is to fix the frontend container configuration to enable
 **Platform:** Docker Compose  
 **Architecture:** Microservices (Ruby on Rails + React)
 
+
+
+
