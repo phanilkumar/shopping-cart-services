@@ -129,3 +129,7 @@ class Api::V1::AuthController < ApplicationController
     ENV['JWT_SECRET_KEY'] || 'default-secret-key'
   end
 end
+
+
+
+
