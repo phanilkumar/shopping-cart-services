@@ -136,3 +136,7 @@ echo "✅ Ready for testing! Run 'docker-compose logs -f' to monitor services."
 
 
 
+
+
+
+
