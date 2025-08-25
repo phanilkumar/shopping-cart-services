@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 
 FactoryBot.define do
+  factory :jwt_denylist do
+    jti { "MyString" }
+    exp { "2025-08-24 11:08:13" }
+  end
+
   factory :user do
     email { Faker::Internet.email }
     password { 'password123' }
@@ -24,3 +29,7 @@ FactoryBot.define do
     status { 'inactive' }
   end
 end
+
+
+
+

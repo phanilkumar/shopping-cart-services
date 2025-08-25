@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Congratulations Animation Preview</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes confetti {
+      0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+    
+    @keyframes bounce {
+      0%, 20%, 53%, 80%, 100% { transform: translate3d(0,0,0); }
+      40%, 43% { transform: translate3d(0, -30px, 0); }
+      70% { transform: translate3d(0, -15px, 0); }
+      90% { transform: translate3d(0, -4px, 0); }
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .confetti {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      background: #fbbf24;
+      animation: confetti 3s linear infinite;
+    }
+    
+    .confetti:nth-child(2n) {
+      background: #ef4444;
+      animation-delay: 0.5s;
+    }
+    
+    .confetti:nth-child(3n) {
+      background: #10b981;
+      animation-delay: 1s;
+    }
+    
+    .confetti:nth-child(4n) {
+      background: #3b82f6;
+      animation-delay: 1.5s;
+    }
+    
+    .confetti:nth-child(5n) {
+      background: #8b5cf6;
+      animation-delay: 2s;
+    }
+    
+    .bounce-animation {
+      animation: bounce 2s infinite;
+    }
+    
+    .pulse-animation {
+      animation: pulse 2s infinite;
+    }
+    
+    .fade-in-up {
+      animation: fadeInUp 1s ease-out;
+    }
+    
+    .gradient-bg {
+      background: linear-gradient(135deg, #1e3a8a 0%, #7c3aed 50%, #dc2626 100%);
+    }
+    
+    .text-shadow {
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+    
+    .card-bg {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+  </style>
+</head>
+<body class="gradient-bg min-h-screen flex items-center justify-center overflow-hidden">
+  <!-- Confetti Animation -->
+  <div id="confetti-container"></div>
+  
+  <!-- Main Content -->
+  <div class="text-center text-white fade-in-up">
+    <!-- Success Icon -->
+    <div class="mb-8">
+      <div class="inline-flex items-center justify-center w-24 h-24 bg-green-500 rounded-full bounce-animation shadow-lg">
+        <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+      </div>
+    </div>
+    
+    <!-- Welcome Message -->
+    <h1 class="text-5xl font-bold mb-4 pulse-animation text-shadow">
+      Welcome Back! 🎉
+    </h1>
+    
+    <p class="text-xl mb-2 opacity-90 text-shadow">
+      Great to see you again,
+    </p>
+    
+    <p class="text-3xl font-semibold mb-8 text-yellow-300 text-shadow">
+      John Doe!
+    </p>
+    
+    <!-- Success Message -->
+    <div class="card-bg rounded-lg p-6 mb-8 max-w-md mx-auto shadow-xl">
+      <p class="text-lg text-white font-medium">
+        You've successfully logged into your account. 
+        Ready to continue your journey?
+      </p>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="space-x-4">
+      <a href="#" 
+         class="inline-flex items-center px-6 py-3 bg-white text-purple-600 font-semibold rounded-lg hover:bg-gray-100 transition-colors duration-300 shadow-lg">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+        </svg>
+        Go to Dashboard
+      </a>
+      
+      <a href="#" 
+         class="inline-flex items-center px-6 py-3 border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-purple-600 transition-colors duration-300 shadow-lg">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+        </svg>
+        Back to Home
+      </a>
+    </div>
+    
+    <!-- User Info -->
+    <div class="mt-8 text-sm opacity-90 text-shadow">
+      <p class="mb-1">Logged in as: <span class="font-semibold text-yellow-300">john.doe@example.com</span></p>
+      <p>Last login: <span class="font-semibold text-yellow-300">August 24, 2025 at 11:30 AM</span></p>
+    </div>
+  </div>
+
+  <script>
+    // Create confetti animation
+    function createConfetti() {
+      const container = document.getElementById('confetti-container');
+      const colors = ['#fbbf24', '#ef4444', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899'];
+      
+      for (let i = 0; i < 50; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.animationDelay = Math.random() * 3 + 's';
+        confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        container.appendChild(confetti);
+      }
+    }
+    
+    // Initialize animations
+    document.addEventListener('DOMContentLoaded', function() {
+      createConfetti();
+    });
+  </script>
+</body>
+</html>
