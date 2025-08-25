@@ -23,3 +23,7 @@ class CreateUsers < ActiveRecord::Migration[7.1]
     add_index :users, :phone, unique: true
   end
 end
+
+
+
+
