@@ -1,31 +1,50 @@
 class User < ApplicationRecord
-  has_secure_password
-  
+  # Include default devise modules. Others available are:
+  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+  devise :database_authenticatable, :registerable,
+         :recoverable, :rememberable, :validatable
+
   # Callbacks
   before_create :set_default_values
   before_validation :sanitize_phone
   before_save :normalize_email
-  before_create :set_default_password_for_phone
 
-  # Basic validations
-  validates :email, presence: { message: '%{attribute} is required' }, 
-            uniqueness: { case_sensitive: false, message: '%{attribute} address is already registered' },
-            format: { with: URI::MailTo::EMAIL_REGEXP, message: 'Please enter a valid email address' }
+  # Email validation is handled by Devise :validatable module
+  # No need for additional email validations here
   
-  validates :password, presence: { message: '%{attribute} is required' }, 
-            length: { minimum: 6, maximum: 6, message: '%{attribute} must be exactly 6 characters' }, 
-            format: { with: /\A\d{6}\z/, message: '%{attribute} must be 6 digits' },
-            on: :create
+  # First name validation
+  validates :first_name, presence: { message: 'First name is required' },
+            length: { minimum: 4, maximum: 20, message: 'First name must be between 4 and 20 characters' },
+            format: { 
+              with: /\A[a-zA-Z]+\z/, 
+              message: 'First name can only contain letters (a-z, A-Z)' 
+            }
   
-  validates :phone, presence: { message: '%{attribute} number is required' }, if: :phone_required?
-  validates :phone, format: { with: /\A\+91[6-9]\d{9}\z/, message: 'Please enter a valid 10-digit mobile number' }, allow_blank: true
-  validates :phone, uniqueness: { message: '%{attribute} number is already registered' }, allow_blank: true
+  # Last name validation
+  validates :last_name, presence: { message: 'Last name is required' },
+            length: { minimum: 4, maximum: 20, message: 'Last name must be between 4 and 20 characters' },
+            format: { 
+              with: /\A[a-zA-Z]+\z/, 
+              message: 'Last name can only contain letters (a-z, A-Z)' 
+            }
+  
+  # Indian mobile number validation (10 digits starting with 6, 7, 8, or 9)
+  validates :phone, presence: { message: 'Mobile number is required' }
+  validates :phone, format: { 
+              with: /\A\+?91[6-9]\d{9}\z/, 
+              message: 'Please enter a valid 10-digit Indian mobile number (e.g., 9876543210)' 
+            }, allow_blank: true
+  validates :phone, uniqueness: { message: 'Mobile number is already registered' }, allow_blank: true
+
+  # Password validation (custom validation for Devise)
+  validate :password_complexity
 
   # Override to prevent duplicate attribute names in error messages
   def errors
     super.tap do |errors|
       def errors.full_messages
-        map do |error|
+        # Get all error messages
+        all_messages = map do |error|
           attribute = error.attribute.to_s.humanize
           message = error.message
           
@@ -39,7 +58,7 @@ class User < ApplicationRecord
             else
               interpolated_message
             end
-          elsif message.match?(/^(Email|Phone|Password)/)
+          elsif message.match?(/^(Email|Phone|Password|First name|Last name)/)
             # If message already starts with attribute name, use as-is
             message
           elsif message.match?(/^Please enter a valid/)
@@ -50,10 +69,20 @@ class User < ApplicationRecord
             "#{attribute} #{message}"
           end
         end
+        
+        # Filter out duplicate email errors - keep only the first one
+        email_errors = all_messages.select { |msg| msg.downcase.include?('email') && msg.downcase.include?('already') }
+        other_errors = all_messages.reject { |msg| msg.downcase.include?('email') && msg.downcase.include?('already') }
+        
+        if email_errors.any?
+          # Use the first email error and add other errors
+          [email_errors.first] + other_errors
+        else
+          all_messages
+        end
       end
     end
   end
-
 
   # Instance methods
   def display_name
@@ -62,10 +91,6 @@ class User < ApplicationRecord
 
   def full_name
     [first_name, last_name].compact.join(' ')
-  end
-
-  def phone_required?
-    email.blank?
   end
 
   def admin?
@@ -107,21 +132,13 @@ class User < ApplicationRecord
     self.email = email.downcase.strip if email.present?
   end
 
-  def set_default_password_for_phone
-    # If user has phone but no password, set a default 6-digit password
-    if phone.present? && password.blank?
-      self.password = '123456' # Default 6-digit password for phone users
-      self.password_confirmation = '123456'
-    end
-  end
-
   def sanitize_phone
     return if phone.blank?
     
     # Remove any existing country code or special characters
     cleaned_phone = phone.to_s.gsub(/[^\d]/, '')
     
-    # If it's a 10-digit number starting with 6-9, add +91 prefix
+    # If it's a 10-digit number starting with 6, 7, 8, or 9, assume it's an Indian number and add +91 prefix
     if cleaned_phone.match?(/\A[6-9]\d{9}\z/)
       self.phone = "+91#{cleaned_phone}"
     elsif cleaned_phone.match?(/\A91[6-9]\d{9}\z/)
@@ -130,6 +147,37 @@ class User < ApplicationRecord
     elsif cleaned_phone.match?(/\A\+91[6-9]\d{9}\z/)
       # If it already has +91 prefix, keep as is
       self.phone = cleaned_phone
+    end
+  end
+
+  def password_complexity
+    return if password.blank?
+    
+    # Check minimum and maximum length
+    if password.length < 8
+      errors.add(:password, 'must be at least 8 characters long')
+    elsif password.length > 16
+      errors.add(:password, 'must not exceed 16 characters')
+    end
+    
+    # Check for at least one letter
+    unless password.match?(/[a-zA-Z]/)
+      errors.add(:password, 'must contain at least one letter')
+    end
+    
+    # Check for at least one number
+    unless password.match?(/\d/)
+      errors.add(:password, 'must contain at least one number')
+    end
+    
+    # Check for at least one special character
+    unless password.match?(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/)
+      errors.add(:password, 'must contain at least one special character (!@#$%^&*()_+-=[]{}|;:,.<>?)')
+    end
+    
+    # Check for only allowed characters
+    unless password.match?(/\A[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+\z/)
+      errors.add(:password, 'can only contain letters, numbers, and special characters')
     end
   end
 end
