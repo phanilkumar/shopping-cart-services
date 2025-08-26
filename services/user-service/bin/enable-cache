@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# Enable Rails caching for development
+touch tmp/caching-dev.txt
+echo "Rails caching enabled for development"
+echo "Run 'rails dev:cache' to disable caching"
