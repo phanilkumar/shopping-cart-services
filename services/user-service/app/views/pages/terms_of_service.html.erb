@@ -117,7 +117,7 @@
 
     <!-- Footer Actions -->
     <div class="text-center">
-      <%= link_to "Back to Login", login_path, class: "inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-xl text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-105 shadow-lg" %>
+      <%= link_to "Back to Login", "/users/sign_in", class: "inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-xl text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-105 shadow-lg" %>
     </div>
   </div>
 
@@ -135,10 +135,10 @@
     // Show/hide back to top button based on scroll position
     window.addEventListener('scroll', function() {
       const backToTopButton = document.getElementById('back-to-top');
-      if (window.pageYOffset > 300) {
+      if (backToTopButton && window.pageYOffset > 300) {
         backToTopButton.classList.remove('opacity-0', 'pointer-events-none');
         backToTopButton.classList.add('opacity-100', 'pointer-events-auto');
-      } else {
+      } else if (backToTopButton) {
         backToTopButton.classList.add('opacity-0', 'pointer-events-none');
         backToTopButton.classList.remove('opacity-100', 'pointer-events-auto');
       }
