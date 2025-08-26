@@ -7,10 +7,544 @@
     <%= csp_meta_tag %>
 
     <!-- CSS and JS will be loaded via CDN for simplicity -->
-    <script src="https://cdn.jsdelivr.net/npm/@hotwired/turbo@7.3.0/dist/turbo.es2017-umd.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@hotwired/stimulus@3.2.2/dist/stimulus.umd.js"></script>
-    
-    <!-- Tailwind CSS CDN for styling -->
+          <script src="https://cdn.jsdelivr.net/npm/@hotwired/turbo@7.3.0/dist/turbo.es2017-umd.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/@hotwired/stimulus@3.2.2/dist/stimulus.umd.js"></script>
+      
+      <!-- Unified Login JavaScript -->
+      <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          console.log('DOM loaded, initializing unified login...');
+          
+          // Initialize Stimulus application
+          const application = Stimulus.Application.start();
+          
+          // Unified Login Controller
+          application.register("unified-login", class extends Stimulus.Controller {
+            static targets = [
+              "emailTab", "phoneTab", "emailLogin", "phoneLogin", "phoneStep", "otpStep",
+              "phoneInput", "otp1", "otp2", "otp3", "otp4", "otp5", "otp6",
+              "sendOtpBtn", "verifyOtpBtn", "verifyText", "verifyDisabledText", "resendOtpBtn", "resendText", "resendTimer", "timerCountdown",
+              "emailError", "emailErrorMessage", "emailErrorIcon", "emailSuccessIcon", "phoneError", "phoneErrorMessage", "phoneErrorIcon", "phoneSuccessIcon",
+              "loadingOverlay", "toastContainer"
+            ];
+
+            connect() {
+              console.log('UnifiedLoginController connected!');
+              this.currentPhone = null;
+              this.otpInputs = [this.otp1Target, this.otp2Target, this.otp3Target, this.otp4Target, this.otp5Target, this.otp6Target];
+              this.setupOtpInputs();
+              this.setupEmailForm();
+              this.checkForServerErrors();
+              this.resendTimer = null;
+              this.countdownInterval = null;
+              this.failedAttempts = 0;
+              this.maxFailedAttempts = 3;
+            }
+
+            // Tab switching
+            switchToEmail() {
+              console.log('Switching to email tab');
+              this.emailTabTarget.classList.add('bg-white', 'text-blue-600', 'shadow-sm');
+              this.emailTabTarget.classList.remove('text-gray-600', 'hover:text-gray-900');
+              
+              this.phoneTabTarget.classList.remove('bg-white', 'text-blue-600', 'shadow-sm');
+              this.phoneTabTarget.classList.add('text-gray-600', 'hover:text-gray-900');
+              
+              this.emailLoginTarget.classList.remove('hidden');
+              this.phoneLoginTarget.classList.add('hidden');
+              this.clearAllErrors();
+            }
+
+            switchToPhone() {
+              console.log('Switching to phone tab');
+              this.phoneTabTarget.classList.add('bg-white', 'text-blue-600', 'shadow-sm');
+              this.phoneTabTarget.classList.remove('text-gray-600', 'hover:text-gray-900');
+              
+              this.emailTabTarget.classList.remove('bg-white', 'text-blue-600', 'shadow-sm');
+              this.emailTabTarget.classList.add('text-gray-600', 'hover:text-gray-900');
+              
+              this.phoneLoginTarget.classList.remove('hidden');
+              this.emailLoginTarget.classList.add('hidden');
+              this.clearAllErrors();
+            }
+
+            // Phone OTP functionality
+            async sendOtp() {
+              console.log('Send OTP clicked');
+              
+              // Prevent multiple rapid clicks
+              if (this.sendOtpBtnTarget.disabled) {
+                console.log('Send OTP button is disabled, ignoring click');
+                return;
+              }
+              
+              const phone = this.phoneInputTarget.value.trim();
+              console.log('Phone number:', phone);
+              
+              if (!this.validatePhone(phone)) {
+                this.showPhoneError('Please enter a valid 10-digit phone number');
+                return;
+              }
+
+              // Disable button immediately to prevent multiple clicks
+              this.sendOtpBtnTarget.disabled = true;
+              this.sendOtpBtnTarget.textContent = 'Sending...';
+              this.showLoading(true);
+              
+              try {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+                console.log('CSRF Token:', csrfToken);
+                
+                const requestBody = JSON.stringify({ phone: phone });
+                console.log('Request body:', requestBody);
+                
+                const response = await fetch('/api/v1/auth/otp/send', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': csrfToken
+                  },
+                  body: requestBody
+                });
+
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+
+                const data = await response.json();
+                console.log('Response data:', data);
+                
+                if (data.status === 'success') {
+                  this.currentPhone = phone;
+                  this.showOtpStep();
+                  this.showPhoneSuccess('OTP sent successfully!');
+                  this.startResendTimer();
+                } else {
+                  this.showPhoneError(data.message);
+                  // Re-enable button on error
+                  this.sendOtpBtnTarget.disabled = false;
+                  this.sendOtpBtnTarget.textContent = 'Send OTP';
+                }
+              } catch (error) {
+                console.error('Error sending OTP:', error);
+                this.showPhoneError('Network error. Please try again.');
+                // Re-enable button on error
+                this.sendOtpBtnTarget.disabled = false;
+                this.sendOtpBtnTarget.textContent = 'Send OTP';
+              } finally {
+                this.showLoading(false);
+              }
+            }
+
+            showOtpStep() {
+              this.phoneStepTarget.classList.add('hidden');
+              this.otpStepTarget.classList.remove('hidden');
+              this.otp1Target.focus();
+            }
+
+            backToPhone() {
+              this.otpStepTarget.classList.add('hidden');
+              this.phoneStepTarget.classList.remove('hidden');
+              this.currentPhone = null;
+              this.clearOtpInputs();
+              this.stopResendTimer();
+              this.resetVerifyButton(); // Reset verify button when going back
+            }
+
+            async verifyOtp() {
+              // Check if button is disabled due to too many failed attempts
+              if (this.verifyOtpBtnTarget.disabled) {
+                this.showPhoneError('Too many failed attempts. Please request a new OTP.');
+                return;
+              }
+
+              const otp = this.getOtpValue();
+              
+              if (otp.length !== 6) {
+                this.showPhoneError('Please enter the complete 6-digit OTP');
+                return;
+              }
+
+              this.showLoading(true);
+              
+              try {
+                const response = await fetch('/api/v1/auth/otp/verify', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+                  },
+                  body: JSON.stringify({ 
+                    phone: this.currentPhone, 
+                    otp: otp 
+                  })
+                });
+
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                  this.showPhoneSuccess('OTP verified successfully!');
+                  setTimeout(() => {
+                    window.location.href = '/congratulations';
+                  }, 1000);
+                } else {
+                  this.failedAttempts++;
+                  this.showPhoneError(data.message);
+                  
+                  // Check if we've reached the maximum failed attempts
+                  if (this.failedAttempts >= this.maxFailedAttempts) {
+                    this.disableVerifyButton();
+                    this.showPhoneError('Too many failed attempts. Please request a new OTP.');
+                  }
+                }
+              } catch (error) {
+                this.failedAttempts++;
+                this.showPhoneError('Network error. Please try again.');
+                
+                // Check if we've reached the maximum failed attempts
+                if (this.failedAttempts >= this.maxFailedAttempts) {
+                  this.disableVerifyButton();
+                  this.showPhoneError('Too many failed attempts. Please request a new OTP.');
+                }
+              } finally {
+                this.showLoading(false);
+              }
+            }
+
+            disableVerifyButton() {
+              this.verifyOtpBtnTarget.disabled = true;
+              this.verifyTextTarget.classList.add('hidden');
+              this.verifyDisabledTextTarget.classList.remove('hidden');
+            }
+
+            resetVerifyButton() {
+              this.verifyOtpBtnTarget.disabled = false;
+              this.verifyTextTarget.classList.remove('hidden');
+              this.verifyDisabledTextTarget.classList.add('hidden');
+              this.failedAttempts = 0;
+            }
+
+            showEmailError(message) {
+              this.emailErrorMessageTarget.textContent = message;
+              this.emailErrorTarget.classList.remove('hidden');
+              this.emailErrorTarget.classList.remove('bg-green-50', 'border-green-200');
+              this.emailErrorTarget.classList.add('bg-red-50', 'border-red-200');
+              this.emailErrorMessageTarget.classList.remove('text-green-600');
+              this.emailErrorMessageTarget.classList.add('text-red-600');
+              this.emailErrorIconTarget.classList.remove('hidden');
+              this.emailSuccessIconTarget.classList.add('hidden');
+              // Auto-hide after 7 seconds
+              setTimeout(() => {
+                this.hideEmailError();
+              }, 7000);
+            }
+
+            showEmailSuccess(message) {
+              this.emailErrorMessageTarget.textContent = message;
+              this.emailErrorTarget.classList.remove('hidden');
+              this.emailErrorTarget.classList.remove('bg-red-50', 'border-red-200');
+              this.emailErrorTarget.classList.add('bg-green-50', 'border-green-200');
+              this.emailErrorMessageTarget.classList.remove('text-red-600');
+              this.emailErrorMessageTarget.classList.add('text-green-600');
+              this.emailErrorIconTarget.classList.add('hidden');
+              this.emailSuccessIconTarget.classList.remove('hidden');
+              // Auto-hide after 5 seconds for success messages
+              setTimeout(() => {
+                this.hideEmailError();
+              }, 5000);
+            }
+
+            hideEmailError() {
+              this.emailErrorTarget.classList.add('hidden');
+              // Reset to default error state
+              this.emailErrorTarget.classList.remove('bg-green-50', 'border-green-200');
+              this.emailErrorTarget.classList.add('bg-red-50', 'border-red-200');
+              this.emailErrorMessageTarget.classList.remove('text-green-600');
+              this.emailErrorMessageTarget.classList.add('text-red-600');
+              this.emailErrorIconTarget.classList.remove('hidden');
+              this.emailSuccessIconTarget.classList.add('hidden');
+            }
+
+            showPhoneError(message) {
+              this.phoneErrorMessageTarget.textContent = message;
+              this.phoneErrorTarget.classList.remove('hidden');
+              this.phoneErrorTarget.classList.remove('bg-green-50', 'border-green-200');
+              this.phoneErrorTarget.classList.add('bg-red-50', 'border-red-200');
+              this.phoneErrorMessageTarget.classList.remove('text-green-600');
+              this.phoneErrorMessageTarget.classList.add('text-red-600');
+              this.phoneErrorIconTarget.classList.remove('hidden');
+              this.phoneSuccessIconTarget.classList.add('hidden');
+              // Auto-hide after 7 seconds
+              setTimeout(() => {
+                this.hidePhoneError();
+              }, 7000);
+            }
+
+            showPhoneSuccess(message) {
+              this.phoneErrorMessageTarget.textContent = message;
+              this.phoneErrorTarget.classList.remove('hidden');
+              this.phoneErrorTarget.classList.remove('bg-red-50', 'border-red-200');
+              this.phoneErrorTarget.classList.add('bg-green-50', 'border-green-200');
+              this.phoneErrorMessageTarget.classList.remove('text-red-600');
+              this.phoneErrorMessageTarget.classList.add('text-green-600');
+              this.phoneErrorIconTarget.classList.add('hidden');
+              this.phoneSuccessIconTarget.classList.remove('hidden');
+              // Auto-hide after 5 seconds for success messages
+              setTimeout(() => {
+                this.hidePhoneError();
+              }, 5000);
+            }
+
+            hidePhoneError() {
+              this.phoneErrorTarget.classList.add('hidden');
+              // Reset to default error state
+              this.phoneErrorTarget.classList.remove('bg-green-50', 'border-green-200');
+              this.phoneErrorTarget.classList.add('bg-red-50', 'border-red-200');
+              this.phoneErrorMessageTarget.classList.remove('text-green-600');
+              this.phoneErrorMessageTarget.classList.add('text-red-600');
+              this.phoneErrorIconTarget.classList.remove('hidden');
+              this.phoneSuccessIconTarget.classList.add('hidden');
+            }
+
+            clearAllErrors() {
+              this.hideEmailError();
+              this.hidePhoneError();
+            }
+
+            setupEmailForm() {
+              // Find the email form and add submission handler
+              const emailForm = this.emailLoginTarget.querySelector('form');
+              if (emailForm) {
+                emailForm.addEventListener('submit', (e) => {
+                  this.handleEmailSubmit(e);
+                });
+              }
+            }
+
+            handleEmailSubmit(event) {
+              // Clear any existing errors
+              this.hideEmailError();
+              
+              // Get form data
+              const formData = new FormData(event.target);
+              const email = formData.get('user[email]');
+              const password = formData.get('user[password]');
+              
+              // Basic validation
+              if (!email || !password) {
+                event.preventDefault();
+                this.showEmailError('Please enter both email and password');
+                return;
+              }
+              
+              // Email format validation
+              const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+              if (!emailRegex.test(email)) {
+                event.preventDefault();
+                this.showEmailError('Please enter a valid email address');
+                return;
+              }
+              
+              // If validation passes, let the form submit normally
+              // The server will handle authentication and return errors if needed
+            }
+
+            checkForServerErrors() {
+              // Check if there are any server-side error messages in the DOM
+              const errorMessages = document.querySelectorAll('.alert-error, .error-message, [data-error]');
+              if (errorMessages.length > 0) {
+                errorMessages.forEach(error => {
+                  const message = error.textContent.trim();
+                  if (message) {
+                    this.showEmailError(message);
+                    // Remove the original error element to avoid duplication
+                    error.remove();
+                  }
+                });
+              }
+            }
+
+            async resendOtp() {
+              // Prevent multiple rapid clicks
+              if (this.resendOtpBtnTarget.disabled) {
+                console.log('Resend OTP button is disabled, ignoring click');
+                return;
+              }
+              
+              if (!this.currentPhone) {
+                this.showPhoneError('Please enter a phone number first');
+                return;
+              }
+
+              // Disable button immediately
+              this.resendOtpBtnTarget.disabled = true;
+              this.showLoading(true);
+              
+              try {
+                const response = await fetch('/api/v1/auth/otp/send', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+                  },
+                  body: JSON.stringify({ phone: this.currentPhone })
+                });
+
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                  this.showPhoneSuccess('OTP resent successfully!');
+                  this.clearOtpInputs();
+                  this.otp1Target.focus();
+                  this.startResendTimer();
+                  this.resetVerifyButton(); // Reset verify button when new OTP is sent
+                } else {
+                  this.showPhoneError(data.message);
+                  // Re-enable button on error
+                  this.resendOtpBtnTarget.disabled = false;
+                }
+              } catch (error) {
+                this.showPhoneError('Network error. Please try again.');
+                // Re-enable button on error
+                this.resendOtpBtnTarget.disabled = false;
+              } finally {
+                this.showLoading(false);
+              }
+            }
+
+            startResendTimer() {
+              // Clear any existing timer
+              if (this.countdownInterval) {
+                clearInterval(this.countdownInterval);
+              }
+
+              let countdown = 60; // 60 seconds (1 minute)
+              this.resendOtpBtnTarget.disabled = true;
+              this.resendTextTarget.classList.add('hidden');
+              this.resendTimerTarget.classList.remove('hidden');
+              this.timerCountdownTarget.textContent = countdown;
+
+              this.countdownInterval = setInterval(() => {
+                countdown--;
+                this.timerCountdownTarget.textContent = countdown;
+
+                if (countdown <= 0) {
+                  clearInterval(this.countdownInterval);
+                  this.resendOtpBtnTarget.disabled = false;
+                  this.resendTextTarget.classList.remove('hidden');
+                  this.resendTimerTarget.classList.add('hidden');
+                }
+              }, 1000);
+            }
+
+            stopResendTimer() {
+              if (this.countdownInterval) {
+                clearInterval(this.countdownInterval);
+                this.countdownInterval = null;
+              }
+              this.resendOtpBtnTarget.disabled = false;
+              this.resendTextTarget.classList.remove('hidden');
+              this.resendTimerTarget.classList.add('hidden');
+            }
+
+            // OTP Input handling
+            setupOtpInputs() {
+              this.otpInputs.forEach((input, index) => {
+                input.addEventListener('input', (e) => {
+                  this.handleOtpInput(e, index);
+                });
+                
+                input.addEventListener('keydown', (e) => {
+                  this.handleOtpKeydown(e, index);
+                });
+              });
+            }
+
+            handleOtpInput(event, index) {
+              const input = event.target;
+              const value = input.value.replace(/\D/g, '').slice(0, 1);
+              input.value = value;
+
+              // Auto-advance to next input when a digit is entered
+              if (value.length === 1 && index < 5) {
+                setTimeout(() => {
+                  this.otpInputs[index + 1].focus();
+                }, 10);
+              }
+            }
+
+            handleOtpKeydown(event, index) {
+              // Handle backspace to go to previous input
+              if (event.key === 'Backspace' && event.target.value === '' && index > 0) {
+                this.otpInputs[index - 1].focus();
+              }
+              
+              // Handle arrow keys for navigation
+              if (event.key === 'ArrowLeft' && index > 0) {
+                this.otpInputs[index - 1].focus();
+              }
+              
+              if (event.key === 'ArrowRight' && index < 5) {
+                this.otpInputs[index + 1].focus();
+              }
+            }
+
+            getOtpValue() {
+              return this.otpInputs.map(input => input.value).join('');
+            }
+
+            clearOtpInputs() {
+              this.otpInputs.forEach(input => {
+                input.value = '';
+              });
+            }
+
+            // Validation
+            validatePhone(phone) {
+              return /^[6-9]\d{9}$/.test(phone);
+            }
+
+            // UI helpers
+            showLoading(show) {
+              if (show) {
+                this.loadingOverlayTarget.classList.remove('hidden');
+              } else {
+                this.loadingOverlayTarget.classList.add('hidden');
+              }
+            }
+
+            showToast(message, type = 'info') {
+              const toast = document.createElement('div');
+              const bgColor = type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500';
+              const icon = type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ';
+              
+              toast.className = `${bgColor} text-white px-4 py-3 rounded-lg shadow-lg flex items-center space-x-2 transform transition-all duration-300 translate-x-full`;
+              toast.innerHTML = `
+                <span class="font-bold">${icon}</span>
+                <span>${message}</span>
+              `;
+              
+              this.toastContainerTarget.appendChild(toast);
+              
+              // Animate in
+              setTimeout(() => {
+                toast.classList.remove('translate-x-full');
+              }, 100);
+              
+              // Auto remove after 4 seconds
+              setTimeout(() => {
+                toast.classList.add('translate-x-full');
+                setTimeout(() => {
+                  if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                  }
+                }, 300);
+              }, 4000);
+            }
+          });
+        });
+      </script>
+      
+      <!-- Tailwind CSS CDN for styling -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio"></script>
     
     <!-- Custom styles -->
@@ -38,6 +572,17 @@
       }
       .alert-info {
         @apply bg-blue-100 border border-blue-400 text-blue-700;
+      }
+      
+      /* Simple anti-flashing for OTP inputs */
+      .otp-input {
+        transition: none !important;
+      }
+      
+      .otp-input:focus {
+        transition: none !important;
+        outline: none !important;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5) !important;
       }
     </style>
   </head>
