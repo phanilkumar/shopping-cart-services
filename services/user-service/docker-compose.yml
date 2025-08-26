@@ -21,11 +21,11 @@ services:
       RAILS_ENV: development
     depends_on:
       - db
-    volumes:
-      - .:/app
-      - bundle_cache:/usr/local/bundle
+    # volumes:
+    #   - .:/app
+    #   - bundle_cache:/usr/local/bundle
     command: ./bin/rails server -p 3001 -b 0.0.0.0
 
 volumes:
   postgres_data:
-  bundle_cache:
+  # bundle_cache:
