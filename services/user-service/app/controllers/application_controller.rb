@@ -14,6 +14,11 @@ class ApplicationController < ActionController::Base
   # Handle JSON requests
   respond_to :html, :json
 
+  # Health check endpoint for Docker
+  def health
+    render json: { status: 'healthy', timestamp: Time.current }, status: :ok
+  end
+
   # Handle 404 errors
   def not_found
     render file: "#{Rails.root}/public/404.html", status: :not_found, layout: false

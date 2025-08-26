@@ -5,6 +5,17 @@ class Api::V1::OtpController < ApplicationController
   def send_otp
     phone = params[:phone]
     
+    # Rate limiting: Check if OTP was sent recently
+    rate_limit_key = "rate_limit_#{phone}"
+    last_sent = Rails.cache.read(rate_limit_key)
+    
+    if last_sent && last_sent > 1.minute.ago
+      return render json: {
+        status: 'error',
+        message: 'Please wait 1 minute before requesting another OTP.'
+      }, status: :too_many_requests
+    end
+    
     # Validate phone number format
     unless phone&.match?(/\A[6-9]\d{9}\z/)
       return render json: {
@@ -37,8 +48,17 @@ class Api::V1::OtpController < ApplicationController
     # Generate static OTP (123456 for all numbers as requested)
     otp = "123456"
     
-    # Store OTP in Redis cache
-    Rails.cache.write("otp_#{phone}", { code: otp, expires_at: 30.minutes.from_now }, expires_in: 30.minutes)
+    # Store OTP in Redis cache with 5-minute expiration for security
+    Rails.cache.write("otp_#{phone}", { 
+      code: otp, 
+      expires_at: 5.minutes.from_now,
+      attempts: 0,
+      max_attempts: 3
+    }, expires_in: 5.minutes)
+    
+    # Set rate limiting (1 minute cooldown)
+    Rails.cache.write(rate_limit_key, Time.current, expires_in: 1.minute)
+    
     Rails.logger.info "OTP stored for #{phone}: #{otp}"
     Rails.logger.info "Session data: #{Rails.cache.read("otp_#{phone}").inspect}"
     
@@ -47,7 +67,7 @@ class Api::V1::OtpController < ApplicationController
     
     render json: {
       status: 'success',
-      message: "Verification code sent to #{phone}. Test code: #{otp}"
+      message: "Verification code sent to #{phone}"
     }
   end
 
@@ -73,27 +93,45 @@ class Api::V1::OtpController < ApplicationController
 
     # Check stored OTP
     stored_otp_data = Rails.cache.read("otp_#{phone}")
-    stored_otp = stored_otp_data[:code] if stored_otp_data
     
-    # Check if OTP has expired
-    if stored_otp_data && stored_otp_data[:expires_at] < Time.current
-      Rails.cache.delete("otp_#{phone}")
-      stored_otp = nil
-    end
-    Rails.logger.info "Stored OTP for #{phone}: #{stored_otp}"
-    Rails.logger.info "Session data for #{phone}: #{Rails.cache.read("otp_#{phone}").inspect}"
-    
-    if stored_otp.nil?
+    if stored_otp_data.nil?
       return render json: {
         status: 'error',
         message: 'Verification code expired. Request new code.'
       }, status: :bad_request
     end
-
-    if stored_otp != otp
+    
+    # Check if OTP has expired
+    if stored_otp_data[:expires_at] < Time.current
+      Rails.cache.delete("otp_#{phone}")
       return render json: {
         status: 'error',
-        message: 'Incorrect verification code. Verify and retry.'
+        message: 'Verification code expired. Request new code.'
+      }, status: :bad_request
+    end
+    
+    # Check attempt limits
+    if stored_otp_data[:attempts] >= stored_otp_data[:max_attempts]
+      Rails.cache.delete("otp_#{phone}")
+      return render json: {
+        status: 'error',
+        message: 'Too many failed attempts. Request new code.'
+      }, status: :bad_request
+    end
+    
+    stored_otp = stored_otp_data[:code]
+    Rails.logger.info "Stored OTP for #{phone}: #{stored_otp}"
+    Rails.logger.info "Attempts: #{stored_otp_data[:attempts]}/#{stored_otp_data[:max_attempts]}"
+    
+    if stored_otp != otp
+      # Increment attempt counter
+      stored_otp_data[:attempts] += 1
+      Rails.cache.write("otp_#{phone}", stored_otp_data, expires_in: 5.minutes)
+      
+      remaining_attempts = stored_otp_data[:max_attempts] - stored_otp_data[:attempts]
+      return render json: {
+        status: 'error',
+        message: "Incorrect verification code. #{remaining_attempts} attempts remaining."
       }, status: :bad_request
     end
 
