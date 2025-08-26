@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Phone Tab Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/@hotwired/stimulus@3.2.2/dist/stimulus.umd.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-md mx-auto bg-white rounded-lg shadow-lg p-6">
+        <h1 class="text-2xl font-bold mb-6 text-center">Phone Tab Test</h1>
+        
+        <div data-controller="unified-login">
+            <!-- Tab Navigation -->
+            <div class="flex bg-gray-100 rounded-lg p-1 mb-6">
+                <button data-action="click->unified-login#switchToEmail" 
+                        data-unified-login-target="emailTab"
+                        class="flex-1 py-2 px-3 rounded-md text-sm font-medium transition-all duration-200 bg-white text-blue-600 shadow-sm">
+                    Email
+                </button>
+                <button data-action="click->unified-login#switchToPhone" 
+                        data-unified-login-target="phoneTab"
+                        class="flex-1 py-2 px-3 rounded-md text-sm font-medium transition-all duration-200 text-gray-600 hover:text-gray-900">
+                    Phone OTP
+                </button>
+            </div>
+
+            <!-- Email Form -->
+            <div data-unified-login-target="emailLogin" class="space-y-4">
+                <p class="text-center text-gray-600">Email login form would be here</p>
+            </div>
+
+            <!-- Phone Form -->
+            <div data-unified-login-target="phoneLogin" class="space-y-4 hidden">
+                <p class="text-center text-gray-600">Phone OTP form would be here</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing test...');
+            
+            const application = Stimulus.Application.start();
+            
+            application.register("unified-login", class extends Stimulus.Controller {
+                static targets = ["emailTab", "phoneTab", "emailLogin", "phoneLogin"];
+
+                connect() {
+                    console.log('Test controller connected!');
+                }
+
+                switchToEmail() {
+                    console.log('Switching to email tab');
+                    this.emailTabTarget.classList.add('bg-white', 'text-blue-600', 'shadow-sm');
+                    this.emailTabTarget.classList.remove('text-gray-600', 'hover:text-gray-900');
+                    
+                    this.phoneTabTarget.classList.remove('bg-white', 'text-blue-600', 'shadow-sm');
+                    this.phoneTabTarget.classList.add('text-gray-600', 'hover:text-gray-900');
+                    
+                    this.emailLoginTarget.classList.remove('hidden');
+                    this.phoneLoginTarget.classList.add('hidden');
+                }
+
+                switchToPhone() {
+                    console.log('Switching to phone tab');
+                    this.phoneTabTarget.classList.add('bg-white', 'text-blue-600', 'shadow-sm');
+                    this.phoneTabTarget.classList.remove('text-gray-600', 'hover:text-gray-900');
+                    
+                    this.emailTabTarget.classList.remove('bg-white', 'text-blue-600', 'shadow-sm');
+                    this.emailTabTarget.classList.add('text-gray-600', 'hover:text-gray-900');
+                    
+                    this.phoneLoginTarget.classList.remove('hidden');
+                    this.emailLoginTarget.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
