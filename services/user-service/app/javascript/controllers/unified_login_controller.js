@@ -2,198 +2,247 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = [
-    "step1", 
-    "step2Password", 
-    "step2Otp", 
-    "identifier", 
-    "emailDisplay", 
-    "passwordForm", 
-    "passwordIdentifier", 
-    "passwordInput", 
-    "phoneDisplay", 
-    "otpForm", 
-    "otpIdentifier", 
-    "otpInput", 
-    "otpError", 
-    "passwordError"
+    "emailTab", "phoneTab", "emailLogin", "phoneLogin", "phoneStep", "otpStep",
+    "phoneInput", "otp1", "otp2", "otp3", "otp4", "otp5", "otp6",
+    "sendOtpBtn", "verifyOtpBtn", "resendOtpBtn", "loadingOverlay", "toastContainer"
   ]
 
   connect() {
-    this.currentStep = 1
-    this.identifierType = null
+    console.log('UnifiedLoginController connected!')
+    this.currentPhone = null
+    this.otpInputs = [this.otp1Target, this.otp2Target, this.otp3Target, this.otp4Target, this.otp5Target, this.otp6Target]
+    this.setupOtpInputs()
   }
 
-  detectType(event) {
-    const value = event.target.value.trim()
-    if (value.includes('@')) {
-      this.identifierType = 'email'
-    } else if (value.match(/^\d+$/)) {
-      this.identifierType = 'phone'
-    } else {
-      this.identifierType = null
-    }
-  }
-
-  continue() {
-    const identifier = this.identifierTarget.value.trim()
+  // Tab switching
+  switchToEmail() {
+    console.log('Switching to email tab')
+    this.emailTabTarget.classList.add('bg-white', 'text-blue-600', 'shadow-sm')
+    this.emailTabTarget.classList.remove('text-gray-600', 'hover:text-gray-900')
     
-    if (!identifier) {
-      this.showError(this.identifierTarget, 'Please enter your email or phone number')
-      return
-    }
-
-    if (!this.identifierType) {
-      this.showError(this.identifierTarget, 'Please enter a valid email or phone number')
-      return
-    }
-
-    if (this.identifierType === 'email') {
-      this.showPasswordStep(identifier)
-    } else {
-      this.showOtpStep(identifier)
-    }
-  }
-
-  showPasswordStep(email) {
-    this.step1Target.classList.add('hidden')
-    this.step2PasswordTarget.classList.remove('hidden')
-    this.emailDisplayTarget.textContent = email
-    this.passwordIdentifierTarget.value = email
-    this.passwordInputTarget.focus()
-  }
-
-  showOtpStep(phone) {
-    this.step1Target.classList.add('hidden')
-    this.step2OtpTarget.classList.remove('hidden')
-    this.phoneDisplayTarget.textContent = phone
-    this.otpIdentifierTarget.value = phone
-    this.otpInputTarget.focus()
-  }
-
-  async authenticateWithPassword(event) {
-    event.preventDefault()
+    this.phoneTabTarget.classList.remove('bg-white', 'text-blue-600', 'shadow-sm')
+    this.phoneTabTarget.classList.add('text-gray-600', 'hover:text-gray-900')
     
-    const email = this.passwordIdentifierTarget.value
-    const password = this.passwordInputTarget.value
+    this.emailLoginTarget.classList.remove('hidden')
+    this.phoneLoginTarget.classList.add('hidden')
+  }
 
-    if (!password) {
-      this.showError(this.passwordInputTarget, 'Please enter your password')
+  switchToPhone() {
+    console.log('Switching to phone tab')
+    this.phoneTabTarget.classList.add('bg-white', 'text-blue-600', 'shadow-sm')
+    this.phoneTabTarget.classList.remove('text-gray-600', 'hover:text-gray-900')
+    
+    this.emailTabTarget.classList.remove('bg-white', 'text-blue-600', 'shadow-sm')
+    this.emailTabTarget.classList.add('text-gray-600', 'hover:text-gray-900')
+    
+    this.phoneLoginTarget.classList.remove('hidden')
+    this.emailLoginTarget.classList.add('hidden')
+  }
+
+  // Phone OTP functionality
+  async sendOtp() {
+    const phone = this.phoneInputTarget.value.trim()
+    
+    if (!this.validatePhone(phone)) {
+      this.showToast('Please enter a valid 10-digit phone number', 'error')
       return
     }
 
+    this.showLoading(true)
+    
     try {
-      const response = await fetch('/auth/login', {
+      const response = await fetch('/api/v1/auth/otp/send', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
         },
-        body: JSON.stringify({
-          email: email,
-          password: password
-        })
+        body: JSON.stringify({ phone: phone })
       })
 
       const data = await response.json()
-
-      if (response.ok) {
-        window.location.href = '/dashboard'
+      
+      if (data.status === 'success') {
+        this.currentPhone = phone
+        this.showOtpStep()
+        this.showToast(data.message, 'success')
       } else {
-        this.showError(this.passwordInputTarget, data.error || 'Invalid credentials')
+        this.showToast(data.message, 'error')
       }
     } catch (error) {
-      this.showError(this.passwordInputTarget, 'An error occurred. Please try again.')
+      this.showToast('Network error. Please try again.', 'error')
+    } finally {
+      this.showLoading(false)
     }
   }
 
-  async authenticateWithOtp(event) {
-    event.preventDefault()
+  showOtpStep() {
+    this.phoneStepTarget.classList.add('hidden')
+    this.otpStepTarget.classList.remove('hidden')
+    this.otp1Target.focus()
+  }
+
+  backToPhone() {
+    this.otpStepTarget.classList.add('hidden')
+    this.phoneStepTarget.classList.remove('hidden')
+    this.currentPhone = null
+    this.clearOtpInputs()
+  }
+
+  async verifyOtp() {
+    const otp = this.getOtpValue()
     
-    const phone = this.otpIdentifierTarget.value
-    const otp = this.otpInputTarget.value
-
-    if (!otp) {
-      this.showError(this.otpInputTarget, 'Please enter the OTP')
-      return
-    }
-
     if (otp.length !== 6) {
-      this.showError(this.otpInputTarget, 'OTP must be 6 digits')
+      this.showToast('Please enter the complete 6-digit OTP', 'error')
       return
     }
 
+    this.showLoading(true)
+    
     try {
-      const response = await fetch('/auth/login_with_otp', {
+      const response = await fetch('/api/v1/auth/otp/verify', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
         },
-        body: JSON.stringify({
-          phone: phone,
-          otp: otp
+        body: JSON.stringify({ 
+          phone: this.currentPhone, 
+          otp: otp 
         })
       })
 
       const data = await response.json()
-
-      if (response.ok) {
-        window.location.href = '/dashboard'
+      
+      if (data.status === 'success') {
+        this.showToast('OTP verified successfully!', 'success')
+        // Redirect to dashboard or congratulations page
+        setTimeout(() => {
+          window.location.href = '/congratulations'
+        }, 1000)
       } else {
-        this.showError(this.otpInputTarget, data.error || 'Invalid OTP')
+        this.showToast(data.message, 'error')
       }
     } catch (error) {
-      this.showError(this.otpInputTarget, 'An error occurred. Please try again.')
+      this.showToast('Network error. Please try again.', 'error')
+    } finally {
+      this.showLoading(false)
     }
   }
 
-  handlePasswordKeydown(event) {
-    if (event.key === 'Enter') {
-      this.authenticateWithPassword(event)
+  async resendOtp() {
+    if (!this.currentPhone) {
+      this.showToast('Please enter a phone number first', 'error')
+      return
     }
-  }
 
-  handleOtpKeydown(event) {
-    if (event.key === 'Enter') {
-      this.authenticateWithOtp(event)
-    }
-  }
-
-  hidePasswordError() {
-    this.hideError(this.passwordInputTarget)
-  }
-
-  hideOtpError() {
-    this.hideError(this.otpInputTarget)
-  }
-
-  showError(element, message) {
-    this.hideError(element)
+    this.showLoading(true)
     
-    const errorDiv = document.createElement('div')
-    errorDiv.className = 'text-red-600 text-sm mt-1'
-    errorDiv.textContent = message
-    
-    element.parentNode.appendChild(errorDiv)
-    element.classList.add('border-red-500', 'focus:ring-red-500', 'focus:border-red-500')
-  }
+    try {
+      const response = await fetch('/api/v1/auth/otp/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({ phone: this.currentPhone })
+      })
 
-  hideError(element) {
-    const errorDiv = element.parentNode.querySelector('.text-red-600')
-    if (errorDiv) {
-      errorDiv.remove()
+      const data = await response.json()
+      
+      if (data.status === 'success') {
+        this.showToast(data.message, 'success')
+        this.clearOtpInputs()
+        this.otp1Target.focus()
+      } else {
+        this.showToast(data.message, 'error')
+      }
+    } catch (error) {
+      this.showToast('Network error. Please try again.', 'error')
+    } finally {
+      this.showLoading(false)
     }
-    element.classList.remove('border-red-500', 'focus:ring-red-500', 'focus:border-red-500')
   }
 
-  preventFormSubmit(event) {
-    event.preventDefault()
+  // OTP Input handling
+  setupOtpInputs() {
+    this.otpInputs.forEach((input, index) => {
+      input.addEventListener('input', (e) => {
+        this.handleOtpInput(e, index)
+      })
+      
+      input.addEventListener('keydown', (e) => {
+        this.handleOtpKeydown(e, index)
+      })
+    })
   }
 
-  goBack() {
-    this.step2PasswordTarget.classList.add('hidden')
-    this.step2OtpTarget.classList.add('hidden')
-    this.step1Target.classList.remove('hidden')
-    this.identifierTarget.focus()
+  handleOtpInput(event, index) {
+    const input = event.target
+    const value = input.value.replace(/\D/g, '').slice(0, 2)
+    input.value = value
+
+    if (value.length === 2 && index < 5) {
+      this.otpInputs[index + 1].focus()
+    }
+  }
+
+  handleOtpKeydown(event, index) {
+    if (event.key === 'Backspace' && event.target.value === '' && index > 0) {
+      this.otpInputs[index - 1].focus()
+    }
+  }
+
+  getOtpValue() {
+    return this.otpInputs.map(input => input.value).join('')
+  }
+
+  clearOtpInputs() {
+    this.otpInputs.forEach(input => {
+      input.value = ''
+    })
+  }
+
+  // Validation
+  validatePhone(phone) {
+    return /^[6-9]\d{9}$/.test(phone)
+  }
+
+  // UI helpers
+  showLoading(show) {
+    if (show) {
+      this.loadingOverlayTarget.classList.remove('hidden')
+    } else {
+      this.loadingOverlayTarget.classList.add('hidden')
+    }
+  }
+
+  showToast(message, type = 'info') {
+    const toast = document.createElement('div')
+    const bgColor = type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+    const icon = type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ'
+    
+    toast.className = `${bgColor} text-white px-4 py-3 rounded-lg shadow-lg flex items-center space-x-2 transform transition-all duration-300 translate-x-full`
+    toast.innerHTML = `
+      <span class="font-bold">${icon}</span>
+      <span>${message}</span>
+    `
+    
+    this.toastContainerTarget.appendChild(toast)
+    
+    // Animate in
+    setTimeout(() => {
+      toast.classList.remove('translate-x-full')
+    }, 100)
+    
+    // Auto remove after 4 seconds
+    setTimeout(() => {
+      toast.classList.add('translate-x-full')
+      setTimeout(() => {
+        if (toast.parentNode) {
+          toast.parentNode.removeChild(toast)
+        }
+      }, 300)
+    }, 4000)
   }
 }
