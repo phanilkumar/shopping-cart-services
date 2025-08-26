@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  # Health check route for Docker
+  get '/health', to: 'application#health'
+  
   # Devise routes
   devise_for :users, controllers: {
     sessions: 'users/sessions',
