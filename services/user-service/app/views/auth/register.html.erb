@@ -63,7 +63,10 @@
           <%= f.email_field :email, 
               autocomplete: "email", 
               placeholder: "john.doe@example.com", 
-              class: "appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm" %>
+              class: "appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm",
+              maxlength: "50",
+              pattern: "[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$",
+              title: "Please enter a valid email address (maximum 50 characters)" %>
           <p class="mt-1 text-xs text-gray-500">Enter a valid email address</p>
         </div>
         
@@ -73,7 +76,12 @@
           <%= f.telephone_field :phone, 
               autocomplete: "tel", 
               placeholder: "9876543210", 
-              class: "appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm" %>
+              class: "appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm",
+              id: "user_phone",
+              pattern: "[0-9]*",
+              inputmode: "numeric",
+              maxlength: "10",
+              oninput: "this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)" %>
           <p class="mt-1 text-xs text-gray-500">10-digit Indian mobile number (starts with 6, 7, 8, or 9)</p>
         </div>
         
@@ -84,17 +92,61 @@
           <%= f.password_field :password, 
               autocomplete: "new-password", 
               placeholder: "Enter password", 
-              class: "appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm" %>
+              class: "appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm password-field",
+              id: "user_password",
+              maxlength: "16" %>
           
-          <div class="mt-1 text-xs text-gray-500">
-            <p class="font-medium mb-1">Password requirements:</p>
-            <ul class="list-disc list-inside space-y-0.5 text-gray-400">
-              <li>8-16 characters long</li>
-              <li>At least one letter (a-z, A-Z)</li>
-              <li>At least one number (0-9)</li>
-              <li>At least one special character (!@#$%^&*()_+-=[]{}|;:,.<>?)</li>
-            </ul>
-          </div>
+                                  <!-- Password Strength Progress Bar -->
+            <div class="mt-2 hidden" id="password-strength-container">
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-xs text-gray-500">Password strength:</span>
+                <span class="text-xs font-medium text-gray-400" id="strength-text">Very Weak</span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                <div class="h-2 rounded-full transition-all duration-300 ease-in-out bg-red-500" 
+                     style="width: 0%; min-width: 0;" 
+                     id="progress-bar"></div>
+              </div>
+            </div>
+            
+            <!-- Password Requirements -->
+            <div class="mt-2 p-2 bg-gray-50 rounded-md hidden" id="password-requirements-container">
+              <p class="text-xs font-medium text-gray-700 mb-1">Password requirements:</p>
+              <div class="space-y-1">
+                <div class="flex items-center space-x-2 requirement-item" data-requirement="length">
+                  <span class="requirement-icon">
+                    <svg class="w-3 h-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"></path>
+                    </svg>
+                  </span>
+                  <span class="requirement-text text-xs text-gray-400">8-16 characters long</span>
+                </div>
+                <div class="flex items-center space-x-2 requirement-item" data-requirement="letter">
+                  <span class="requirement-icon">
+                    <svg class="w-3 h-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"></path>
+                    </svg>
+                  </span>
+                  <span class="requirement-text text-xs text-gray-400">At least one letter (a-z, A-Z)</span>
+                </div>
+                <div class="flex items-center space-x-2 requirement-item" data-requirement="number">
+                  <span class="requirement-icon">
+                    <svg class="w-3 h-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"></path>
+                    </svg>
+                  </span>
+                  <span class="requirement-text text-xs text-gray-400">At least one number (0-9)</span>
+                </div>
+                <div class="flex items-center space-x-2 requirement-item" data-requirement="special">
+                  <span class="requirement-icon">
+                    <svg class="w-3 h-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"></path>
+                    </svg>
+                  </span>
+                  <span class="requirement-text text-xs text-gray-400">At least one special character (!@#$%^&*()_+-=[]{}|;:,.<>?)</span>
+                </div>
+              </div>
+            </div>
         </div>
         
         <!-- Password Confirmation Field -->
@@ -103,7 +155,8 @@
           <%= f.password_field :password_confirmation, 
               autocomplete: "new-password", 
               placeholder: "Confirm your password", 
-              class: "appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm" %>
+              class: "appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm",
+              maxlength: "16" %>
           <p class="mt-1 text-xs text-gray-500">Must match your password</p>
         </div>
       </div>
@@ -140,3 +193,236 @@
     </div>
   </div>
 </div>
+
+<script>
+// Global function to initialize password strength - can be called multiple times
+function initializePasswordStrength() {
+  console.log('Initializing password strength functionality...');
+  
+  const passwordField = document.getElementById('user_password');
+  const progressBar = document.getElementById('progress-bar');
+  const strengthText = document.getElementById('strength-text');
+  const requirementItems = document.querySelectorAll('.requirement-item');
+  const strengthContainer = document.getElementById('password-strength-container');
+  const requirementsContainer = document.getElementById('password-requirements-container');
+  
+  console.log('Found elements:', {
+    passwordField: !!passwordField,
+    progressBar: !!progressBar,
+    strengthText: !!strengthText,
+    requirementItems: requirementItems.length,
+    strengthContainer: !!strengthContainer,
+    requirementsContainer: !!requirementsContainer
+  });
+  
+  if (!passwordField || !progressBar || !strengthText || !strengthContainer || !requirementsContainer) {
+    console.error('Required elements not found!');
+    return;
+  }
+  
+  function updatePasswordStrength() {
+    const password = passwordField.value;
+    console.log('Password changed:', password);
+    
+    // Show/hide containers based on whether password has content
+    if (password.length > 0) {
+      strengthContainer.classList.remove('hidden');
+      requirementsContainer.classList.remove('hidden');
+    } else {
+      strengthContainer.classList.add('hidden');
+      requirementsContainer.classList.add('hidden');
+      return; // Don't calculate strength for empty password
+    }
+    
+    // Calculate strength
+    let score = 0;
+    const checks = {
+      length: password.length >= 8 && password.length <= 16,
+      letter: /[a-zA-Z]/.test(password),
+      number: /\d/.test(password),
+      special: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)
+    };
+    
+    console.log('Password checks:', checks);
+    
+    // Count how many requirements are met
+    const metRequirements = Object.values(checks).filter(check => check).length;
+    
+    // Base score: 20 points per requirement met (max 80 points)
+    score = metRequirements * 20;
+    
+    // Bonus for length (max 20 points)
+    let lengthBonus = 0;
+    if (password.length >= 12) {
+      lengthBonus = 20;
+      score += 20;
+    } else if (password.length >= 10) {
+      lengthBonus = 10;
+      score += 10;
+    } else if (password.length >= 8) {
+      lengthBonus = 5;
+      score += 5;
+    }
+    
+    score = Math.min(score, 100);
+    console.log('Calculated score:', score);
+    console.log('Met requirements:', metRequirements, 'out of 4');
+    console.log('Length bonus:', lengthBonus);
+    console.log('Password length:', password.length);
+    
+    // Update progress bar - ensure proper reset and setting
+    progressBar.style.width = '0%'; // Reset first
+    progressBar.style.minWidth = '0%';
+    progressBar.style.maxWidth = '100%';
+    
+    // Force a reflow
+    progressBar.offsetHeight;
+    
+    // Now set the actual width
+    progressBar.style.width = score + '%';
+    
+    console.log('Progress bar width set to:', score + '%');
+    
+    // Update color
+    let colorClass = 'bg-red-500';
+    if (score >= 80) colorClass = 'bg-green-500';
+    else if (score >= 60) colorClass = 'bg-blue-500';
+    else if (score >= 40) colorClass = 'bg-yellow-500';
+    else if (score >= 20) colorClass = 'bg-orange-500';
+    
+    progressBar.className = 'h-2 rounded-full transition-all duration-300 ease-in-out ' + colorClass;
+    
+    // Update strength text
+    let text = 'Very Weak';
+    let textColor = 'text-red-600';
+    if (score >= 80) {
+      text = 'Very Strong';
+      textColor = 'text-green-600';
+    } else if (score >= 60) {
+      text = 'Strong';
+      textColor = 'text-blue-600';
+    } else if (score >= 40) {
+      text = 'Medium';
+      textColor = 'text-yellow-600';
+    } else if (score >= 20) {
+      text = 'Weak';
+      textColor = 'text-orange-600';
+    }
+    
+    strengthText.textContent = text;
+    strengthText.className = 'text-xs font-medium ' + textColor;
+    
+    // Update requirements
+    const requirementTypes = ['length', 'letter', 'number', 'special'];
+    requirementTypes.forEach((type, index) => {
+      const item = requirementItems[index];
+      const check = checks[type];
+      const icon = item.querySelector('.requirement-icon');
+      const text = item.querySelector('.requirement-text');
+      
+      if (check) {
+        icon.innerHTML = '<svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>';
+        text.classList.remove('text-gray-400');
+        text.classList.add('text-green-600');
+      } else {
+        icon.innerHTML = '<svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"></path></svg>';
+        text.classList.remove('text-green-600');
+        text.classList.add('text-gray-400');
+      }
+    });
+  }
+  
+  // Add event listener
+  passwordField.addEventListener('input', updatePasswordStrength);
+  
+  // Initial call
+  updatePasswordStrength();
+  
+  // Phone number validation - only allow numbers
+  const phoneField = document.getElementById('user_phone');
+  if (phoneField) {
+    // Clean the phone field on page load (remove +91 prefix if present)
+    if (phoneField.value) {
+      phoneField.value = phoneField.value.replace(/^\+?91/, '').replace(/[^0-9]/g, '').slice(0, 10);
+    }
+    
+    phoneField.addEventListener('input', function(e) {
+      // Remove any non-numeric characters
+      this.value = this.value.replace(/[^0-9]/g, '');
+      
+      // Limit to 10 digits
+      if (this.value.length > 10) {
+        this.value = this.value.slice(0, 10);
+      }
+    });
+    
+    // Prevent paste of non-numeric content
+    phoneField.addEventListener('paste', function(e) {
+      e.preventDefault();
+      const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+      const numericOnly = pastedText.replace(/[^0-9]/g, '').slice(0, 10);
+      this.value = numericOnly;
+    });
+    
+    // Prevent drag and drop of non-numeric content
+    phoneField.addEventListener('drop', function(e) {
+      e.preventDefault();
+    });
+  }
+  
+  console.log('Password strength setup complete!');
+  
+  // Email validation - real-time feedback
+  const emailField = document.querySelector('input[type="email"]');
+  if (emailField) {
+    emailField.addEventListener('input', function() {
+      const email = this.value;
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      
+      // Remove existing validation classes
+      this.classList.remove('border-red-500', 'border-green-500', 'focus:ring-red-500', 'focus:ring-green-500');
+      
+      if (email.length === 0) {
+        // Empty field - neutral state
+        this.classList.add('border-gray-300', 'focus:ring-green-500');
+      } else if (email.length > 50) {
+        // Too long
+        this.classList.add('border-red-500', 'focus:ring-red-500');
+      } else if (emailRegex.test(email)) {
+        // Valid email
+        this.classList.add('border-green-500', 'focus:ring-green-500');
+      } else {
+        // Invalid format
+        this.classList.add('border-red-500', 'focus:ring-red-500');
+      }
+    });
+  }
+}
+
+// Initialize on DOM load
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('DOM loaded, initializing password strength...');
+  initializePasswordStrength();
+});
+
+// Re-initialize when form is re-rendered (after validation errors)
+document.addEventListener('turbo:load', function() {
+  console.log('Turbo load event, re-initializing password strength...');
+  initializePasswordStrength();
+});
+
+// Also listen for Rails UJS events
+document.addEventListener('rails:attachBindings', function() {
+  console.log('Rails UJS event, re-initializing password strength...');
+  initializePasswordStrength();
+});
+
+// Initialize immediately if DOM is already loaded
+if (document.readyState === 'loading') {
+  // DOM is still loading, wait for DOMContentLoaded
+} else {
+  // DOM is already loaded, initialize immediately
+  console.log('DOM already loaded, initializing immediately...');
+  initializePasswordStrength();
+}
+</script>

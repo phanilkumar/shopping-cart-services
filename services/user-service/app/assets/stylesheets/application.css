@@ -173,6 +173,61 @@
   @apply bg-blue-100 border border-blue-400 text-blue-700;
 }
 
+/* Password Strength Progress Bar Styles */
+.password-strength-bar {
+  transition: all 0.3s ease-in-out;
+}
+
+.password-strength-bar.very-weak {
+  background-color: #ef4444;
+}
+
+.password-strength-bar.weak {
+  background-color: #f97316;
+}
+
+.password-strength-bar.medium {
+  background-color: #eab308;
+}
+
+.password-strength-bar.strong {
+  background-color: #3b82f6;
+}
+
+.password-strength-bar.very-strong {
+  background-color: #10b981;
+}
+
+/* Requirement checkmark animations */
+.requirement-icon svg {
+  transition: all 0.2s ease-in-out;
+}
+
+.requirement-icon svg.text-green-500 {
+  transform: scale(1.1);
+}
+
+/* Password field focus enhancement */
+.password-field:focus {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+/* Password strength container transitions */
+#password-strength-container,
+#password-requirements-container {
+  transition: all 0.3s ease-in-out;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+#password-strength-container.hidden,
+#password-requirements-container.hidden {
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+}
+
 
 
 
