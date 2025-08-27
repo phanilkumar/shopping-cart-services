@@ -115,8 +115,11 @@
                      id="phone" 
                      data-unified-login-target="phoneInput"
                      maxlength="10" 
+                     pattern="[0-9]*"
+                     inputmode="numeric"
                      class="block w-full pl-12 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-all duration-200"
-                     placeholder="Enter 10-digit number">
+                     placeholder="Enter 10-digit number"
+                     oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)">
             </div>
             <p class="mt-1 text-xs text-gray-500">Enter your 10-digit mobile number</p>
           </div>
@@ -139,13 +142,19 @@
               <input type="text" 
                      data-unified-login-target="otp1" 
                      maxlength="1" 
+                     pattern="[0-9]*"
+                     inputmode="numeric"
                      class="w-10 h-12 text-center border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg font-semibold otp-input"
-                     data-action="input->unified-login#handleOtpInput keydown->unified-login#handleOtpKeydown">
+                     data-action="input->unified-login#handleOtpInput keydown->unified-login#handleOtpKeydown"
+                     oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 1)">
               <input type="text" 
                      data-unified-login-target="otp2" 
                      maxlength="1" 
+                     pattern="[0-9]*"
+                     inputmode="numeric"
                      class="w-10 h-12 text-center border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg font-semibold otp-input"
-                     data-action="input->unified-login#handleOtpInput keydown->unified-login#handleOtpKeydown">
+                     data-action="input->unified-login#handleOtpInput keydown->unified-login#handleOtpKeydown"
+                     oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 1)">
               
               <span class="flex items-center text-gray-400 font-bold">-</span>
               
@@ -153,13 +162,19 @@
               <input type="text" 
                      data-unified-login-target="otp3" 
                      maxlength="1" 
+                     pattern="[0-9]*"
+                     inputmode="numeric"
                      class="w-10 h-12 text-center border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg font-semibold otp-input"
-                     data-action="input->unified-login#handleOtpInput keydown->unified-login#handleOtpKeydown">
+                     data-action="input->unified-login#handleOtpInput keydown->unified-login#handleOtpKeydown"
+                     oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 1)">
               <input type="text" 
                      data-unified-login-target="otp4" 
                      maxlength="1" 
+                     pattern="[0-9]*"
+                     inputmode="numeric"
                      class="w-10 h-12 text-center border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg font-semibold otp-input"
-                     data-action="input->unified-login#handleOtpInput keydown->unified-login#handleOtpKeydown">
+                     data-action="input->unified-login#handleOtpInput keydown->unified-login#handleOtpKeydown"
+                     oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 1)">
               
               <span class="flex items-center text-gray-400 font-bold">-</span>
               
@@ -167,13 +182,19 @@
               <input type="text" 
                      data-unified-login-target="otp5" 
                      maxlength="1" 
+                     pattern="[0-9]*"
+                     inputmode="numeric"
                      class="w-10 h-12 text-center border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg font-semibold otp-input"
-                     data-action="input->unified-login#handleOtpInput keydown->unified-login#handleOtpKeydown">
+                     data-action="input->unified-login#handleOtpInput keydown->unified-login#handleOtpKeydown"
+                     oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 1)">
               <input type="text" 
                      data-unified-login-target="otp6" 
                      maxlength="1" 
+                     pattern="[0-9]*"
+                     inputmode="numeric"
                      class="w-10 h-12 text-center border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg font-semibold otp-input"
-                     data-action="input->unified-login#handleOtpInput keydown->unified-login#handleOtpKeydown">
+                     data-action="input->unified-login#handleOtpInput keydown->unified-login#handleOtpKeydown"
+                     oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 1)">
             </div>
           </div>
           

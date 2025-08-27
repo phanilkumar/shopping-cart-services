@@ -10,7 +10,8 @@ class User < ApplicationRecord
   before_save :normalize_email
 
   # Email validation is handled by Devise :validatable module
-  # No need for additional email validations here
+  # Additional email length validation
+  validates :email, length: { maximum: 50, message: 'Email address is too long (maximum 50 characters)' }
   
   # First name validation
   validates :first_name, presence: { message: 'First name is required' },

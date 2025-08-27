@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Progress Bar Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .progress-container {
+            width: 100%;
+            background-color: #e5e7eb;
+            border-radius: 9999px;
+            height: 8px;
+        }
+        .progress-bar {
+            height: 8px;
+            border-radius: 9999px;
+            transition: all 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen p-8">
+    <div class="max-w-md mx-auto">
+        <h1 class="text-2xl font-bold text-gray-900 mb-6">Progress Bar Test</h1>
+        
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Test Value (0-100):</label>
+                    <input type="range" id="test-slider" min="0" max="100" value="0" 
+                           class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                    <div class="flex justify-between text-xs text-gray-500 mt-1">
+                        <span>0</span>
+                        <span>25</span>
+                        <span>50</span>
+                        <span>75</span>
+                        <span>100</span>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="flex justify-between mb-1">
+                        <span class="text-sm text-gray-600">Value:</span>
+                        <span class="text-sm font-medium" id="value-display">0%</span>
+                    </div>
+                    
+                    <!-- Test Progress Bar 1 (Tailwind) -->
+                    <div class="w-full bg-gray-200 rounded-full h-2 mb-4">
+                        <div class="h-2 rounded-full transition-all duration-300 ease-in-out bg-red-500" 
+                             style="width: 0%" 
+                             id="progress-bar-1"></div>
+                    </div>
+                    
+                    <!-- Test Progress Bar 2 (Custom CSS) -->
+                    <div class="progress-container mb-4">
+                        <div class="progress-bar bg-red-500" 
+                             style="width: 0%" 
+                             id="progress-bar-2"></div>
+                    </div>
+                    
+                    <!-- Test Progress Bar 3 (Inline styles) -->
+                    <div style="width: 100%; background-color: #e5e7eb; border-radius: 9999px; height: 8px; margin-bottom: 1rem;">
+                        <div style="height: 8px; border-radius: 9999px; background-color: #ef4444; transition: all 0.3s ease-in-out;" 
+                             id="progress-bar-3"></div>
+                    </div>
+                </div>
+                
+                <div class="text-sm text-gray-600">
+                    <p><strong>Debug Info:</strong></p>
+                    <p id="debug-info">Move the slider to test progress bars</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const slider = document.getElementById('test-slider');
+        const valueDisplay = document.getElementById('value-display');
+        const progressBar1 = document.getElementById('progress-bar-1');
+        const progressBar2 = document.getElementById('progress-bar-2');
+        const progressBar3 = document.getElementById('progress-bar-3');
+        const debugInfo = document.getElementById('debug-info');
+        
+        function updateProgress(value) {
+            // Update display
+            valueDisplay.textContent = value + '%';
+            
+            // Update progress bars
+            progressBar1.style.width = value + '%';
+            progressBar2.style.width = value + '%';
+            progressBar3.style.width = value + '%';
+            
+            // Update colors
+            let color = '#ef4444'; // red
+            if (value >= 80) color = '#10b981'; // green
+            else if (value >= 60) color = '#3b82f6'; // blue
+            else if (value >= 40) color = '#eab308'; // yellow
+            else if (value >= 20) color = '#f97316'; // orange
+            
+            progressBar1.className = 'h-2 rounded-full transition-all duration-300 ease-in-out';
+            progressBar1.style.backgroundColor = color;
+            
+            progressBar2.style.backgroundColor = color;
+            progressBar3.style.backgroundColor = color;
+            
+            // Debug info
+            debugInfo.innerHTML = `
+                <p>Value: ${value}%</p>
+                <p>Progress Bar 1 width: ${progressBar1.style.width}</p>
+                <p>Progress Bar 1 computed width: ${window.getComputedStyle(progressBar1).width}</p>
+                <p>Progress Bar 2 width: ${progressBar2.style.width}</p>
+                <p>Progress Bar 3 width: ${progressBar3.style.width}</p>
+            `;
+        }
+        
+        slider.addEventListener('input', function() {
+            updateProgress(this.value);
+        });
+        
+        // Initial update
+        updateProgress(0);
+    </script>
+</body>
+</html>
