@@ -1,0 +1,171 @@
+en:
+  # Common translations
+  common:
+    welcome: "Welcome"
+    login: "Login"
+    register: "Register"
+    logout: "Logout"
+    dashboard: "Dashboard"
+    profile: "Profile"
+    settings: "Settings"
+    save: "Save"
+    cancel: "Cancel"
+    edit: "Edit"
+    delete: "Delete"
+    back: "Back"
+    next: "Next"
+    previous: "Previous"
+    submit: "Submit"
+    loading: "Loading..."
+    error: "Error"
+    success: "Success"
+    warning: "Warning"
+    info: "Information"
+    yes: "Yes"
+    no: "No"
+    ok: "OK"
+    close: "Close"
+    search: "Search"
+    filter: "Filter"
+    sort: "Sort"
+    language: "Language"
+    english: "English"
+    hindi: "Hindi"
+    telugu: "Telugu"
+    selected: "Selected"
+    select: "Select"
+    current_language: "Current Language"
+    back_to_home: "Back to Home"
+    or: "Or"
+    and: "and"
+    processing: "Processing..."
+
+  # Navigation
+  navigation:
+    home: "Home"
+    about: "About"
+    contact: "Contact"
+    help: "Help"
+    terms: "Terms of Service"
+    privacy: "Privacy Policy"
+
+  # Authentication
+  auth:
+    login_title: "Sign In"
+    register_title: "Create Account"
+    email: "Email"
+    password: "Password"
+    confirm_password: "Confirm Password"
+    first_name: "First Name"
+    last_name: "Last Name"
+    phone: "Phone Number"
+    remember_me: "Remember me"
+    forgot_password: "Forgot your password?"
+    sign_in: "Sign In"
+    sign_up: "Sign Up"
+    sign_out: "Sign Out"
+    already_have_account: "Already have an account?"
+    dont_have_account: "Don't have an account?"
+    welcome_back: "Welcome back, %{name}!"
+    incorrect_password: "Incorrect password. Please try again."
+    invalid_auth_method: "Invalid authentication method"
+    registration_successful: "Registration successful! Please login with your credentials."
+    registration_failed: "Registration failed. Please check the form and try again."
+    logout_successful: "You have been successfully logged out."
+    login_required: "Please log in to access the dashboard."
+    sign_in_with_email_or_phone: "Sign in with email or phone number"
+    create_new_account: "create a new account"
+    phone_otp: "Phone OTP"
+    enter_email_placeholder: "Enter your email address"
+    enter_password_placeholder: "Enter your password"
+    enter_phone_placeholder: "Enter 10-digit number"
+    enter_10_digit_mobile: "Enter your 10-digit mobile number"
+    send_otp: "Send OTP"
+    enter_6_digit_otp: "Enter 6-digit OTP"
+    verify_and_login: "Verify & Login"
+    too_many_failed_attempts: "Too Many Failed Attempts"
+    resend_otp: "Resend OTP"
+    resend_in: "Resend in"
+    back_to_phone_number: "Back to Phone Number"
+    by_signing_in_you_agree: "By signing in, you agree to our"
+    join_us_today: "Join us today"
+    sign_in_to_your_account: "sign in to your account"
+    first_name_placeholder: "First name"
+    last_name_placeholder: "Last name"
+    create_password_placeholder: "Create a password"
+    confirm_password_placeholder: "Confirm your password"
+    valid_email_title: "Please enter a valid email address (maximum 50 characters)"
+    password_strength: "Password strength"
+    very_weak: "Very Weak"
+    password_requirements: "Password requirements"
+    password_length_requirement: "8-16 characters long"
+    password_letter_requirement: "At least one letter (a-z, A-Z)"
+    password_number_requirement: "At least one number (0-9)"
+    password_special_requirement: "At least one special character (!@#$%^&*()_+-=[]{}|;:,.<>?)"
+    i_agree_to_the: "I agree to the"
+
+  # User management
+  users:
+    profile: "User Profile"
+    update_profile: "Update Profile"
+    account_settings: "Account Settings"
+    personal_info: "Personal Information"
+    security: "Security"
+    notifications: "Notifications"
+    profile_updated: "Profile updated successfully"
+    profile_update_failed: "Failed to update profile"
+
+  # Dashboard
+  dashboard:
+    title: "Dashboard"
+    welcome_message: "Welcome to your dashboard"
+    recent_activity: "Recent Activity"
+    quick_actions: "Quick Actions"
+    statistics: "Statistics"
+
+  # Forms
+  forms:
+    required: "This field is required"
+    invalid_email: "Please enter a valid email address"
+    password_too_short: "Password must be at least %{count} characters"
+    password_mismatch: "Passwords don't match"
+    invalid_phone: "Please enter a valid phone number"
+
+  # Messages
+  messages:
+    created: "%{resource} was successfully created"
+    updated: "%{resource} was successfully updated"
+    destroyed: "%{resource} was successfully deleted"
+    error_occurred: "An error occurred. Please try again."
+
+  # Time
+  time:
+    formats:
+      default: "%B %d, %Y"
+      short: "%b %d"
+      long: "%B %d, %Y at %I:%M %p"
+
+  # Date
+  date:
+    formats:
+      default: "%Y-%m-%d"
+      short: "%m/%d"
+      long: "%B %d, %Y"
+
+  # Number
+  number:
+    currency:
+      format:
+        unit: "₹"
+        precision: 2
+        separator: "."
+        delimiter: ","
+        format: "%u%n"
+
+  # Pagination
+  pagination:
+    first: "&laquo; First"
+    last: "Last &raquo;"
+    previous: "&lsaquo; Previous"
+    next: "Next &rsaquo;"
+    truncate: "&hellip;"

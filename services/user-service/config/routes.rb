@@ -24,6 +24,11 @@ Rails.application.routes.draw do
   # Legal pages
   get '/terms', to: 'pages#terms_of_service'
   get '/privacy', to: 'pages#privacy_policy'
+  get '/debug-language', to: 'pages#debug_language'
+  
+  # Language switching
+  get '/languages', to: 'languages#index'
+  get '/languages/:locale', to: 'languages#change', as: :change_language
   
   # API routes (for React frontend)
   namespace :api do

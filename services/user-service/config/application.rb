@@ -41,9 +41,17 @@ module UserService
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = false  # Changed from true to enable Hotwire
     
-        # Enable session middleware for Hotwire
+    # Enable session middleware for Hotwire
     config.middleware.use ActionDispatch::Cookies
     config.middleware.use ActionDispatch::Session::CookieStore
+    
+    # Internationalization (i18n) Configuration
+    config.i18n.default_locale = :en
+    config.i18n.available_locales = [:en, :hi, :te]
+    config.i18n.fallbacks = {
+      hi: :en,
+      te: :en
+    }
     
     # Enable CORS for frontend integration
     config.middleware.insert_before 0, Rack::Cors do

@@ -3,6 +3,8 @@
 # Base Application Controller for all microservices
 # This provides standardized error handling, authentication, and response formatting
 class ApplicationController < ActionController::Base
+  include LocaleConcern
+  
   protect_from_forgery with: :exception, unless: :json_request?
   
   # Set the layout

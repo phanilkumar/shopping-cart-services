@@ -7,14 +7,14 @@
         </svg>
       </div>
       <h2 class="mt-2 text-center text-xl font-bold text-gray-900">
-        Welcome Back
+        <%= t('auth.login_title') %>
       </h2>
       <p class="mt-1 text-center text-sm text-gray-600">
-        Sign in with email or phone number
+        <%= t('auth.sign_in_with_email_or_phone') %>
       </p>
       <p class="mt-1 text-center text-xs text-gray-500">
-        Or
-        <%= link_to "create a new account", new_user_registration_path, class: "font-medium text-blue-600 hover:text-blue-500" %>
+        <%= t('common.or') %>
+        <%= link_to t('auth.create_new_account'), new_user_registration_path, class: "font-medium text-blue-600 hover:text-blue-500" %>
       </p>
     </div>
     
@@ -27,7 +27,7 @@
           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
           </svg>
-          Email
+          <%= t('common.email') %>
         </button>
         <button data-action="click->unified-login#switchToPhone" 
                 data-unified-login-target="phoneTab"
@@ -35,7 +35,7 @@
           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
           </svg>
-          Phone OTP
+          <%= t('auth.phone_otp') %>
         </button>
       </div>
 
@@ -57,32 +57,32 @@
         <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "space-y-4" }) do |f| %>
           
           <div>
-            <%= f.label :email, class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= f.label :email, t('auth.email'), class: "block text-sm font-medium text-gray-700 mb-2" %>
             <%= f.email_field :email, 
                              autocomplete: "email", 
-                             placeholder: "Enter your email address", 
+                             placeholder: t('auth.enter_email_placeholder'), 
                              class: "block w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-all duration-200" %>
           </div>
           
           <div>
-            <%= f.label :password, class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= f.label :password, t('auth.password'), class: "block text-sm font-medium text-gray-700 mb-2" %>
             <%= f.password_field :password, 
                                 autocomplete: "current-password", 
-                                placeholder: "Enter your password", 
+                                placeholder: t('auth.enter_password_placeholder'), 
                                 class: "block w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-all duration-200" %>
           </div>
 
           <div class="flex items-center justify-between">
             <div class="flex items-center">
               <%= f.check_box :remember_me, class: "h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" %>
-              <%= f.label :remember_me, class: "ml-2 block text-sm text-gray-900" %>
+              <%= f.label :remember_me, t('auth.remember_me'), class: "ml-2 block text-sm text-gray-900" %>
             </div>
             <div class="text-sm">
-              <%= link_to "Forgot password?", new_user_password_path, class: "font-medium text-blue-600 hover:text-blue-500" %>
+              <%= link_to t('auth.forgot_password'), new_user_password_path, class: "font-medium text-blue-600 hover:text-blue-500" %>
             </div>
           </div>
 
-          <%= f.submit "Sign In", class: "w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]" %>
+          <%= f.submit t('auth.sign_in'), class: "w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]" %>
         <% end %>
       </div>
 
@@ -105,7 +105,7 @@
         <div data-unified-login-target="phoneStep" class="space-y-4">
           <div>
             <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
-              Phone Number
+              <%= t('auth.phone') %>
             </label>
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -118,16 +118,16 @@
                      pattern="[0-9]*"
                      inputmode="numeric"
                      class="block w-full pl-12 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-all duration-200"
-                     placeholder="Enter 10-digit number"
+                     placeholder="<%= t('auth.enter_phone_placeholder') %>"
                      oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)">
             </div>
-            <p class="mt-1 text-xs text-gray-500">Enter your 10-digit mobile number</p>
+            <p class="mt-1 text-xs text-gray-500"><%= t('auth.enter_10_digit_mobile') %></p>
           </div>
           
           <button data-action="click->unified-login#sendOtp" 
                   data-unified-login-target="sendOtpBtn"
                   class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]">
-            Send OTP
+            <%= t('auth.send_otp') %>
           </button>
         </div>
 
@@ -135,7 +135,7 @@
         <div data-unified-login-target="otpStep" class="space-y-4 hidden">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-3 text-center">
-              Enter 6-digit OTP
+              <%= t('auth.enter_6_digit_otp') %>
             </label>
             <div class="flex space-x-2 justify-center mb-4">
               <!-- First block (2 digits) -->
@@ -201,16 +201,16 @@
           <button data-action="click->unified-login#verifyOtp" 
                   data-unified-login-target="verifyOtpBtn"
                   class="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-3 px-4 rounded-lg font-medium hover:from-green-700 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
-            <span data-unified-login-target="verifyText">Verify & Login</span>
-            <span data-unified-login-target="verifyDisabledText" class="hidden">Too Many Failed Attempts</span>
+            <span data-unified-login-target="verifyText"><%= t('auth.verify_and_login') %></span>
+            <span data-unified-login-target="verifyDisabledText" class="hidden"><%= t('auth.too_many_failed_attempts') %></span>
           </button>
           
           <button data-action="click->unified-login#resendOtp" 
                   data-unified-login-target="resendOtpBtn"
                   class="w-full text-blue-600 py-2 px-4 rounded-lg font-medium hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200">
-            <span data-unified-login-target="resendText">Resend OTP</span>
+            <span data-unified-login-target="resendText"><%= t('auth.resend_otp') %></span>
             <span data-unified-login-target="resendTimer" class="hidden">
-              Resend in <span data-unified-login-target="timerCountdown">60</span>s
+              <%= t('auth.resend_in') %> <span data-unified-login-target="timerCountdown">60</span>s
             </span>
           </button>
           
@@ -219,7 +219,7 @@
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
             </svg>
-            Back to Phone Number
+            <%= t('auth.back_to_phone_number') %>
           </button>
         </div>
       </div>
@@ -229,7 +229,7 @@
            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-lg p-6 flex items-center space-x-3 shadow-xl">
           <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-          <span class="text-gray-700 font-medium">Processing...</span>
+          <span class="text-gray-700 font-medium"><%= t('common.processing') %></span>
         </div>
       </div>
 
@@ -240,10 +240,10 @@
     
     <div class="text-center mt-6">
       <p class="text-xs text-gray-600">
-        By signing in, you agree to our
-        <%= link_to "Terms of Service", terms_path, class: "text-blue-600 hover:text-blue-500" %>
-        and
-        <%= link_to "Privacy Policy", privacy_path, class: "text-blue-600 hover:text-blue-500" %>
+        <%= t('auth.by_signing_in_you_agree') %>
+        <%= link_to t('navigation.terms'), terms_path, class: "text-blue-600 hover:text-blue-500" %>
+        <%= t('common.and') %>
+        <%= link_to t('navigation.privacy'), privacy_path, class: "text-blue-600 hover:text-blue-500" %>
       </p>
     </div>
   </div>
