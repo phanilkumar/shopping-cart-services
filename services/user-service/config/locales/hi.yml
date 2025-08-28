@@ -1,0 +1,171 @@
+hi:
+  # Common translations
+  common:
+    welcome: "स्वागत है"
+    login: "लॉगिन"
+    register: "रजिस्टर"
+    logout: "लॉगआउट"
+    dashboard: "डैशबोर्ड"
+    profile: "प्रोफ़ाइल"
+    settings: "सेटिंग्स"
+    save: "सहेजें"
+    cancel: "रद्द करें"
+    edit: "संपादित करें"
+    delete: "हटाएं"
+    back: "वापस"
+    next: "अगला"
+    previous: "पिछला"
+    submit: "सबमिट करें"
+    loading: "लोड हो रहा है..."
+    error: "त्रुटि"
+    success: "सफलता"
+    warning: "चेतावनी"
+    info: "जानकारी"
+    yes: "हाँ"
+    no: "नहीं"
+    ok: "ठीक है"
+    close: "बंद करें"
+    search: "खोजें"
+    filter: "फ़िल्टर"
+    sort: "क्रमबद्ध करें"
+    language: "भाषा"
+    english: "अंग्रेज़ी"
+    hindi: "हिंदी"
+    telugu: "तेलुगु"
+    selected: "चयनित"
+    select: "चुनें"
+    current_language: "वर्तमान भाषा"
+    back_to_home: "होम पर वापस जाएं"
+    or: "या"
+    and: "और"
+    processing: "प्रोसेसिंग..."
+
+  # Navigation
+  navigation:
+    home: "होम"
+    about: "हमारे बारे में"
+    contact: "संपर्क"
+    help: "सहायता"
+    terms: "नियम और शर्तें"
+    privacy: "गोपनीयता नीति"
+
+  # Authentication
+  auth:
+    login_title: "साइन इन करें"
+    register_title: "खाता बनाएं"
+    email: "ईमेल"
+    password: "पासवर्ड"
+    confirm_password: "पासवर्ड की पुष्टि करें"
+    first_name: "पहला नाम"
+    last_name: "अंतिम नाम"
+    phone: "फ़ोन नंबर"
+    remember_me: "मुझे याद रखें"
+    forgot_password: "पासवर्ड भूल गए?"
+    sign_in: "साइन इन करें"
+    sign_up: "साइन अप करें"
+    sign_out: "साइन आउट करें"
+    already_have_account: "क्या आपका पहले से खाता है?"
+    dont_have_account: "क्या आपका खाता नहीं है?"
+    welcome_back: "वापसी पर स्वागत है, %{name}!"
+    incorrect_password: "गलत पासवर्ड। कृपया पुनः प्रयास करें।"
+    invalid_auth_method: "अमान्य प्रमाणीकरण विधि"
+    registration_successful: "पंजीकरण सफल! कृपया अपने क्रेडेंशियल्स के साथ लॉगिन करें।"
+    registration_failed: "पंजीकरण विफल। कृपया फॉर्म की जांच करें और पुनः प्रयास करें।"
+    logout_successful: "आप सफलतापूर्वक लॉगआउट हो गए हैं।"
+    login_required: "डैशबोर्ड तक पहुंचने के लिए कृपया लॉगिन करें।"
+    sign_in_with_email_or_phone: "ईमेल या फोन नंबर से साइन इन करें"
+    create_new_account: "नया खाता बनाएं"
+    phone_otp: "फोन OTP"
+    enter_email_placeholder: "अपना ईमेल पता दर्ज करें"
+    enter_password_placeholder: "अपना पासवर्ड दर्ज करें"
+    enter_phone_placeholder: "10 अंकों का नंबर दर्ज करें"
+    enter_10_digit_mobile: "अपना 10 अंकों का मोबाइल नंबर दर्ज करें"
+    send_otp: "OTP भेजें"
+    enter_6_digit_otp: "6 अंकों का OTP दर्ज करें"
+    verify_and_login: "सत्यापित करें और लॉगिन करें"
+    too_many_failed_attempts: "बहुत सारे असफल प्रयास"
+    resend_otp: "OTP पुनः भेजें"
+    resend_in: "पुनः भेजें"
+    back_to_phone_number: "फोन नंबर पर वापस जाएं"
+    by_signing_in_you_agree: "साइन इन करके, आप हमारी"
+    join_us_today: "आज हमसे जुड़ें"
+    sign_in_to_your_account: "अपने खाते में साइन इन करें"
+    first_name_placeholder: "पहला नाम"
+    last_name_placeholder: "अंतिम नाम"
+    create_password_placeholder: "पासवर्ड बनाएं"
+    confirm_password_placeholder: "अपना पासवर्ड पुष्टि करें"
+    valid_email_title: "कृपया एक वैध ईमेल पता दर्ज करें (अधिकतम 50 अक्षर)"
+    password_strength: "पासवर्ड की मजबूती"
+    very_weak: "बहुत कमजोर"
+    password_requirements: "पासवर्ड आवश्यकताएं"
+    password_length_requirement: "8-16 अक्षर लंबा"
+    password_letter_requirement: "कम से कम एक अक्षर (a-z, A-Z)"
+    password_number_requirement: "कम से कम एक संख्या (0-9)"
+    password_special_requirement: "कम से कम एक विशेष अक्षर (!@#$%^&*()_+-=[]{}|;:,.<>?)"
+    i_agree_to_the: "मैं सहमत हूं"
+
+  # User management
+  users:
+    profile: "उपयोगकर्ता प्रोफ़ाइल"
+    update_profile: "प्रोफ़ाइल अपडेट करें"
+    account_settings: "खाता सेटिंग्स"
+    personal_info: "व्यक्तिगत जानकारी"
+    security: "सुरक्षा"
+    notifications: "सूचनाएं"
+    profile_updated: "प्रोफ़ाइल सफलतापूर्वक अपडेट किया गया"
+    profile_update_failed: "प्रोफ़ाइल अपडेट करने में विफल"
+
+  # Dashboard
+  dashboard:
+    title: "डैशबोर्ड"
+    welcome_message: "आपके डैशबोर्ड में स्वागत है"
+    recent_activity: "हाल की गतिविधि"
+    quick_actions: "त्वरित कार्य"
+    statistics: "आंकड़े"
+
+  # Forms
+  forms:
+    required: "यह फ़ील्ड आवश्यक है"
+    invalid_email: "कृपया एक वैध ईमेल पता दर्ज करें"
+    password_too_short: "पासवर्ड कम से कम %{count} अक्षर का होना चाहिए"
+    password_mismatch: "पासवर्ड मेल नहीं खाते"
+    invalid_phone: "कृपया एक वैध फ़ोन नंबर दर्ज करें"
+
+  # Messages
+  messages:
+    created: "%{resource} सफलतापूर्वक बनाया गया"
+    updated: "%{resource} सफलतापूर्वक अपडेट किया गया"
+    destroyed: "%{resource} सफलतापूर्वक हटाया गया"
+    error_occurred: "एक त्रुटि हुई। कृपया पुनः प्रयास करें।"
+
+  # Time
+  time:
+    formats:
+      default: "%B %d, %Y"
+      short: "%b %d"
+      long: "%B %d, %Y को %I:%M %p"
+
+  # Date
+  date:
+    formats:
+      default: "%Y-%m-%d"
+      short: "%m/%d"
+      long: "%B %d, %Y"
+
+  # Number
+  number:
+    currency:
+      format:
+        unit: "₹"
+        precision: 2
+        separator: "."
+        delimiter: ","
+        format: "%u%n"
+
+  # Pagination
+  pagination:
+    first: "&laquo; पहला"
+    last: "अंतिम &raquo;"
+    previous: "&lsaquo; पिछला"
+    next: "अगला &rsaquo;"
+    truncate: "&hellip;"

@@ -1,0 +1,171 @@
+te:
+  # Common translations
+  common:
+    welcome: "స్వాగతం"
+    login: "లాగిన్"
+    register: "రిజిస్టర్"
+    logout: "లాగ్అవుట్"
+    dashboard: "డాష్‌బోర్డ్"
+    profile: "ప్రొఫైల్"
+    settings: "సెట్టింగ్‌లు"
+    save: "సేవ్ చేయండి"
+    cancel: "రద్దు చేయండి"
+    edit: "ఎడిట్ చేయండి"
+    delete: "తొలగించండి"
+    back: "వెనుకకు"
+    next: "తదుపరి"
+    previous: "మునుపటి"
+    submit: "సమర్పించండి"
+    loading: "లోడ్ అవుతోంది..."
+    error: "లోపం"
+    success: "విజయం"
+    warning: "హెచ్చరిక"
+    info: "సమాచారం"
+    yes: "అవును"
+    no: "లేదు"
+    ok: "సరే"
+    close: "మూసివేయండి"
+    search: "వెతకండి"
+    filter: "ఫిల్టర్"
+    sort: "క్రమబద్ధం చేయండి"
+    language: "భాష"
+    english: "ఆంగ్లం"
+    hindi: "హిందీ"
+    telugu: "తెలుగు"
+    selected: "ఎంచుకున్నది"
+    select: "ఎంచుకోండి"
+    current_language: "ప్రస్తుత భాష"
+    back_to_home: "హోమ్‌కి తిరిగి వెళ్లండి"
+    or: "లేదా"
+    and: "మరియు"
+    processing: "ప్రాసెసింగ్..."
+
+  # Navigation
+  navigation:
+    home: "హోమ్"
+    about: "మా గురించి"
+    contact: "సంప్రదించండి"
+    help: "సహాయం"
+    terms: "నిబంధనలు మరియు షరతులు"
+    privacy: "గోప్యతా విధానం"
+
+  # Authentication
+  auth:
+    login_title: "సైన్ ఇన్ చేయండి"
+    register_title: "ఖాతా సృష్టించండి"
+    email: "ఇమెయిల్"
+    password: "పాస్‌వర్డ్"
+    confirm_password: "పాస్‌వర్డ్ నిర్ధారించండి"
+    first_name: "మొదటి పేరు"
+    last_name: "చివరి పేరు"
+    phone: "ఫోన్ నంబర్"
+    remember_me: "నన్ను గుర్తుంచుకోండి"
+    forgot_password: "పాస్‌వర్డ్ మరచిపోయారా?"
+    sign_in: "సైన్ ఇన్ చేయండి"
+    sign_up: "సైన్ అప్ చేయండి"
+    sign_out: "సైన్ అవుట్ చేయండి"
+    already_have_account: "మీకు ఇప్పటికే ఖాతా ఉందా?"
+    dont_have_account: "మీకు ఖాతా లేదా?"
+    welcome_back: "తిరిగి రావడానికి స్వాగతం, %{name}!"
+    incorrect_password: "తప్పు పాస్‌వర్డ్. దయచేసి మళ్లీ ప్రయత్నించండి."
+    invalid_auth_method: "చెల్లని ప్రమాణీకరణ పద్ధతి"
+    registration_successful: "నమోదు విజయవంతం! దయచేసి మీ ధృవపత్రాలతో లాగిన్ చేయండి."
+    registration_failed: "నమోదు విఫలం. దయచేసి ఫారం తనిఖీ చేసి మళ్లీ ప్రయత్నించండి."
+    logout_successful: "మీరు విజయవంతంగా లాగ్‌అవుట్ అయ్యారు."
+    login_required: "డాష్‌బోర్డ్‌కి ప్రాప్యత పొందడానికి దయచేసి లాగిన్ చేయండి."
+    sign_in_with_email_or_phone: "ఇమెయిల్ లేదా ఫోన్ నంబర్‌తో సైన్ ఇన్ చేయండి"
+    create_new_account: "కొత్త ఖాతా సృష్టించండి"
+    phone_otp: "ఫోన్ OTP"
+    enter_email_placeholder: "మీ ఇమెయిల్ చిరునామాను నమోదు చేయండి"
+    enter_password_placeholder: "మీ పాస్‌వర్డ్‌ని నమోదు చేయండి"
+    enter_phone_placeholder: "10 అంకెల నంబర్‌ని నమోదు చేయండి"
+    enter_10_digit_mobile: "మీ 10 అంకెల మొబైల్ నంబర్‌ని నమోదు చేయండి"
+    send_otp: "OTP పంపండి"
+    enter_6_digit_otp: "6 అంకెల OTP నమోదు చేయండి"
+    verify_and_login: "ధృవీకరించండి మరియు లాగిన్ చేయండి"
+    too_many_failed_attempts: "చాలా విఫల ప్రయత్నాలు"
+    resend_otp: "OTP మళ్లీ పంపండి"
+    resend_in: "మళ్లీ పంపండి"
+    back_to_phone_number: "ఫోన్ నంబర్‌కి తిరిగి వెళ్లండి"
+    by_signing_in_you_agree: "సైన్ ఇన్ చేయడం ద్వారా, మీరు మా"
+    join_us_today: "ఈరోజు మాతో చేరండి"
+    sign_in_to_your_account: "మీ ఖాతాలో సైన్ ఇన్ చేయండి"
+    first_name_placeholder: "మొదటి పేరు"
+    last_name_placeholder: "చివరి పేరు"
+    create_password_placeholder: "పాస్‌వర్డ్ సృష్టించండి"
+    confirm_password_placeholder: "మీ పాస్‌వర్డ్‌ని నిర్ధారించండి"
+    valid_email_title: "దయచేసి చెల్లుబాటు అయ్యే ఇమెయిల్ చిరునామాను నమోదు చేయండి (గరిష్టం 50 అక్షరాలు)"
+    password_strength: "పాస్‌వర్డ్ బలం"
+    very_weak: "చాలా బలహీనం"
+    password_requirements: "పాస్‌వర్డ్ అవసరాలు"
+    password_length_requirement: "8-16 అక్షరాలు పొడవు"
+    password_letter_requirement: "కనీసం ఒక అక్షరం (a-z, A-Z)"
+    password_number_requirement: "కనీసం ఒక సంఖ్య (0-9)"
+    password_special_requirement: "కనీసం ఒక ప్రత్యేక అక్షరం (!@#$%^&*()_+-=[]{}|;:,.<>?)"
+    i_agree_to_the: "నేను అంగీకరిస్తున్నాను"
+
+  # User management
+  users:
+    profile: "వినియోగదారు ప్రొఫైల్"
+    update_profile: "ప్రొఫైల్ నవీకరించండి"
+    account_settings: "ఖాతా సెట్టింగ్‌లు"
+    personal_info: "వ్యక్తిగత సమాచారం"
+    security: "భద్రత"
+    notifications: "నోటిఫికేషన్‌లు"
+    profile_updated: "ప్రొఫైల్ విజయవంతంగా నవీకరించబడింది"
+    profile_update_failed: "ప్రొఫైల్ నవీకరించడంలో విఫలం"
+
+  # Dashboard
+  dashboard:
+    title: "డాష్‌బోర్డ్"
+    welcome_message: "మీ డాష్‌బోర్డ్‌కి స్వాగతం"
+    recent_activity: "ఇటీవలి కార్యకలాపం"
+    quick_actions: "త్వరిత చర్యలు"
+    statistics: "గణాంకాలు"
+
+  # Forms
+  forms:
+    required: "ఈ ఫీల్డ్ అవసరం"
+    invalid_email: "దయచేసి చెల్లుబాటు అయ్యే ఇమెయిల్ చిరునామాను నమోదు చేయండి"
+    password_too_short: "పాస్‌వర్డ్ కనీసం %{count} అక్షరాలుగా ఉండాలి"
+    password_mismatch: "పాస్‌వర్డ్‌లు సరిపోలడం లేదు"
+    invalid_phone: "దయచేసి చెల్లుబాటు అయ్యే ఫోన్ నంబర్‌ని నమోదు చేయండి"
+
+  # Messages
+  messages:
+    created: "%{resource} విజయవంతంగా సృష్టించబడింది"
+    updated: "%{resource} విజయవంతంగా నవీకరించబడింది"
+    destroyed: "%{resource} విజయవంతంగా తొలగించబడింది"
+    error_occurred: "ఒక లోపం సంభవించింది. దయచేసి మళ్లీ ప్రయత్నించండి."
+
+  # Time
+  time:
+    formats:
+      default: "%B %d, %Y"
+      short: "%b %d"
+      long: "%B %d, %Y న %I:%M %p"
+
+  # Date
+  date:
+    formats:
+      default: "%Y-%m-%d"
+      short: "%m/%d"
+      long: "%B %d, %Y"
+
+  # Number
+  number:
+    currency:
+      format:
+        unit: "₹"
+        precision: 2
+        separator: "."
+        delimiter: ","
+        format: "%u%n"
+
+  # Pagination
+  pagination:
+    first: "&laquo; మొదటి"
+    last: "చివరి &raquo;"
+    previous: "&lsaquo; మునుపటి"
+    next: "తదుపరి &rsaquo;"
+    truncate: "&hellip;"

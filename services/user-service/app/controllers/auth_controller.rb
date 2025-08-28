@@ -20,17 +20,17 @@ class AuthController < ApplicationController
       
       if user&.valid_password?(password)
         # For now, just show success message
-        flash[:notice] = "Welcome back, #{user.display_name}!"
+        flash[:notice] = t('auth.welcome_back', name: user.display_name)
         redirect_to dashboard_path
       else
         # Return JSON error for AJAX requests, or redirect for regular requests
         if request.xhr? || request.format.json?
           render json: { 
             status: 'error', 
-            message: 'Incorrect password. Please try again.' 
+            message: t('auth.incorrect_password') 
           }, status: :unauthorized
         else
-          flash[:alert] = 'Incorrect password. Please try again.'
+          flash[:alert] = t('auth.incorrect_password')
           redirect_to login_path
         end
       end
@@ -39,10 +39,10 @@ class AuthController < ApplicationController
       if request.xhr? || request.format.json?
         render json: { 
           status: 'error', 
-          message: 'Invalid authentication method' 
+          message: t('auth.invalid_auth_method') 
         }, status: :bad_request
       else
-        flash[:alert] = 'Invalid authentication method'
+        flash[:alert] = t('auth.invalid_auth_method')
         redirect_to login_path
       end
     end
@@ -59,11 +59,11 @@ class AuthController < ApplicationController
     
     if @user.save
       # Show congratulations message
-      flash[:notice] = 'Registration successful! Please login with your credentials.'
+      flash[:notice] = t('auth.registration_successful')
       redirect_to login_path
     else
       # Re-render the registration form with errors
-      flash.now[:alert] = 'Registration failed. Please check the form and try again.'
+      flash.now[:alert] = t('auth.registration_failed')
       render :register, status: :unprocessable_entity
     end
   end
@@ -71,7 +71,7 @@ class AuthController < ApplicationController
   # DELETE /logout
   def logout
     sign_out(current_user)
-    flash[:notice] = 'You have been successfully logged out.'
+    flash[:notice] = t('auth.logout_successful')
     redirect_to root_path
   end
   
@@ -91,7 +91,7 @@ class AuthController < ApplicationController
       @user = current_user
     else
       # User is not authenticated, redirect to home
-      flash[:alert] = 'Please log in to access the dashboard.'
+      flash[:alert] = t('auth.login_required')
       redirect_to root_path
     end
   end

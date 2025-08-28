@@ -1,0 +1,65 @@
+<div class="language-switcher">
+  <div class="relative inline-block text-left">
+    <div>
+      <button type="button" 
+              class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              id="languageDropdown"
+              onclick="toggleLanguageMenu()">
+        <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path>
+        </svg>
+        <%= t('common.language') %>
+        <svg class="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        </svg>
+      </button>
+    </div>
+    
+    <div id="languageMenu" class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+      <div class="py-1" role="menu" aria-orientation="vertical">
+        <%= link_to change_language_path(:en), 
+            class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 #{I18n.locale == :en ? 'bg-blue-100 text-blue-900' : ''}", 
+            role: "menuitem" do %>
+          <span class="mr-2">🇺🇸</span>
+          <%= t('common.english') %>
+        <% end %>
+        
+        <%= link_to change_language_path(:hi), 
+            class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 #{I18n.locale == :hi ? 'bg-blue-100 text-blue-900' : ''}", 
+            role: "menuitem" do %>
+          <span class="mr-2">🇮🇳</span>
+          <%= t('common.hindi') %>
+        <% end %>
+        
+        <%= link_to change_language_path(:te), 
+            class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 #{I18n.locale == :te ? 'bg-blue-100 text-blue-900' : ''}", 
+            role: "menuitem" do %>
+          <span class="mr-2">🇮🇳</span>
+          <%= t('common.telugu') %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleLanguageMenu() {
+  const menu = document.getElementById('languageMenu');
+  if (menu.classList.contains('hidden')) {
+    menu.classList.remove('hidden');
+  } else {
+    menu.classList.add('hidden');
+  }
+}
+
+// Close menu when clicking outside
+document.addEventListener('click', function(event) {
+  const dropdown = document.getElementById('languageDropdown');
+  const menu = document.getElementById('languageMenu');
+  
+  if (!dropdown.contains(event.target) && !menu.contains(event.target)) {
+    menu.classList.add('hidden');
+  }
+});
+</script>
+

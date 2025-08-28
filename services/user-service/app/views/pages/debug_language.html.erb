@@ -1,0 +1,57 @@
+<div class="max-w-4xl mx-auto py-8">
+  <div class="bg-white rounded-lg shadow-lg p-8">
+    <h1 class="text-3xl font-bold text-gray-900 mb-8">
+      Language Debug Page
+    </h1>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="border rounded-lg p-6">
+        <h2 class="text-xl font-semibold mb-4">Current Status</h2>
+        <ul class="space-y-2">
+          <li><strong>Current Locale:</strong> <%= @current_locale %></li>
+          <li><strong>Session Locale:</strong> <%= @session_locale || 'nil' %></li>
+          <li><strong>Available Locales:</strong> <%= @available_locales.join(', ') %></li>
+          <li><strong>Test Translation:</strong> <%= @test_translation %></li>
+        </ul>
+      </div>
+      
+      <div class="border rounded-lg p-6">
+        <h2 class="text-xl font-semibold mb-4">Language Switcher</h2>
+        <%= render 'shared/language_switcher' %>
+        
+        <div class="mt-4">
+          <h3 class="font-semibold mb-2">Direct Links:</h3>
+          <div class="space-y-2">
+            <%= link_to "Switch to English", change_language_path(:en), class: "block text-blue-600 hover:text-blue-800" %>
+            <%= link_to "Switch to Hindi", change_language_path(:hi), class: "block text-blue-600 hover:text-blue-800" %>
+            <%= link_to "Switch to Telugu", change_language_path(:te), class: "block text-blue-600 hover:text-blue-800" %>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="mt-8 border rounded-lg p-6">
+      <h2 class="text-xl font-semibold mb-4">Translation Test</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+          <h3 class="font-semibold">Common</h3>
+          <p><%= t('common.welcome') %></p>
+          <p><%= t('common.login') %></p>
+          <p><%= t('common.register') %></p>
+        </div>
+        <div>
+          <h3 class="font-semibold">Auth</h3>
+          <p><%= t('auth.login_title') %></p>
+          <p><%= t('auth.register_title') %></p>
+          <p><%= t('auth.email') %></p>
+        </div>
+        <div>
+          <h3 class="font-semibold">Navigation</h3>
+          <p><%= t('navigation.home') %></p>
+          <p><%= t('navigation.terms') %></p>
+          <p><%= t('navigation.privacy') %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

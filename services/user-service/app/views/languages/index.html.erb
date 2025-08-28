@@ -1,0 +1,82 @@
+<div class="max-w-4xl mx-auto py-8">
+  <div class="bg-white rounded-lg shadow-lg p-8">
+    <h1 class="text-3xl font-bold text-gray-900 mb-8 text-center">
+      <%= t('common.language') %> <%= t('common.settings') %>
+    </h1>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <% @available_locales.each do |locale| %>
+        <div class="border rounded-lg p-6 text-center hover:shadow-md transition-shadow">
+          <div class="text-4xl mb-4">
+            <% case locale %>
+            <% when :en %>
+              🇺🇸
+            <% when :hi %>
+              🇮🇳
+            <% when :te %>
+              🇮🇳
+            <% end %>
+          </div>
+          
+          <h3 class="text-xl font-semibold mb-2">
+            <% case locale %>
+            <% when :en %>
+              <%= t('common.english') %>
+            <% when :hi %>
+              <%= t('common.hindi') %>
+            <% when :te %>
+              <%= t('common.telugu') %>
+            <% end %>
+          </h3>
+          
+          <p class="text-gray-600 mb-4">
+            <% case locale %>
+            <% when :en %>
+              English language
+            <% when :hi %>
+              हिंदी भाषा
+            <% when :te %>
+              తెలుగు భాష
+            <% end %>
+          </p>
+          
+          <%= link_to change_language_path(locale), 
+              class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg #{@current_locale == locale ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}" do %>
+            <% if @current_locale == locale %>
+              <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              <%= t('common.selected') %>
+            <% else %>
+              <%= t('common.select') %>
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+    
+    <div class="mt-8 text-center">
+      <h2 class="text-xl font-semibold mb-4"><%= t('common.current_language') %></h2>
+      <p class="text-lg text-gray-700">
+        <% case @current_locale %>
+        <% when :en %>
+          <%= t('common.english') %>
+        <% when :hi %>
+          <%= t('common.hindi') %>
+        <% when :te %>
+          <%= t('common.telugu') %>
+        <% end %>
+      </p>
+    </div>
+    
+    <div class="mt-8 text-center">
+      <%= link_to root_path, class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700" do %>
+        <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
+        <%= t('common.back_to_home') %>
+      <% end %>
+    </div>
+  </div>
+</div>
+
