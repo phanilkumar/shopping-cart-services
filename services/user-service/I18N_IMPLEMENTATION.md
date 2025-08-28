@@ -217,7 +217,7 @@ end
    - Ensure Devise locale files are properly named
    - Check Devise configuration
    - Restart Rails server after adding new translations
-
+dock
 ## Future Enhancements
 
 1. **Database-backed Translations**
