@@ -43,12 +43,12 @@ class Rack::Attack
   end
 
   # Custom response for blocked requests
-  self.blocklisted_response = lambda do |env|
+  self.blocklisted_responder = lambda do |env|
     [429, {'Content-Type' => 'application/json'}, [{error: 'Too many requests'}.to_json]]
   end
 
   # Custom response for throttled requests
-  self.throttled_response = lambda do |env|
+  self.throttled_responder = lambda do |env|
     [429, {'Content-Type' => 'application/json'}, [{error: 'Rate limit exceeded'}.to_json]]
   end
 
