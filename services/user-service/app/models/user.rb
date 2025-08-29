@@ -2,7 +2,7 @@ class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable
+         :recoverable, :rememberable, :validatable, :lockable
 
   # Callbacks
   before_create :set_default_values
@@ -120,6 +120,26 @@ class User < ApplicationRecord
 
   def generate_refresh_token
     SecureRandom.hex(32)
+  end
+
+  # Security methods
+  def access_locked?
+    locked_at.present? && locked_at > Devise.unlock_in.ago
+  end
+
+  def unlock_account!
+    update(locked_at: nil, failed_attempts: 0)
+  end
+
+  def increment_failed_attempts!
+    increment!(:failed_attempts)
+    if failed_attempts >= Devise.maximum_attempts
+      update(locked_at: Time.current)
+    end
+  end
+
+  def reset_failed_attempts!
+    update(failed_attempts: 0, locked_at: nil)
   end
 
   private

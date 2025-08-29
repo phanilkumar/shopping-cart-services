@@ -10,6 +10,12 @@ class ApplicationController < ActionController::Base
   # Set the layout
   layout 'application'
   
+  # Security headers
+  before_action :set_security_headers
+  
+  # Audit logging
+  after_action :log_authentication_events
+  
   # Devise authentication helpers - temporarily commented out
   # before_action :authenticate_user!, unless: :devise_controller?
 
@@ -47,6 +53,23 @@ class ApplicationController < ActionController::Base
 
   def json_request?
     request.format.json?
+  end
+
+  # Set security headers
+  def set_security_headers
+    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+    response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data: https://cdn.jsdelivr.net; connect-src 'self' ws: wss:;"
+  end
+
+  # Log authentication events
+  def log_authentication_events
+    if controller_name == 'sessions' || controller_name == 'registrations' || controller_name == 'auth'
+      Rails.logger.info "Authentication event: #{action_name} from IP #{request.remote_ip} at #{Time.current}"
+    end
   end
 
   # Override Devise's after_sign_in_path_for

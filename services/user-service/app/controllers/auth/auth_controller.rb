@@ -1,48 +1,80 @@
 class Api::V1::AuthController < ApplicationController
   skip_before_action :authenticate_user!, only: [:login, :register]
+  skip_before_action :verify_authenticity_token, only: [:login, :register]
   
   def login
-    user = User.find_by(email: params[:email])
+    # Input validation
+    unless valid_login_params?
+      return error_response('Invalid input parameters', [], :bad_request)
+    end
+
+    user = User.find_by(email: params[:email]&.downcase&.strip)
     
     if user&.valid_password?(params[:password])
+      # Check if account is locked
+      if user.access_locked?
+        return error_response('Account is temporarily locked due to too many failed attempts', [], :locked)
+      end
+      
       if user.active?
+        # Reset failed attempts on successful login
+        user.update(failed_attempts: 0, locked_at: nil) if user.failed_attempts > 0
+        
         user.update_last_login
-        render json: {
-          status: 'success',
-          message: 'Login successful',
-          data: {
+        
+        # Log successful login
+        Rails.logger.info "Successful login for user #{user.email} from IP #{request.remote_ip}"
+        
+        success_response(
+          {
             user: user_serializer(user),
             token: user.generate_jwt_token,
             refresh_token: user.generate_refresh_token
-          }
-        }
+          },
+          'Login successful'
+        )
       else
-        render json: {
-          status: 'error',
-          message: 'Account is not active'
-        }, status: :unauthorized
+        Rails.logger.warn "Login attempt for inactive account: #{params[:email]} from IP #{request.remote_ip}"
+        error_response('Account is not active', [], :unauthorized)
       end
     else
-      render json: {
-        status: 'error',
-        message: 'Invalid email or password'
-      }, status: :unauthorized
+      # Increment failed attempts
+      if user
+        user.increment!(:failed_attempts)
+        
+        # Lock account if max attempts reached
+        if user.failed_attempts >= Devise.maximum_attempts
+          user.update(locked_at: Time.current)
+          Rails.logger.warn "Account locked for user #{user.email} from IP #{request.remote_ip}"
+        end
+      end
+      
+      Rails.logger.warn "Failed login attempt for email: #{params[:email]} from IP #{request.remote_ip}"
+      error_response('Invalid email or password', [], :unauthorized)
     end
   end
   
   def register
+    # Input validation
+    unless valid_registration_params?
+      return error_response('Invalid input parameters', [], :bad_request)
+    end
+
     user = User.new(user_params)
     
     if user.save
-      render json: {
-        status: 'success',
-        message: 'Registration successful',
-        data: {
+      # Log successful registration
+      Rails.logger.info "Successful registration for user #{user.email} from IP #{request.remote_ip}"
+      
+      success_response(
+        {
           user: user_serializer(user),
           token: user.generate_jwt_token,
           refresh_token: user.generate_refresh_token
-        }
-      }, status: :created
+        },
+        'Registration successful',
+        :created
+      )
     else
       # Handle specific validation errors without duplication
       error_messages = []
@@ -65,11 +97,8 @@ class Api::V1::AuthController < ApplicationController
         end
       end
       
-      render json: {
-        status: 'error',
-        message: 'Registration failed',
-        errors: error_messages
-      }, status: :unprocessable_entity
+      Rails.logger.warn "Failed registration attempt for email: #{params.dig(:user, :email)} from IP #{request.remote_ip}"
+      error_response('Registration failed', error_messages, :unprocessable_entity)
     end
   end
   
@@ -79,28 +108,23 @@ class Api::V1::AuthController < ApplicationController
       user_id = decoded_token[0]['user_id']
       user = User.find(user_id)
       
-      render json: {
-        status: 'success',
-        message: 'Token refreshed successfully',
-        data: {
+      success_response(
+        {
           token: user.generate_jwt_token,
           refresh_token: user.generate_refresh_token
-        }
-      }
+        },
+        'Token refreshed successfully'
+      )
     rescue JWT::DecodeError, ActiveRecord::RecordNotFound
-      render json: {
-        status: 'error',
-        message: 'Invalid refresh token'
-      }, status: :unauthorized
+      Rails.logger.warn "Invalid refresh token attempt from IP #{request.remote_ip}"
+      error_response('Invalid refresh token', [], :unauthorized)
     end
   end
   
   def logout
     # In a real implementation, you might want to add the token to a denylist
-    render json: {
-      status: 'success',
-      message: 'Logout successful'
-    }
+    Rails.logger.info "User logout from IP #{request.remote_ip}"
+    success_response({}, 'Logout successful')
   end
   
   private
@@ -126,7 +150,38 @@ class Api::V1::AuthController < ApplicationController
   end
   
   def jwt_secret_key
-    ENV['JWT_SECRET_KEY'] || 'default-secret-key'
+    Rails.application.credentials.secret_key_base
+  end
+
+  def valid_login_params?
+    params[:email].present? && 
+    params[:password].present? && 
+    params[:email].is_a?(String) && 
+    params[:password].is_a?(String) &&
+    params[:email].length <= 255 &&
+    params[:password].length <= 128
+  end
+
+  def valid_registration_params?
+    user_data = params[:user]
+    return false unless user_data.is_a?(ActionController::Parameters)
+    
+    user_data[:email].present? && 
+    user_data[:password].present? && 
+    user_data[:password_confirmation].present? &&
+    user_data[:first_name].present? &&
+    user_data[:last_name].present? &&
+    user_data[:phone].present? &&
+    user_data[:email].is_a?(String) &&
+    user_data[:password].is_a?(String) &&
+    user_data[:first_name].is_a?(String) &&
+    user_data[:last_name].is_a?(String) &&
+    user_data[:phone].is_a?(String) &&
+    user_data[:email].length <= 255 &&
+    user_data[:password].length <= 128 &&
+    user_data[:first_name].length <= 50 &&
+    user_data[:last_name].length <= 50 &&
+    user_data[:phone].length <= 20
   end
 end
 
