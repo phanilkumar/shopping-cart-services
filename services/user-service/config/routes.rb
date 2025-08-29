@@ -35,6 +35,8 @@ Rails.application.routes.draw do
     namespace :v1 do
       # Authentication routes
       post '/auth/login', to: 'auth#login'
+      post '/auth/register', to: 'auth#register'
+      post '/auth/refresh', to: 'auth#refresh'
       post '/auth/otp/send', to: 'otp#send_otp'
       post '/auth/otp/verify', to: 'otp#verify_otp'
       delete '/auth/logout', to: 'auth#logout'

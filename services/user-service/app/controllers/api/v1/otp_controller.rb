@@ -222,7 +222,7 @@ class Api::V1::OtpController < ApplicationController
         email: user.email,
         exp: 24.hours.from_now.to_i
       },
-      Rails.application.secrets.secret_key_base,
+      Rails.application.credentials.secret_key_base,
       'HS256'
     )
 
