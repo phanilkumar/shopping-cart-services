@@ -5,10 +5,29 @@
               class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               id="languageDropdown"
               onclick="toggleLanguageMenu()">
-        <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path>
-        </svg>
-        <%= t('common.language') %>
+        <% case I18n.locale %>
+        <% when :en %>
+          <span class="mr-2">🇺🇸</span>
+          <%= t('common.english') %>
+        <% when :hi %>
+          <span class="mr-2">🇮🇳</span>
+          <%= t('common.hindi') %>
+        <% when :te %>
+          <span class="mr-2">🇮🇳</span>
+          <%= t('common.telugu') %>
+        <% when :kn %>
+          <span class="mr-2">🇮🇳</span>
+          <%= t('common.kannada') %>
+        <% when :ta %>
+          <span class="mr-2">🇮🇳</span>
+          <%= t('common.tamil') %>
+        <% when :ml %>
+          <span class="mr-2">🇮🇳</span>
+          <%= t('common.malayalam') %>
+        <% else %>
+          <span class="mr-2">🇺🇸</span>
+          <%= t('common.english') %>
+        <% end %>
         <svg class="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
         </svg>
@@ -21,42 +40,42 @@
             class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 #{I18n.locale == :en ? 'bg-blue-100 text-blue-900' : ''}", 
             role: "menuitem" do %>
           <span class="mr-2">🇺🇸</span>
-          <%= t('common.english') %>
+          English
         <% end %>
         
         <%= link_to change_language_path(:hi), 
             class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 #{I18n.locale == :hi ? 'bg-blue-100 text-blue-900' : ''}", 
             role: "menuitem" do %>
           <span class="mr-2">🇮🇳</span>
-          <%= t('common.hindi') %>
+          हिंदी
         <% end %>
         
         <%= link_to change_language_path(:te), 
             class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 #{I18n.locale == :te ? 'bg-blue-100 text-blue-900' : ''}", 
             role: "menuitem" do %>
           <span class="mr-2">🇮🇳</span>
-          <%= t('common.telugu') %>
+          తెలుగు
         <% end %>
         
         <%= link_to change_language_path(:kn), 
             class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 #{I18n.locale == :kn ? 'bg-blue-100 text-blue-900' : ''}", 
             role: "menuitem" do %>
           <span class="mr-2">🇮🇳</span>
-          <%= t('common.kannada') %>
+          ಕನ್ನಡ
         <% end %>
         
         <%= link_to change_language_path(:ta), 
             class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 #{I18n.locale == :ta ? 'bg-blue-100 text-blue-900' : ''}", 
             role: "menuitem" do %>
           <span class="mr-2">🇮🇳</span>
-          <%= t('common.tamil') %>
+          தமிழ்
         <% end %>
         
         <%= link_to change_language_path(:ml), 
             class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 #{I18n.locale == :ml ? 'bg-blue-100 text-blue-900' : ''}", 
             role: "menuitem" do %>
           <span class="mr-2">🇮🇳</span>
-          <%= t('common.malayalam') %>
+          മലയാളം
         <% end %>
       </div>
     </div>
