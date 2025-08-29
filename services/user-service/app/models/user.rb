@@ -107,24 +107,28 @@ class User < ApplicationRecord
   end
 
   def generate_jwt_token
-    JWT.encode(
-      {
-        user_id: id,
-        email: email,
-        exp: 24.hours.from_now.to_i
-      },
-      Rails.application.credentials.secret_key_base,
-      'HS256'
-    )
+    payload = {
+      user_id: id,
+      email: email,
+      exp: 24.hours.from_now.to_i
+    }
+    
+    JWT.encode(payload, jwt_secret_key, 'HS256')
   end
 
   def generate_refresh_token
-    SecureRandom.hex(32)
+    payload = {
+      user_id: id,
+      exp: 7.days.from_now.to_i,
+      type: 'refresh'
+    }
+    
+    JWT.encode(payload, jwt_secret_key, 'HS256')
   end
 
-  # Security methods
+  # Account lockout methods
   def access_locked?
-    locked_at.present? && locked_at > Devise.unlock_in.ago
+    locked_at.present? && locked_at > 15.minutes.ago
   end
 
   def unlock_account!
@@ -145,40 +149,42 @@ class User < ApplicationRecord
   private
 
   def set_default_values
-    self.status ||= 1  # Set to active by default
-    self.role ||= 0    # Set to user by default
+    self.status ||= 1
+    self.role ||= 0
+    self.failed_attempts ||= 0
+  end
+
+  def sanitize_phone
+    return unless phone.present?
+    
+    # Remove all non-digit characters except +
+    cleaned_phone = phone.gsub(/[^\d+]/, '')
+    
+    # If it starts with +91, keep it, otherwise add +91
+    if cleaned_phone.start_with?('+91')
+      self.phone = cleaned_phone
+    elsif cleaned_phone.length == 10
+      self.phone = "+91#{cleaned_phone}"
+    else
+      self.phone = cleaned_phone
+    end
   end
 
   def normalize_email
     self.email = email.downcase.strip if email.present?
   end
 
-  def sanitize_phone
-    return if phone.blank?
-    
-    # Remove any existing country code or special characters
-    cleaned_phone = phone.to_s.gsub(/[^\d]/, '')
-    
-    # If it's a 10-digit number starting with 6, 7, 8, or 9, assume it's an Indian number and add +91 prefix
-    if cleaned_phone.match?(/\A[6-9]\d{9}\z/)
-      self.phone = "+91#{cleaned_phone}"
-    elsif cleaned_phone.match?(/\A91[6-9]\d{9}\z/)
-      # If it already has 91 prefix, add + sign
-      self.phone = "+#{cleaned_phone}"
-    elsif cleaned_phone.match?(/\A\+91[6-9]\d{9}\z/)
-      # If it already has +91 prefix, keep as is
-      self.phone = cleaned_phone
-    end
-  end
-
   def password_complexity
     return if password.blank?
     
-    # Check minimum and maximum length
+    # Check minimum length
     if password.length < 8
       errors.add(:password, 'must be at least 8 characters long')
-    elsif password.length > 16
-      errors.add(:password, 'must not exceed 16 characters')
+    end
+    
+    # Check maximum length
+    if password.length > 16
+      errors.add(:password, 'must be at most 16 characters long')
     end
     
     # Check for at least one letter
@@ -193,12 +199,11 @@ class User < ApplicationRecord
     
     # Check for at least one special character
     unless password.match?(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/)
-      errors.add(:password, 'must contain at least one special character (!@#$%^&*()_+-=[]{}|;:,.<>?)')
+      errors.add(:password, 'must contain at least one special character')
     end
-    
-    # Check for only allowed characters
-    unless password.match?(/\A[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+\z/)
-      errors.add(:password, 'can only contain letters, numbers, and special characters')
-    end
+  end
+
+  def jwt_secret_key
+    Rails.application.credentials.secret_key_base
   end
 end

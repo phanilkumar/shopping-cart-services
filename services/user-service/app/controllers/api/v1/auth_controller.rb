@@ -1,5 +1,4 @@
 class Api::V1::AuthController < Api::V1::BaseController
-  skip_before_action :verify_authenticity_token, only: [:login, :register]
   
   def login
     # Input validation
