@@ -47,10 +47,13 @@ module UserService
     
     # Internationalization (i18n) Configuration
     config.i18n.default_locale = :en
-    config.i18n.available_locales = [:en, :hi, :te]
+    config.i18n.available_locales = [:en, :hi, :te, :kn, :ta, :ml]
     config.i18n.fallbacks = {
       hi: :en,
-      te: :en
+      te: :en,
+      kn: :en,
+      ta: :en,
+      ml: :en
     }
     
     # Enable CORS for frontend integration

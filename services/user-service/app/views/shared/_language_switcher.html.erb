@@ -37,6 +37,27 @@
           <span class="mr-2">🇮🇳</span>
           <%= t('common.telugu') %>
         <% end %>
+        
+        <%= link_to change_language_path(:kn), 
+            class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 #{I18n.locale == :kn ? 'bg-blue-100 text-blue-900' : ''}", 
+            role: "menuitem" do %>
+          <span class="mr-2">🇮🇳</span>
+          <%= t('common.kannada') %>
+        <% end %>
+        
+        <%= link_to change_language_path(:ta), 
+            class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 #{I18n.locale == :ta ? 'bg-blue-100 text-blue-900' : ''}", 
+            role: "menuitem" do %>
+          <span class="mr-2">🇮🇳</span>
+          <%= t('common.tamil') %>
+        <% end %>
+        
+        <%= link_to change_language_path(:ml), 
+            class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 #{I18n.locale == :ml ? 'bg-blue-100 text-blue-900' : ''}", 
+            role: "menuitem" do %>
+          <span class="mr-2">🇮🇳</span>
+          <%= t('common.malayalam') %>
+        <% end %>
       </div>
     </div>
   </div>
