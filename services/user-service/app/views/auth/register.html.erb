@@ -215,8 +215,9 @@ function initializePasswordStrength() {
     requirementsContainer: !!requirementsContainer
   });
   
+  // Check if we're on a page that has password strength functionality
   if (!passwordField || !progressBar || !strengthText || !strengthContainer || !requirementsContainer) {
-    console.error('Required elements not found!');
+    console.log('Password strength elements not found - not on registration page, skipping initialization');
     return;
   }
   
