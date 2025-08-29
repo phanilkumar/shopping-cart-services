@@ -156,6 +156,18 @@ body {
   to { transform: rotate(360deg); }
 }
 
+/* Force icon sizing - override any conflicting styles */
+svg.w-4 { width: 1rem !important; }
+svg.h-4 { height: 1rem !important; }
+svg.w-5 { width: 1.25rem !important; }
+svg.h-5 { height: 1.25rem !important; }
+svg.w-6 { width: 1.5rem !important; }
+svg.h-6 { height: 1.5rem !important; }
+
+/* Ensure all SVG icons respect their size classes */
+svg[class*="w-"] { width: var(--tw-width) !important; }
+svg[class*="h-"] { height: var(--tw-height) !important; }
+
 /* Custom utilities for OTP inputs */
 .otp-input {
   -webkit-appearance: none;
