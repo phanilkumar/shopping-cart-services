@@ -1,0 +1,174 @@
+kn:
+  # Common translations
+  common:
+    welcome: "ಸುಸ್ವಾಗತ"
+    login: "ಲಾಗಿನ್"
+    register: "ನೋಂದಾಯಿಸಿ"
+    logout: "ಲಾಗ್‌ಔಟ್"
+    dashboard: "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್"
+    profile: "ಪ್ರೊಫೈಲ್"
+    settings: "ಸೆಟ್ಟಿಂಗ್‌ಗಳು"
+    save: "ಉಳಿಸಿ"
+    cancel: "ರದ್ದುಮಾಡಿ"
+    edit: "ಸಂಪಾದಿಸಿ"
+    delete: "ಅಳಿಸಿ"
+    back: "ಹಿಂದೆ"
+    next: "ಮುಂದೆ"
+    previous: "ಹಿಂದಿನ"
+    submit: "ಸಲ್ಲಿಸಿ"
+    loading: "ಲೋಡ್ ಆಗುತ್ತಿದೆ..."
+    error: "ದೋಷ"
+    success: "ಯಶಸ್ವಿ"
+    warning: "ಎಚ್ಚರಿಕೆ"
+    info: "ಮಾಹಿತಿ"
+    yes: "ಹೌದು"
+    no: "ಇಲ್ಲ"
+    ok: "ಸರಿ"
+    close: "ಮುಚ್ಚಿ"
+    search: "ಹುಡುಕಿ"
+    filter: "ಫಿಲ್ಟರ್"
+    sort: "ವಿಂಗಡಿಸಿ"
+    language: "ಭಾಷೆ"
+    english: "ಇಂಗ್ಲಿಷ್"
+    hindi: "ಹಿಂದಿ"
+    telugu: "ತೆಲುಗು"
+    kannada: "ಕನ್ನಡ"
+    tamil: "ತಮಿಳು"
+    malayalam: "ಮಲಯಾಳಂ"
+    selected: "ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ"
+    select: "ಆಯ್ಕೆಮಾಡಿ"
+    current_language: "ಪ್ರಸ್ತುತ ಭಾಷೆ"
+    back_to_home: "ಮನೆಗೆ ಹಿಂತಿರುಗಿ"
+    or: "ಅಥವಾ"
+    and: "ಮತ್ತು"
+    processing: "ಸಂಸ್ಕರಿಸಲಾಗುತ್ತಿದೆ..."
+
+  # Navigation
+  navigation:
+    home: "ಮನೆ"
+    about: "ನಮ್ಮ ಬಗ್ಗೆ"
+    contact: "ಸಂಪರ್ಕ"
+    help: "ಸಹಾಯ"
+    terms: "ನಿಯಮಗಳು ಮತ್ತು ಷರತ್ತುಗಳು"
+    privacy: "ಗೌಪ್ಯತೆ ನೀತಿ"
+
+  # Authentication
+  auth:
+    login_title: "ಸೈನ್ ಇನ್ ಮಾಡಿ"
+    register_title: "ಖಾತೆ ರಚಿಸಿ"
+    email: "ಇಮೇಲ್"
+    password: "ಪಾಸ್‌ವರ್ಡ್"
+    confirm_password: "ಪಾಸ್‌ವರ್ಡ್ ದೃಢೀಕರಿಸಿ"
+    first_name: "ಮೊದಲ ಹೆಸರು"
+    last_name: "ಕೊನೆಯ ಹೆಸರು"
+    phone: "ಫೋನ್ ಸಂಖ್ಯೆ"
+    remember_me: "ನನ್ನನ್ನು ನೆನಪಿಡಿ"
+    forgot_password: "ಪಾಸ್‌ವರ್ಡ್ ಮರೆತಿರುವಿರಾ?"
+    sign_in: "ಸೈನ್ ಇನ್ ಮಾಡಿ"
+    sign_up: "ಸೈನ್ ಅಪ್ ಮಾಡಿ"
+    sign_out: "ಸೈನ್ ಔಟ್ ಮಾಡಿ"
+    already_have_account: "ಈಗಾಗಲೇ ಖಾತೆ ಇದೆಯೇ?"
+    dont_have_account: "ಖಾತೆ ಇಲ್ಲವೇ?"
+    welcome_back: "ಮರಳಿ ಸುಸ್ವಾಗತ, %{name}!"
+    incorrect_password: "ತಪ್ಪಾದ ಪಾಸ್‌ವರ್ಡ್. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ."
+    invalid_auth_method: "ಅಮಾನ್ಯ ದೃಢೀಕರಣ ವಿಧಾನ"
+    registration_successful: "ನೋಂದಣಿ ಯಶಸ್ವಿ! ದಯವಿಟ್ಟು ನಿಮ್ಮ ಅಧಿಕಾರಗಳೊಂದಿಗೆ ಲಾಗಿನ್ ಮಾಡಿ."
+    registration_failed: "ನೋಂದಣಿ ವಿಫಲ. ದಯವಿಟ್ಟು ಫಾರ್ಮ್ ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ."
+    logout_successful: "ನೀವು ಯಶಸ್ವಿಯಾಗಿ ಲಾಗ್‌ಔಟ್ ಆಗಿದ್ದೀರಿ."
+    login_required: "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ ಪ್ರವೇಶಿಸಲು ದಯವಿಟ್ಟು ಲಾಗಿನ್ ಮಾಡಿ."
+    sign_in_with_email_or_phone: "ಇಮೇಲ್ ಅಥವಾ ಫೋನ್ ಸಂಖ್ಯೆಯೊಂದಿಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ"
+    create_new_account: "ಹೊಸ ಖಾತೆ ರಚಿಸಿ"
+    phone_otp: "ಫೋನ್ OTP"
+    enter_email_placeholder: "ನಿಮ್ಮ ಇಮೇಲ್ ವಿಳಾಸವನ್ನು ನಮೂದಿಸಿ"
+    enter_password_placeholder: "ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ"
+    enter_phone_placeholder: "10 ಅಂಕಿಯ ಸಂಖ್ಯೆ ನಮೂದಿಸಿ"
+    enter_10_digit_mobile: "ನಿಮ್ಮ 10 ಅಂಕಿಯ ಮೊಬೈಲ್ ಸಂಖ್ಯೆ ನಮೂದಿಸಿ"
+    send_otp: "OTP ಕಳುಹಿಸಿ"
+    enter_6_digit_otp: "6 ಅಂಕಿಯ OTP ನಮೂದಿಸಿ"
+    verify_and_login: "ದೃಢೀಕರಿಸಿ ಮತ್ತು ಲಾಗಿನ್ ಮಾಡಿ"
+    too_many_failed_attempts: "ಹಲವಾರು ವಿಫಲ ಪ್ರಯತ್ನಗಳು"
+    resend_otp: "OTP ಮತ್ತೆ ಕಳುಹಿಸಿ"
+    resend_in: "ಮತ್ತೆ ಕಳುಹಿಸಿ"
+    back_to_phone_number: "ಫೋನ್ ಸಂಖ್ಯೆಗೆ ಹಿಂತಿರುಗಿ"
+    by_signing_in_you_agree: "ಸೈನ್ ಇನ್ ಮಾಡುವ ಮೂಲಕ, ನೀವು ನಮ್ಮ"
+    join_us_today: "ಇಂದು ನಮ್ಮೊಂದಿಗೆ ಸೇರಿ"
+    sign_in_to_your_account: "ನಿಮ್ಮ ಖಾತೆಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ"
+    first_name_placeholder: "ಮೊದಲ ಹೆಸರು"
+    last_name_placeholder: "ಕೊನೆಯ ಹೆಸರು"
+    create_password_placeholder: "ಪಾಸ್‌ವರ್ಡ್ ರಚಿಸಿ"
+    confirm_password_placeholder: "ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ದೃಢೀಕರಿಸಿ"
+    valid_email_title: "ದಯವಿಟ್ಟು ಮಾನ್ಯ ಇಮೇಲ್ ವಿಳಾಸವನ್ನು ನಮೂದಿಸಿ (ಗರಿಷ್ಠ 50 ಅಕ್ಷರಗಳು)"
+    password_strength: "ಪಾಸ್‌ವರ್ಡ್ ಶಕ್ತಿ"
+    very_weak: "ಬಹಳ ದುರ್ಬಲ"
+    password_requirements: "ಪಾಸ್‌ವರ್ಡ್ ಅಗತ್ಯತೆಗಳು"
+    password_length_requirement: "8-16 ಅಕ್ಷರಗಳ ಉದ್ದ"
+    password_letter_requirement: "ಕನಿಷ್ಠ ಒಂದು ಅಕ್ಷರ (a-z, A-Z)"
+    password_number_requirement: "ಕನಿಷ್ಠ ಒಂದು ಸಂಖ್ಯೆ (0-9)"
+    password_special_requirement: "ಕನಿಷ್ಠ ಒಂದು ವಿಶೇಷ ಅಕ್ಷರ (!@#$%^&*()_+-=[]{}|;:,.<>?)"
+    i_agree_to_the: "ನಾನು ಒಪ್ಪುತ್ತೇನೆ"
+
+  # User management
+  users:
+    profile: "ಬಳಕೆದಾರ ಪ್ರೊಫೈಲ್"
+    update_profile: "ಪ್ರೊಫೈಲ್ ನವೀಕರಿಸಿ"
+    account_settings: "ಖಾತೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳು"
+    personal_info: "ವೈಯಕ್ತಿಕ ಮಾಹಿತಿ"
+    security: "ಭದ್ರತೆ"
+    notifications: "ಅಧಿಸೂಚನೆಗಳು"
+    profile_updated: "ಪ್ರೊಫೈಲ್ ಯಶಸ್ವಿಯಾಗಿ ನವೀಕರಿಸಲಾಗಿದೆ"
+    profile_update_failed: "ಪ್ರೊಫೈಲ್ ನವೀಕರಿಸಲು ವಿಫಲ"
+
+  # Dashboard
+  dashboard:
+    title: "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್"
+    welcome_message: "ನಿಮ್ಮ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್‌ಗೆ ಸುಸ್ವಾಗತ"
+    recent_activity: "ಇತ್ತೀಚಿನ ಚಟುವಟಿಕೆ"
+    quick_actions: "ತ್ವರಿತ ಕ್ರಿಯೆಗಳು"
+    statistics: "ಅಂಕಿಅಂಶಗಳು"
+
+  # Forms
+  forms:
+    required: "ಈ ಕ್ಷೇತ್ರ ಅಗತ್ಯವಿದೆ"
+    invalid_email: "ದಯವಿಟ್ಟು ಮಾನ್ಯ ಇಮೇಲ್ ವಿಳಾಸವನ್ನು ನಮೂದಿಸಿ"
+    password_too_short: "ಪಾಸ್‌ವರ್ಡ್ ಕನಿಷ್ಠ %{count} ಅಕ್ಷರಗಳಾಗಿರಬೇಕು"
+    password_mismatch: "ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಹೊಂದಾಣಿಕೆಯಾಗುತ್ತಿಲ್ಲ"
+    invalid_phone: "ದಯವಿಟ್ಟು ಮಾನ್ಯ ಫೋನ್ ಸಂಖ್ಯೆಯನ್ನು ನಮೂದಿಸಿ"
+
+  # Messages
+  messages:
+    created: "%{resource} ಯಶಸ್ವಿಯಾಗಿ ರಚಿಸಲಾಗಿದೆ"
+    updated: "%{resource} ಯಶಸ್ವಿಯಾಗಿ ನವೀಕರಿಸಲಾಗಿದೆ"
+    destroyed: "%{resource} ಯಶಸ್ವಿಯಾಗಿ ಅಳಿಸಲಾಗಿದೆ"
+    error_occurred: "ದೋಷ ಸಂಭವಿಸಿದೆ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ."
+
+  # Time
+  time:
+    formats:
+      default: "%B %d, %Y"
+      short: "%b %d"
+      long: "%B %d, %Y ರಂದು %I:%M %p"
+
+  # Date
+  date:
+    formats:
+      default: "%Y-%m-%d"
+      short: "%m/%d"
+      long: "%B %d, %Y"
+
+  # Number
+  number:
+    currency:
+      format:
+        unit: "₹"
+        precision: 2
+        separator: "."
+        delimiter: ","
+        format: "%u%n"
+
+  # Pagination
+  pagination:
+    first: "&laquo; ಮೊದಲ"
+    last: "ಕೊನೆಯ &raquo;"
+    previous: "&lsaquo; ಹಿಂದಿನ"
+    next: "ಮುಂದಿನ &rsaquo;"
+    truncate: "&hellip;"

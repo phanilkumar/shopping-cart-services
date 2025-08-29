@@ -1,0 +1,174 @@
+ta:
+  # Common translations
+  common:
+    welcome: "வரவேற்கிறோம்"
+    login: "உள்நுழைவு"
+    register: "பதிவு"
+    logout: "வெளியேறு"
+    dashboard: "டாஷ்போர்டு"
+    profile: "சுயவிவரம்"
+    settings: "அமைப்புகள்"
+    save: "சேமி"
+    cancel: "ரத்து"
+    edit: "திருத்து"
+    delete: "அழி"
+    back: "பின்செல்"
+    next: "அடுத்து"
+    previous: "முந்தைய"
+    submit: "சமர்ப்பி"
+    loading: "ஏற்றுகிறது..."
+    error: "பிழை"
+    success: "வெற்றி"
+    warning: "எச்சரிக்கை"
+    info: "தகவல்"
+    yes: "ஆம்"
+    no: "இல்லை"
+    ok: "சரி"
+    close: "மூடு"
+    search: "தேடு"
+    filter: "வடிப்பான்"
+    sort: "வரிசைப்படுத்து"
+    language: "மொழி"
+    english: "ஆங்கிலம்"
+    hindi: "இந்தி"
+    telugu: "தெலுங்கு"
+    kannada: "கன்னடம்"
+    tamil: "தமிழ்"
+    malayalam: "மலையாளம்"
+    selected: "தேர்ந்தெடுக்கப்பட்டது"
+    select: "தேர்ந்தெடுக்கவும்"
+    current_language: "தற்போதைய மொழி"
+    back_to_home: "முகப்புக்குத் திரும்பு"
+    or: "அல்லது"
+    and: "மற்றும்"
+    processing: "செயலாக்குகிறது..."
+
+  # Navigation
+  navigation:
+    home: "முகப்பு"
+    about: "எங்களைப் பற்றி"
+    contact: "தொடர்பு"
+    help: "உதவி"
+    terms: "விதிமுறைகள் மற்றும் நிபந்தனைகள்"
+    privacy: "தனியுரிமைக் கொள்கை"
+
+  # Authentication
+  auth:
+    login_title: "உள்நுழையவும்"
+    register_title: "கணக்கை உருவாக்கவும்"
+    email: "மின்னஞ்சல்"
+    password: "கடவுச்சொல்"
+    confirm_password: "கடவுச்சொலை உறுதிப்படுத்தவும்"
+    first_name: "முதல் பெயர்"
+    last_name: "கடைசி பெயர்"
+    phone: "தொலைபேசி எண்"
+    remember_me: "என்னை நினைவில் கொள்ளுங்கள்"
+    forgot_password: "கடவுச்சொல் மறந்துவிட்டதா?"
+    sign_in: "உள்நுழையவும்"
+    sign_up: "பதிவு செய்யவும்"
+    sign_out: "வெளியேறவும்"
+    already_have_account: "ஏற்கனவே கணக்கு உள்ளதா?"
+    dont_have_account: "கணக்கு இல்லையா?"
+    welcome_back: "மீண்டும் வரவேற்கிறோம், %{name}!"
+    incorrect_password: "தவறான கடவுச்சொல். மீண்டும் முயற்சிக்கவும்."
+    invalid_auth_method: "தவறான அங்கீகார முறை"
+    registration_successful: "பதிவு வெற்றிகரமாக! உங்கள் விவரங்களுடன் உள்நுழையவும்."
+    registration_failed: "பதிவு தோல்வி. படிவத்தை சரிபார்த்து மீண்டும் முயற்சிக்கவும்."
+    logout_successful: "நீங்கள் வெற்றிகரமாக வெளியேறியுள்ளீர்கள்."
+    login_required: "டாஷ்போர்டுக்கு அணுக உள்நுழையவும்."
+    sign_in_with_email_or_phone: "மின்னஞ்சல் அல்லது தொலைபேசி எண்ணுடன் உள்நுழையவும்"
+    create_new_account: "புதிய கணக்கை உருவாக்கவும்"
+    phone_otp: "தொலைபேசி OTP"
+    enter_email_placeholder: "உங்கள் மின்னஞ்சல் முகவரியை உள்ளிடவும்"
+    enter_password_placeholder: "உங்கள் கடவுச்சொல்லை உள்ளிடவும்"
+    enter_phone_placeholder: "10 இலக்க எண்ணை உள்ளிடவும்"
+    enter_10_digit_mobile: "உங்கள் 10 இலக்க மொபைல் எண்ணை உள்ளிடவும்"
+    send_otp: "OTP அனுப்பு"
+    enter_6_digit_otp: "6 இலக்க OTP உள்ளிடவும்"
+    verify_and_login: "சரிபார்த்து உள்நுழையவும்"
+    too_many_failed_attempts: "பல தோல்வி முயற்சிகள்"
+    resend_otp: "OTP மீண்டும் அனுப்பு"
+    resend_in: "மீண்டும் அனுப்பு"
+    back_to_phone_number: "தொலைபேசி எண்ணுக்குத் திரும்பு"
+    by_signing_in_you_agree: "உள்நுழைவதன் மூலம், நீங்கள் எங்கள்"
+    join_us_today: "இன்று எங்களுடன் சேரவும்"
+    sign_in_to_your_account: "உங்கள் கணக்கில் உள்நுழையவும்"
+    first_name_placeholder: "முதல் பெயர்"
+    last_name_placeholder: "கடைசி பெயர்"
+    create_password_placeholder: "கடவுச்சொல்லை உருவாக்கவும்"
+    confirm_password_placeholder: "உங்கள் கடவுச்சொல்லை உறுதிப்படுத்தவும்"
+    valid_email_title: "சரியான மின்னஞ்சல் முகவரியை உள்ளிடவும் (அதிகபட்சம் 50 எழுத்துக்கள்)"
+    password_strength: "கடவுச்சொல் வலிமை"
+    very_weak: "மிகவும் பலவீனம்"
+    password_requirements: "கடவுச்சொல் தேவைகள்"
+    password_length_requirement: "8-16 எழுத்துக்கள் நீளம்"
+    password_letter_requirement: "குறைந்தது ஒரு எழுத்து (a-z, A-Z)"
+    password_number_requirement: "குறைந்தது ஒரு எண் (0-9)"
+    password_special_requirement: "குறைந்தது ஒரு சிறப்பு எழுத்து (!@#$%^&*()_+-=[]{}|;:,.<>?)"
+    i_agree_to_the: "நான் ஒப்புக்கொள்கிறேன்"
+
+  # User management
+  users:
+    profile: "பயனர் சுயவிவரம்"
+    update_profile: "சுயவிவரத்தை புதுப்பிக்கவும்"
+    account_settings: "கணக்கு அமைப்புகள்"
+    personal_info: "தனிப்பட்ட தகவல்"
+    security: "பாதுகாப்பு"
+    notifications: "அறிவிப்புகள்"
+    profile_updated: "சுயவிவரம் வெற்றிகரமாக புதுப்பிக்கப்பட்டது"
+    profile_update_failed: "சுயவிவரத்தை புதுப்பிக்க முடியவில்லை"
+
+  # Dashboard
+  dashboard:
+    title: "டாஷ்போர்டு"
+    welcome_message: "உங்கள் டாஷ்போர்டுக்கு வரவேற்கிறோம்"
+    recent_activity: "சமீபத்திய செயல்பாடு"
+    quick_actions: "விரைவு செயல்கள்"
+    statistics: "புள்ளிவிவரங்கள்"
+
+  # Forms
+  forms:
+    required: "இந்த புலம் தேவை"
+    invalid_email: "சரியான மின்னஞ்சல் முகவரியை உள்ளிடவும்"
+    password_too_short: "கடவுச்சொல் குறைந்தது %{count} எழுத்துக்கள் இருக்க வேண்டும்"
+    password_mismatch: "கடவுச்சொற்கள் பொருந்தவில்லை"
+    invalid_phone: "சரியான தொலைபேசி எண்ணை உள்ளிடவும்"
+
+  # Messages
+  messages:
+    created: "%{resource} வெற்றிகரமாக உருவாக்கப்பட்டது"
+    updated: "%{resource} வெற்றிகரமாக புதுப்பிக்கப்பட்டது"
+    destroyed: "%{resource} வெற்றிகரமாக நீக்கப்பட்டது"
+    error_occurred: "பிழை ஏற்பட்டது. மீண்டும் முயற்சிக்கவும்."
+
+  # Time
+  time:
+    formats:
+      default: "%B %d, %Y"
+      short: "%b %d"
+      long: "%B %d, %Y அன்று %I:%M %p"
+
+  # Date
+  date:
+    formats:
+      default: "%Y-%m-%d"
+      short: "%m/%d"
+      long: "%B %d, %Y"
+
+  # Number
+  number:
+    currency:
+      format:
+        unit: "₹"
+        precision: 2
+        separator: "."
+        delimiter: ","
+        format: "%u%n"
+
+  # Pagination
+  pagination:
+    first: "&laquo; முதல்"
+    last: "கடைசி &raquo;"
+    previous: "&lsaquo; முந்தைய"
+    next: "அடுத்த &rsaquo;"
+    truncate: "&hellip;"
