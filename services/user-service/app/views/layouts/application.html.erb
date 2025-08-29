@@ -8,6 +8,23 @@
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload", "data-timestamp": Time.current.to_i %>
     <%= javascript_include_tag "application", "data-turbo-track": "reload" %>
+    
+    <!-- Fallback CSS for icon sizing -->
+    <style>
+      /* Force icon sizing - override any conflicting styles */
+      svg.w-4 { width: 1rem !important; }
+      svg.h-4 { height: 1rem !important; }
+      svg.w-5 { width: 1.25rem !important; }
+      svg.h-5 { height: 1.25rem !important; }
+      svg.w-6 { width: 1.5rem !important; }
+      svg.h-6 { height: 1.5rem !important; }
+      svg.w-3 { width: 0.75rem !important; }
+      svg.h-3 { height: 0.75rem !important; }
+      
+      /* Ensure all SVG icons respect their size classes */
+      svg[class*="w-"] { width: var(--tw-width) !important; }
+      svg[class*="h-"] { height: var(--tw-height) !important; }
+    </style>
 
     <!-- CSS and JS will be loaded via CDN for simplicity -->
           <script src="https://cdn.jsdelivr.net/npm/@hotwired/turbo@7.3.0/dist/turbo.es2017-umd.js"></script>

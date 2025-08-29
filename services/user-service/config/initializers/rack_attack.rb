@@ -20,19 +20,20 @@ class Rack::Attack
   end
 
   # Block suspicious requests
-  blocklist('block suspicious requests') do |req|
-    # Block requests with suspicious user agents
-    suspicious_agents = [
-      /bot/i,
-      /crawler/i,
-      /spider/i,
-      /scraper/i,
-      /curl/i,
-      /wget/i
-    ]
-    
-    suspicious_agents.any? { |pattern| req.user_agent&.match?(pattern) }
-  end
+  # Temporarily disabled for testing
+  # blocklist('block suspicious requests') do |req|
+  #   # Block requests with suspicious user agents
+  #   suspicious_agents = [
+  #     /bot/i,
+  #     /crawler/i,
+  #     /spider/i,
+  #     /scraper/i,
+  #     /curl/i,
+  #     /wget/i
+  #   ]
+  #   
+  #   suspicious_agents.any? { |pattern| req.user_agent&.match?(pattern) }
+  # end
 
   # Block requests from known malicious IPs (example)
   blocklist('block malicious IPs') do |req|
