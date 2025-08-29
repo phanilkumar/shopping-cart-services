@@ -112,13 +112,14 @@ class LoginRegistrationTest
   def test_valid_registration
     puts "  Testing valid registration..."
     
+    timestamp = Time.now.to_i
     test_user = {
-      email: "test_user_#{Time.now.to_i}@example.com",
+      email: "test_user_#{timestamp}@example.com",
       password: "SecurePass123!",
       password_confirmation: "SecurePass123!",
       first_name: "Test",
       last_name: "User",
-      phone: "9876543210"
+      phone: "+919876543#{timestamp % 1000}"
     }
     
     response = make_request('/api/v1/auth/register', { user: test_user })
@@ -551,9 +552,35 @@ class LoginRegistrationTest
   def test_jwt_tokens
     puts "\n🔑 Testing JWT Token Management..."
     
-    return if @auth_tokens.empty?
+    # First, create a fresh user and get tokens
+    timestamp = Time.now.to_i
+    test_user = {
+      email: "test_jwt_#{timestamp}@example.com",
+      password: "SecurePass123!",
+      password_confirmation: "SecurePass123!",
+      first_name: "Test",
+      last_name: "User",
+      phone: "+919876543#{timestamp % 1000}"
+    }
     
-    tokens = @auth_tokens.values.first
+    # Register user to get fresh tokens
+    response = make_request('/api/v1/auth/register', { user: test_user })
+    
+    if response['status'] != 201
+      puts "    ❌ Failed to create user for JWT test: #{response['status']}"
+      @test_results << { test: "JWT Token Management", passed: false, details: "Failed to create user" }
+      return
+    end
+    
+    # Parse response to get tokens
+    begin
+      response_data = JSON.parse(response['body'])
+      tokens = response_data['data']
+    rescue JSON::ParserError
+      puts "    ❌ Failed to parse response for JWT test"
+      @test_results << { test: "JWT Token Management", passed: false, details: "Failed to parse response" }
+      return
+    end
     
     # Test token structure
     if tokens['token'] && tokens['token'].split('.').length == 3
@@ -573,7 +600,7 @@ class LoginRegistrationTest
       @test_results << { test: "Refresh Token", passed: false, details: "Refresh token missing" }
     end
     
-    # Test token refresh functionality
+    # Test token refresh functionality with fresh token
     response = make_request('/api/v1/auth/refresh', {
       refresh_token: tokens['refresh_token']
     })
@@ -582,8 +609,8 @@ class LoginRegistrationTest
       puts "    ✅ Token refresh successful"
       @test_results << { test: "Token Refresh", passed: true, details: "Token refresh successful" }
     else
-      puts "    ❌ Token refresh failed: #{response['status']}"
-      @test_results << { test: "Token Refresh", passed: false, details: "Token refresh failed" }
+      puts "    ❌ Token refresh failed: #{response['status']} - #{response['body']}"
+      @test_results << { test: "Token Refresh", passed: false, details: "Token refresh failed: #{response['status']}" }
     end
   end
 

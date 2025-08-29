@@ -1,9 +1,6 @@
 # frozen_string_literal: true
 
 class Users::SessionsController < Devise::SessionsController
-  # Skip authentication for login page
-  skip_before_action :authenticate_user!, only: [:new, :create]
-  
   # GET /resource/sign_in
   def new
     super

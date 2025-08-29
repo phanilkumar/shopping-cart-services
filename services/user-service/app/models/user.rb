@@ -32,7 +32,7 @@ class User < ApplicationRecord
   # Indian mobile number validation (10 digits starting with 6, 7, 8, or 9)
   validates :phone, presence: { message: 'Mobile number is required' }
   validates :phone, format: { 
-              with: /\A\+?91[6-9]\d{9}\z/, 
+              with: /\A\+?91?[6-9]\d{9}\z/, 
               message: 'Please enter a valid 10-digit Indian mobile number (e.g., 9876543210)' 
             }, allow_blank: true
   validates :phone, uniqueness: { message: 'Mobile number is already registered' }, allow_blank: true
@@ -79,6 +79,105 @@ class User < ApplicationRecord
     }
     
     JWT.encode(payload, jwt_secret_key, 'HS256')
+  end
+
+  # Token validation methods
+  def validate_jwt_token(token)
+    begin
+      decoded = JWT.decode(token, jwt_secret_key, true, { algorithm: 'HS256' })
+      payload = decoded[0]
+      
+      # Check if token is expired
+      if payload['exp'] && Time.at(payload['exp']) < Time.current
+        Rails.logger.warn "JWT token expired for user #{id}"
+        return nil
+      end
+      
+      # Validate token belongs to this user
+      if payload['user_id'] != id
+        Rails.logger.warn "JWT token user_id mismatch: expected #{id}, got #{payload['user_id']}"
+        return nil
+      end
+      
+      payload
+    rescue JWT::DecodeError => e
+      Rails.logger.error "JWT decode error for user #{id}: #{e.message}"
+      nil
+    rescue JWT::ExpiredSignature => e
+      Rails.logger.warn "JWT token expired for user #{id}: #{e.message}"
+      nil
+    rescue => e
+      Rails.logger.error "Unexpected JWT error for user #{id}: #{e.class} - #{e.message}"
+      nil
+    end
+  end
+
+  def validate_refresh_token(token)
+    begin
+      decoded = JWT.decode(token, jwt_secret_key, true, { algorithm: 'HS256' })
+      payload = decoded[0]
+      
+      # Check if token is expired
+      if payload['exp'] && Time.at(payload['exp']) < Time.current
+        Rails.logger.warn "Refresh token expired for user #{id}"
+        return nil
+      end
+      
+      # Validate token belongs to this user
+      if payload['user_id'] != id
+        Rails.logger.warn "Refresh token user_id mismatch: expected #{id}, got #{payload['user_id']}"
+        return nil
+      end
+      
+      # Validate token type
+      unless payload['type'] == 'refresh'
+        Rails.logger.warn "Invalid token type for refresh: expected 'refresh', got '#{payload['type']}'"
+        return nil
+      end
+      
+      payload
+    rescue JWT::DecodeError => e
+      Rails.logger.error "Refresh token decode error for user #{id}: #{e.message}"
+      nil
+    rescue JWT::ExpiredSignature => e
+      Rails.logger.warn "Refresh token expired for user #{id}: #{e.message}"
+      nil
+    rescue => e
+      Rails.logger.error "Unexpected refresh token error for user #{id}: #{e.class} - #{e.message}"
+      nil
+    end
+  end
+
+  def token_expired?(token)
+    begin
+      decoded = JWT.decode(token, jwt_secret_key, false, { algorithm: 'HS256' })
+      payload = decoded[0]
+      
+      if payload['exp']
+        Time.at(payload['exp']) < Time.current
+      else
+        false
+      end
+    rescue
+      true # Consider invalid tokens as expired
+    end
+  end
+
+  def token_expires_in(token)
+    begin
+      decoded = JWT.decode(token, jwt_secret_key, false, { algorithm: 'HS256' })
+      payload = decoded[0]
+      
+      if payload['exp']
+        expires_at = Time.at(payload['exp'])
+        remaining = expires_at - Time.current
+        remaining > 0 ? remaining : 0
+      else
+        0
+      end
+    rescue
+      0
+    end
   end
 
   # Account lockout methods

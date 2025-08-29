@@ -25,10 +25,26 @@ class Api::V1::BaseController < BaseApplicationController
   rescue_from ActionController::ParameterMissing, with: :handle_parameter_missing
   rescue_from ActionController::UnpermittedParameters, with: :handle_unpermitted_parameters
   
+  # Handle malformed JSON in request body
+  before_action :validate_json_format
+  
   # Standard API documentation
   include Swagger::Blocks if defined?(Swagger::Blocks)
   
   private
+  
+  # Validate JSON format for POST/PUT requests
+  def validate_json_format
+    return unless request.post? || request.put? || request.patch?
+    return unless request.content_type&.include?('application/json')
+    
+    begin
+      JSON.parse(request.body.read)
+      request.body.rewind # Reset body for later reading
+    rescue JSON::ParserError => e
+      handle_json_error(e)
+    end
+  end
   
   # Standard response headers
   def set_response_headers
