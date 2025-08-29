@@ -20,6 +20,11 @@ class Api::V1::BaseController < BaseApplicationController
   # Standard rate limiting (implement in subclasses)
   before_action :check_rate_limit
   
+  # Handle JSON parsing errors
+  rescue_from JSON::ParserError, with: :handle_json_error
+  rescue_from ActionController::ParameterMissing, with: :handle_parameter_missing
+  rescue_from ActionController::UnpermittedParameters, with: :handle_unpermitted_parameters
+  
   # Standard API documentation
   include Swagger::Blocks if defined?(Swagger::Blocks)
   
@@ -45,6 +50,24 @@ class Api::V1::BaseController < BaseApplicationController
   def check_rate_limit
     # Implement rate limiting logic here
     # Example: RateLimiter.check(current_user, request.path)
+  end
+  
+  # Handle JSON parsing errors
+  def handle_json_error(exception)
+    Rails.logger.warn "JSON parsing error: #{exception.message} from IP #{request.remote_ip}"
+    error_response('Invalid JSON format', ['Request body must be valid JSON'], :bad_request)
+  end
+  
+  # Handle missing parameters
+  def handle_parameter_missing(exception)
+    Rails.logger.warn "Missing parameter: #{exception.param} from IP #{request.remote_ip}"
+    error_response('Missing required parameter', ["Parameter '#{exception.param}' is required"], :bad_request)
+  end
+  
+  # Handle unpermitted parameters
+  def handle_unpermitted_parameters(exception)
+    Rails.logger.warn "Unpermitted parameters: #{exception.params} from IP #{request.remote_ip}"
+    error_response('Unpermitted parameters', ["Parameters '#{exception.params.join(', ')}' are not allowed"], :bad_request)
   end
   
   # Standard parameter handling

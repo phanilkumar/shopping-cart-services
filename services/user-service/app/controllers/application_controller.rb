@@ -57,18 +57,64 @@ class ApplicationController < ActionController::Base
 
   # Set security headers
   def set_security_headers
+    # X-Frame-Options: Prevents clickjacking
     response.headers['X-Frame-Options'] = 'DENY'
+    
+    # X-Content-Type-Options: Prevents MIME sniffing
     response.headers['X-Content-Type-Options'] = 'nosniff'
+    
+    # X-XSS-Protection: XSS protection
     response.headers['X-XSS-Protection'] = '1; mode=block'
+    
+    # X-Download-Options: Prevents IE from executing downloads
+    response.headers['X-Download-Options'] = 'noopen'
+    
+    # X-Permitted-Cross-Domain-Policies: Controls Adobe Flash and Adobe Acrobat
+    response.headers['X-Permitted-Cross-Domain-Policies'] = 'none'
+    
+    # Referrer-Policy: Controls referrer information
     response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
-    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
-    response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data: https://cdn.jsdelivr.net; connect-src 'self' ws: wss:;"
+    
+    # Strict-Transport-Security: Enforces HTTPS
+    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains; preload'
+    
+    # Content-Security-Policy: Controls resource loading
+    response.headers['Content-Security-Policy'] = [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net",
+      "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
+      "img-src 'self' data: https:",
+      "font-src 'self' https:",
+      "connect-src 'self'",
+      "media-src 'self'",
+      "object-src 'none'",
+      "frame-src 'none'",
+      "worker-src 'self'",
+      "manifest-src 'self'",
+      "form-action 'self'",
+      "base-uri 'self'",
+      "upgrade-insecure-requests"
+    ].join('; ')
   end
 
   # Log authentication events
   def log_authentication_events
-    if controller_name == 'sessions' || controller_name == 'registrations' || controller_name == 'auth'
-      Rails.logger.info "Authentication event: #{action_name} from IP #{request.remote_ip} at #{Time.current}"
+    # Log authentication-related actions
+    if controller_name == 'sessions' || controller_name == 'registrations'
+      action = action_name
+      user_id = current_user&.id || 'anonymous'
+      ip_address = request.remote_ip
+      
+      case action
+      when 'create'
+        if controller_name == 'sessions'
+          Rails.logger.info "Authentication event: login from IP #{ip_address} at #{Time.current}"
+        elsif controller_name == 'registrations'
+          Rails.logger.info "Authentication event: registration from IP #{ip_address} at #{Time.current}"
+        end
+      when 'destroy'
+        Rails.logger.info "Authentication event: logout from IP #{ip_address} at #{Time.current}"
+      end
     end
   end
 

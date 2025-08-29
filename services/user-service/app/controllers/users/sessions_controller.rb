@@ -1,78 +1,33 @@
 # frozen_string_literal: true
 
 class Users::SessionsController < Devise::SessionsController
-  respond_to :html, :json
-  skip_before_action :verify_authenticity_token, if: :json_request?
-
-  # GET /users/sign_in
+  # Skip authentication for login page
+  skip_before_action :authenticate_user!, only: [:new, :create]
+  
+  # GET /resource/sign_in
   def new
     super
   end
 
-  # POST /users/sign_in
+  # POST /resource/sign_in
   def create
     super
   end
 
-  # DELETE /users/sign_out
+  # DELETE /resource/sign_out
   def destroy
     super
   end
 
-  private
+  protected
 
-  def json_request?
-    request.format.json?
+  # The path used after sign in
+  def after_sign_in_path_for(resource)
+    dashboard_path
   end
 
-  def respond_with(resource, _opts = {})
-    if request.format.json?
-      if resource.persisted?
-        render json: {
-          status: { code: 200, message: 'Logged in successfully.' },
-          data: {
-            user: {
-              id: resource.id,
-              email: resource.email,
-              first_name: resource.first_name,
-              last_name: resource.last_name,
-              display_name: resource.display_name,
-              role: resource.role,
-              status: resource.status
-            }
-          }
-        }
-      else
-        render json: {
-          status: { code: 401, message: 'Invalid email or password.' }
-        }, status: :unauthorized
-      end
-    else
-      # For HTML requests, redirect to congratulations page after successful login
-      if resource.persisted?
-        redirect_to congratulations_path, notice: "Welcome back, #{resource.display_name}!"
-      else
-        super
-      end
-    end
-  end
-
-  def respond_to_on_destroy
-    if request.format.json?
-      if current_user
-        render json: {
-          status: 200,
-          message: 'Logged out successfully.'
-        }
-      else
-        render json: {
-          status: 401,
-          message: "Couldn't find an active session."
-        }
-      end
-    else
-      # For HTML requests, let Devise handle the default behavior
-      super
-    end
+  # The path used after sign out
+  def after_sign_out_path_for(resource_or_scope)
+    new_user_session_path
   end
 end

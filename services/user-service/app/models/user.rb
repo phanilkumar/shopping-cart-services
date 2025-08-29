@@ -40,51 +40,6 @@ class User < ApplicationRecord
   # Password validation (custom validation for Devise)
   validate :password_complexity
 
-  # Override to prevent duplicate attribute names in error messages
-  def errors
-    super.tap do |errors|
-      def errors.full_messages
-        # Get all error messages
-        all_messages = map do |error|
-          attribute = error.attribute.to_s.humanize
-          message = error.message
-          
-          # Handle interpolation and prevent duplication
-          if message.include?('%{attribute}')
-            # Replace %{attribute} with the actual attribute name
-            interpolated_message = message.gsub('%{attribute}', attribute)
-            # If it would create duplication, just use the message part
-            if interpolated_message.downcase.start_with?(attribute.downcase)
-              interpolated_message
-            else
-              interpolated_message
-            end
-          elsif message.match?(/^(Email|Phone|Password|First name|Last name)/)
-            # If message already starts with attribute name, use as-is
-            message
-          elsif message.match?(/^Please enter a valid/)
-            # For format validation messages that start with "Please enter"
-            message
-          else
-            # Default Rails behavior for other cases
-            "#{attribute} #{message}"
-          end
-        end
-        
-        # Filter out duplicate email errors - keep only the first one
-        email_errors = all_messages.select { |msg| msg.downcase.include?('email') && msg.downcase.include?('already') }
-        other_errors = all_messages.reject { |msg| msg.downcase.include?('email') && msg.downcase.include?('already') }
-        
-        if email_errors.any?
-          # Use the first email error and add other errors
-          [email_errors.first] + other_errors
-        else
-          all_messages
-        end
-      end
-    end
-  end
-
   # Instance methods
   def display_name
     [first_name, last_name].compact.join(' ').presence || email

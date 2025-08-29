@@ -50,6 +50,9 @@ class Api::V1::AuthController < Api::V1::BaseController
       Rails.logger.warn "Failed login attempt for email: #{params[:email]} from IP #{request.remote_ip}"
       error_response('Invalid email or password', [], :unauthorized)
     end
+  rescue => e
+    Rails.logger.error "Login error: #{e.message}"
+    error_response('Internal server error', [], :internal_server_error)
   end
   
   def register
@@ -74,30 +77,15 @@ class Api::V1::AuthController < Api::V1::BaseController
         :created
       )
     else
-      # Handle specific validation errors without duplication
-      error_messages = []
-      
-      if user.errors[:email].include?('address is already registered')
-        error_messages << 'Email address is already registered'
-      end
-      
-      if user.errors[:phone].include?('number is already registered')
-        error_messages << 'Phone number is already registered'
-      end
-      
-      # Add other validation errors
-      user.errors.each do |field, messages|
-        next if field == :email && messages.include?('address is already registered')
-        next if field == :phone && messages.include?('number is already registered')
-        
-        messages.each do |message|
-          error_messages << "#{field.to_s.humanize} #{message}"
-        end
-      end
+      # Handle validation errors
+      error_messages = user.errors.full_messages
       
       Rails.logger.warn "Failed registration attempt for email: #{params.dig(:user, :email)} from IP #{request.remote_ip}"
       error_response('Registration failed', error_messages, :unprocessable_entity)
     end
+  rescue => e
+    Rails.logger.error "Registration error: #{e.message}"
+    error_response('Internal server error', [], :internal_server_error)
   end
   
   def refresh
@@ -117,6 +105,9 @@ class Api::V1::AuthController < Api::V1::BaseController
       Rails.logger.warn "Invalid refresh token attempt from IP #{request.remote_ip}"
       error_response('Invalid refresh token', [], :unauthorized)
     end
+  rescue => e
+    Rails.logger.error "Token refresh error: #{e.message}"
+    error_response('Internal server error', [], :internal_server_error)
   end
   
   def logout
