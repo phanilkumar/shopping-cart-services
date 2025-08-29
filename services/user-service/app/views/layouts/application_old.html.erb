@@ -6,8 +6,24 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
+    <!-- CSS and JS will be loaded via CDN for simplicity -->
+          <script src="https://cdn.jsdelivr.net/npm/@hotwired/turbo@7.3.0/dist/turbo.es2017-umd.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/@hotwired/stimulus@3.2.2/dist/stimulus.umd.js"></script>
+      
+      <!-- Global Password Strength Functionality -->
+      <!-- Removed global file reference to fix 404 error -->
+      
+      <!-- Unified Login JavaScript -->
+      <!-- Stimulus controllers are loaded via importmap -->
+      
+      <!-- Tailwind CSS via asset pipeline -->
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-    <%= javascript_include_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+    
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio"></script>
+    
+
     
     <!-- Custom styles -->
     <style>
