@@ -2,7 +2,7 @@ class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable
+         :recoverable, :rememberable, :validatable, :lockable
 
   # Callbacks
   before_create :set_default_values
@@ -99,7 +99,27 @@ class User < ApplicationRecord
   end
 
   def active?
-    status == 1
+    status == 1 && !access_locked?
+  end
+
+  def access_locked?
+    failed_attempts >= 5 && lock_expires_at && lock_expires_at > Time.current
+  end
+
+  def increment_failed_attempts!
+    update(
+      failed_attempts: failed_attempts + 1,
+      locked_at: Time.current,
+      lock_expires_at: 15.minutes.from_now
+    )
+  end
+
+  def reset_failed_attempts!
+    update(
+      failed_attempts: 0,
+      locked_at: nil,
+      lock_expires_at: nil
+    )
   end
 
   def update_last_login
@@ -111,10 +131,14 @@ class User < ApplicationRecord
       {
         user_id: id,
         email: email,
-        exp: 24.hours.from_now.to_i
+        exp: JWT_ACCESS_TOKEN_EXPIRY.from_now.to_i,
+        iat: Time.current.to_i,
+        iss: JWT_ISSUER,
+        aud: JWT_AUDIENCE,
+        jti: SecureRandom.uuid
       },
-      Rails.application.credentials.secret_key_base,
-      'HS256'
+      JWT_SECRET_KEY,
+      JWT_ALGORITHM
     )
   end
 

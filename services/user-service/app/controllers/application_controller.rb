@@ -5,7 +5,14 @@
 class ApplicationController < ActionController::Base
   include LocaleConcern
   
-  protect_from_forgery with: :exception, unless: :json_request?
+  # Security headers
+  before_action :set_security_headers
+  
+  # Prevent CSRF attacks
+  protect_from_forgery with: :exception
+  
+  # Set locale
+  before_action :set_locale
   
   # Set the layout
   layout 'application'
@@ -84,5 +91,27 @@ class ApplicationController < ActionController::Base
       # For web requests, redirect to login
       new_user_session_path
     end
+  end
+
+  def set_security_headers
+    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+    response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' ws: wss:;"
+    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains' if Rails.env.production?
+  end
+  
+  def set_locale
+    I18n.locale = extract_locale || I18n.default_locale
+  end
+  
+  def extract_locale
+    parsed_locale = params[:locale] || request.headers['Accept-Language']&.scan(/^[a-z]{2}/)&.first
+    parsed_locale if I18n.available_locales.map(&:to_s).include?(parsed_locale)
+  end
+  
+  def default_url_options
+    { locale: I18n.locale == I18n.default_locale ? nil : I18n.locale }
   end
 end

@@ -45,6 +45,22 @@ module UserService
     config.middleware.use ActionDispatch::Cookies
     config.middleware.use ActionDispatch::Session::CookieStore
     
+    # Security Headers
+    config.middleware.use Rack::Attack
+    config.middleware.insert_before ActionDispatch::Static, Rack::Deflater
+    
+    # Security headers configuration
+    config.middleware.use Rack::Deflater
+    config.middleware.insert_before 0, Rack::Cors do
+      allow do
+        origins 'http://localhost:3005', 'http://localhost:3001'  # Frontend and API Gateway
+        resource '*',
+          headers: :any,
+          methods: [:get, :post, :put, :patch, :delete, :options, :head],
+          credentials: true
+      end
+    end
+    
     # Internationalization (i18n) Configuration
     config.i18n.default_locale = :en
     config.i18n.available_locales = [:en, :hi, :te, :kn, :ta, :ml]
@@ -55,16 +71,5 @@ module UserService
       ta: :en,
       ml: :en
     }
-    
-    # Enable CORS for frontend integration
-    config.middleware.insert_before 0, Rack::Cors do
-      allow do
-        origins 'http://localhost:3005', 'http://localhost:3001'  # Frontend and API Gateway
-        resource '*',
-          headers: :any,
-          methods: [:get, :post, :put, :patch, :delete, :options, :head],
-          credentials: true
-      end
-    end
   end
 end
