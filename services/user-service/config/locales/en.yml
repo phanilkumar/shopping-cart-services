@@ -35,6 +35,7 @@ en:
     kannada: "Kannada"
     tamil: "Tamil"
     malayalam: "Malayalam"
+    email: "Email"
     selected: "Selected"
     select: "Select"
     current_language: "Current Language"

@@ -35,6 +35,7 @@ ml:
     kannada: "കന്നഡ"
     tamil: "തമിഴ്"
     malayalam: "മലയാളം"
+    email: "ഇമെയിൽ"
     selected: "തിരഞ്ഞെടുത്തത്"
     select: "തിരഞ്ഞെടുക്കുക"
     current_language: "നിലവിലെ ഭാഷ"

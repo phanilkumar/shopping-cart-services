@@ -35,6 +35,7 @@ hi:
     kannada: "कन्नड़"
     tamil: "तमिल"
     malayalam: "मलयालम"
+    email: "ईमेल"
     selected: "चयनित"
     select: "चुनें"
     current_language: "वर्तमान भाषा"
