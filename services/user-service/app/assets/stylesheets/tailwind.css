@@ -5,6 +5,28 @@
   box-sizing: border-box;
 }
 
+/* CSS Custom Properties for icon sizing */
+:root {
+  --tw-width-w-3: 0.75rem;
+  --tw-width-w-4: 1rem;
+  --tw-width-w-5: 1.25rem;
+  --tw-width-w-6: 1.5rem;
+  --tw-width-w-10: 2.5rem;
+  --tw-width-w-12: 3rem;
+  --tw-width-w-16: 4rem;
+  --tw-width-w-24: 6rem;
+  --tw-width-w-80: 20rem;
+  
+  --tw-height-h-2: 0.5rem;
+  --tw-height-h-3: 0.75rem;
+  --tw-height-h-4: 1rem;
+  --tw-height-h-5: 1.25rem;
+  --tw-height-h-6: 1.5rem;
+  --tw-height-h-12: 3rem;
+  --tw-height-h-24: 6rem;
+  --tw-height-h-80: 20rem;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -157,16 +179,33 @@ body {
 }
 
 /* Force icon sizing - override any conflicting styles */
-svg.w-4 { width: 1rem !important; }
-svg.h-4 { height: 1rem !important; }
-svg.w-5 { width: 1.25rem !important; }
-svg.h-5 { height: 1.25rem !important; }
-svg.w-6 { width: 1.5rem !important; }
-svg.h-6 { height: 1.5rem !important; }
+svg.w-4, svg[class*="w-4"] { width: var(--tw-width-w-4) !important; max-width: var(--tw-width-w-4) !important; }
+svg.h-4, svg[class*="h-4"] { height: var(--tw-height-h-4) !important; max-height: var(--tw-height-h-4) !important; }
+svg.w-5, svg[class*="w-5"] { width: var(--tw-width-w-5) !important; max-width: var(--tw-width-w-5) !important; }
+svg.h-5, svg[class*="h-5"] { height: var(--tw-height-h-5) !important; max-height: var(--tw-height-h-5) !important; }
+svg.w-6, svg[class*="w-6"] { width: var(--tw-width-w-6) !important; max-width: var(--tw-width-w-6) !important; }
+svg.h-6, svg[class*="h-6"] { height: var(--tw-height-h-6) !important; max-height: var(--tw-height-h-6) !important; }
 
 /* Ensure all SVG icons respect their size classes */
-svg[class*="w-"] { width: var(--tw-width) !important; }
-svg[class*="h-"] { height: var(--tw-height) !important; }
+svg[class*="w-"] { width: var(--tw-width) !important; max-width: var(--tw-width) !important; }
+svg[class*="h-"] { height: var(--tw-height) !important; max-height: var(--tw-height) !important; }
+
+/* Additional icon size constraints */
+svg {
+  max-width: none;
+  max-height: none;
+}
+
+/* Specific override for feature icons on home page */
+.features-section svg,
+.features-section svg.w-6,
+.features-section svg.h-6 {
+  width: var(--tw-width-w-6) !important;
+  height: var(--tw-height-h-6) !important;
+  max-width: var(--tw-width-w-6) !important;
+  max-height: var(--tw-height-h-6) !important;
+  flex-shrink: 0;
+}
 
 /* Custom utilities for OTP inputs */
 .otp-input {
@@ -253,4 +292,137 @@ svg[class*="h-"] { height: var(--tw-height) !important; }
   border-top: 2px solid #3b82f6;
   border-radius: 50%;
   animation: spin 1s linear infinite;
+}
+
+/* Additional icon size fixes */
+svg {
+  box-sizing: border-box;
+}
+
+/* Ensure icons in feature cards are properly sized */
+.features-section .absolute svg,
+.features-section .flex svg {
+  width: var(--tw-width-w-6) !important;
+  height: var(--tw-height-h-6) !important;
+  max-width: var(--tw-width-w-6) !important;
+  max-height: var(--tw-height-h-6) !important;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+/* Override any potential browser defaults */
+svg:not([width]):not([height]) {
+  width: auto;
+  height: auto;
+}
+
+/* Force specific sizes for common icon classes */
+.w-6.h-6 svg,
+svg.w-6.h-6 {
+  width: var(--tw-width-w-6) !important;
+  height: var(--tw-height-h-6) !important;
+  max-width: var(--tw-width-w-6) !important;
+  max-height: var(--tw-height-h-6) !important;
+}
+
+/* Additional specific overrides for home page icons */
+.features-section .absolute.flex svg,
+.features-section .flex.items-center.justify-center svg {
+  width: var(--tw-width-w-6) !important;
+  height: var(--tw-height-h-6) !important;
+  max-width: var(--tw-width-w-6) !important;
+  max-height: var(--tw-height-h-6) !important;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+/* Override any potential browser or framework defaults */
+svg {
+  width: auto;
+  height: auto;
+}
+
+/* Force specific icon sizes with higher specificity */
+.features-section svg[class*="w-6"],
+.features-section svg[class*="h-6"] {
+  width: var(--tw-width-w-6) !important;
+  height: var(--tw-height-h-6) !important;
+  max-width: var(--tw-width-w-6) !important;
+  max-height: var(--tw-height-h-6) !important;
+}
+
+/* Ensure icon containers don't expand beyond their intended size */
+.features-section .absolute.flex.items-center.justify-center {
+  width: 3rem !important;
+  height: 3rem !important;
+  max-width: 3rem !important;
+  max-height: 3rem !important;
+  flex-shrink: 0;
+}
+
+/* Aggressive override for all SVG elements in features section */
+.features-section svg {
+  width: 1.5rem !important;
+  height: 1.5rem !important;
+  max-width: 1.5rem !important;
+  max-height: 1.5rem !important;
+  min-width: 1.5rem !important;
+  min-height: 1.5rem !important;
+  flex-shrink: 0 !important;
+  box-sizing: border-box !important;
+  transform: none !important;
+  scale: 1 !important;
+}
+
+/* Specific targeting for home page feature icons */
+.features-section .absolute.flex.items-center.justify-center.h-12.w-12 svg.h-6.w-6 {
+  width: 1.5rem !important;
+  height: 1.5rem !important;
+  max-width: 1.5rem !important;
+  max-height: 1.5rem !important;
+  min-width: 1.5rem !important;
+  min-height: 1.5rem !important;
+  flex-shrink: 0 !important;
+  box-sizing: border-box !important;
+  transform: none !important;
+  scale: 1 !important;
+}
+
+/* Override any potential CSS conflicts */
+.features-section svg[class*="h-6"],
+.features-section svg[class*="w-6"] {
+  width: 1.5rem !important;
+  height: 1.5rem !important;
+  max-width: 1.5rem !important;
+  max-height: 1.5rem !important;
+  min-width: 1.5rem !important;
+  min-height: 1.5rem !important;
+}
+
+/* Ensure SVG viewBox doesn't cause scaling issues */
+.features-section svg[viewBox="0 0 24 24"] {
+  width: 1.5rem !important;
+  height: 1.5rem !important;
+  max-width: 1.5rem !important;
+  max-height: 1.5rem !important;
+  min-width: 1.5rem !important;
+  min-height: 1.5rem !important;
+  flex-shrink: 0 !important;
+  box-sizing: border-box !important;
+}
+
+/* Additional overrides for any potential conflicts */
+.features-section .absolute.flex.items-center.justify-center.h-12.w-12 {
+  width: 3rem !important;
+  height: 3rem !important;
+  max-width: 3rem !important;
+  max-height: 3rem !important;
+}
+
+/* Force all SVG elements to respect their size classes */
+svg[class*="w-"], svg[class*="h-"] {
+  width: var(--tw-width, auto) !important;
+  height: var(--tw-height, auto) !important;
+  max-width: var(--tw-width, none) !important;
+  max-height: var(--tw-height, none) !important;
 }

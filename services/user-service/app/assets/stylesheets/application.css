@@ -10,7 +10,7 @@
  * files in this directory. Styles in this file should be added after the last require_* statement.
  * It is generally better to create a new file per style scope.
  *
- *= require tailwind
+ *= require tailwind.css
  *= require_tree .
  *= require_self
  */
@@ -205,6 +205,18 @@
 
 .requirement-icon svg.text-green-500 {
   transform: scale(1.1);
+}
+
+/* Override any scaling for home page feature icons */
+.features-section svg {
+  transform: none !important;
+  scale: 1 !important;
+}
+
+.features-section .requirement-icon svg,
+.features-section .requirement-icon svg.text-green-500 {
+  transform: none !important;
+  scale: 1 !important;
 }
 
 /* Password field focus enhancement */

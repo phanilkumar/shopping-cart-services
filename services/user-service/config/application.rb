@@ -51,15 +51,6 @@ module UserService
     
     # Security headers configuration
     config.middleware.use Rack::Deflater
-    config.middleware.insert_before 0, Rack::Cors do
-      allow do
-        origins 'http://localhost:3005', 'http://localhost:3001'  # Frontend and API Gateway
-        resource '*',
-          headers: :any,
-          methods: [:get, :post, :put, :patch, :delete, :options, :head],
-          credentials: true
-      end
-    end
     
     # Internationalization (i18n) Configuration
     config.i18n.default_locale = :en
@@ -71,5 +62,11 @@ module UserService
       ta: :en,
       ml: :en
     }
+    
+    # Asset Pipeline Configuration
+    config.assets.enabled = true
+    config.assets.version = '1.0'
+    config.assets.paths << Rails.root.join('app', 'assets', 'fonts')
+    config.assets.precompile += %w( application.css application.js )
   end
 end
