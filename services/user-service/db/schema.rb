@@ -37,19 +37,13 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_29_145635) do
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
     t.integer "failed_attempts", default: 0, null: false
-    t.string "unlock_token"
     t.datetime "locked_at"
-    t.string "last_login_ip"
-    t.integer "login_count"
-    t.datetime "lock_expires_at"
     t.index "lower((email)::text)", name: "index_users_on_lower_email", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["failed_attempts"], name: "index_users_on_failed_attempts"
-    t.index ["lock_expires_at"], name: "index_users_on_lock_expires_at"
     t.index ["locked_at"], name: "index_users_on_locked_at"
     t.index ["phone"], name: "index_users_on_phone", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
-    t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
   end
 
 end

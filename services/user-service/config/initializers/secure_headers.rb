@@ -32,7 +32,7 @@ SecureHeaders::Configuration.default do |config|
     script_src: %w('self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net),
     
     # Style sources
-    style_src: %w('self' 'unsafe-inline' https://cdn.jsdelivr.net),
+    style_src: %w('self' 'unsafe-inline' https://cdn.jsdelivr.net data:),
     
     # Image sources
     img_src: %w('self' data: https:),

@@ -13,7 +13,7 @@ Rails.application.routes.draw do
   root to: 'pages#home'
   
   # Authentication routes (redirects to Devise)
-  get '/login', to: 'users/sessions#new'
+  get '/login', to: 'auth#login'
   get '/register', to: 'auth#register'
   post '/register', to: 'auth#create_register'
   delete '/logout', to: 'auth#logout'

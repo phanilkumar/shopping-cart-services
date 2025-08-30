@@ -4,8 +4,8 @@ class AuthController < ApplicationController
   
   # GET /login
   def login
-    # Show login page
-    redirect_to new_user_session_path
+    # Show custom login page
+    # No redirect needed - just render the view
   end
   
   # POST /login (for email/password authentication)
@@ -60,11 +60,31 @@ class AuthController < ApplicationController
     if @user.save
       # Show congratulations message
       flash[:notice] = t('auth.registration_successful')
-      redirect_to login_path
+      
+      # Handle Turbo requests
+      if turbo_frame_request?
+        render turbo_stream: turbo_stream.replace(
+          "registration_form",
+          partial: "auth/registration_success",
+          locals: { user: @user }
+        )
+      else
+        redirect_to login_path
+      end
     else
       # Re-render the registration form with errors
       flash.now[:alert] = t('auth.registration_failed')
-      render :register, status: :unprocessable_entity
+      
+      # Handle Turbo requests
+      if turbo_frame_request?
+        render turbo_stream: turbo_stream.replace(
+          "registration_form",
+          partial: "auth/register_form",
+          locals: { user: @user }
+        )
+      else
+        render :register, status: :unprocessable_entity
+      end
     end
   end
   

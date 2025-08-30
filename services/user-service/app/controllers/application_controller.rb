@@ -82,7 +82,7 @@ class ApplicationController < ActionController::Base
     response.headers['Content-Security-Policy'] = [
       "default-src 'self'",
       "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net",
-      "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
+      "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net data:",
       "img-src 'self' data: https:",
       "font-src 'self' https:",
       "connect-src 'self'",

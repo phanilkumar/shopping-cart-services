@@ -3,6 +3,11 @@ class Rack::Attack
   # Use Redis for caching (fallback to memory if Redis is not available)
   cache.store = ActiveSupport::Cache::RedisCacheStore.new(url: ENV['REDIS_URL'] || 'redis://localhost:6379/0')
 
+  # Allow localhost
+  safelist('allow-localhost') do |req|
+    '127.0.0.1' == req.ip || '::1' == req.ip
+  end
+
   # Throttle login attempts by IP address
   throttle('login/ip', limit: 10, period: 15.minutes) do |req|
     if req.path == '/api/v1/auth/login' && req.post?

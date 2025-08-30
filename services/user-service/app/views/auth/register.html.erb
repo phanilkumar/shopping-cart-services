@@ -1,429 +1,540 @@
-<div class="min-h-screen flex items-center justify-center bg-gray-50 py-2 px-4 sm:px-6 lg:px-8">
-  <div class="max-w-md w-full">
-    <div>
-      <div class="mx-auto h-6 w-6 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-        <svg class="h-4 w-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<div class="min-h-screen bg-gray-50 flex items-center justify-center p-4" 
+     data-controller="registration password-strength form-validation">
+  <div class="w-full max-w-md">
+    <!-- Header Section -->
+    <div class="text-center mb-8">
+      <div class="icon icon-xl bg-primary text-white rounded-full p-3 mx-auto mb-4">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
         </svg>
       </div>
-      <h2 class="mt-2 text-center text-lg font-bold text-gray-900">
+      <h2 class="text-2xl font-bold text-gray-900 mb-2">
         Create your account
       </h2>
-      <p class="mt-1 text-center text-xs text-gray-600">
+      <p class="text-gray-600">
         Or
-        <%= link_to "sign in to your account", login_path, class: "font-medium text-blue-600 hover:text-blue-500" %>
+        <%= link_to "sign in to your account", login_path, class: "text-primary hover:text-primary-dark font-medium" %>
       </p>
     </div>
     
-    <%= form_with(model: @user || User.new, url: register_path, method: :post, local: true, class: "mt-3") do |f| %>
-      <% if @user&.errors&.any? %>
-        <div class="mb-3 p-3 bg-red-50 border border-red-200 rounded-md">
-          <div class="text-xs text-red-600">
-            <ul class="list-disc list-inside space-y-1">
-              <% @user.errors.full_messages.each do |message| %>
-                <li><%= message %></li>
-              <% end %>
-            </ul>
-          </div>
-        </div>
-      <% end %>
-      
-      <% if flash[:alert] %>
-        <div class="mb-3 p-3 bg-red-50 border border-red-200 rounded-md">
-          <div class="text-xs text-red-600">
-            <%= flash[:alert] %>
-          </div>
-        </div>
-      <% end %>
-      
-      <div class="space-y-3">
-        <!-- Name Fields -->
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <%= f.label :first_name, "First Name *", class: "block text-xs font-medium text-gray-700 mb-1" %>
-            <%= f.text_field :first_name, 
-                autocomplete: "given-name", 
-                placeholder: "John", 
-                class: "appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm" %>
-            <p class="mt-1 text-xs text-gray-500">4-20 characters, letters only (a-z, A-Z)</p>
-          </div>
-          <div>
-            <%= f.label :last_name, "Last Name *", class: "block text-xs font-medium text-gray-700 mb-1" %>
-            <%= f.text_field :last_name, 
-                autocomplete: "family-name", 
-                placeholder: "Doe", 
-                class: "appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm" %>
-            <p class="mt-1 text-xs text-gray-500">4-20 characters, letters only (a-z, A-Z)</p>
-          </div>
-        </div>
-        
-        <!-- Email Field -->
-        <div>
-          <%= f.label :email, "Email Address *", class: "block text-xs font-medium text-gray-700 mb-1" %>
-          <%= f.email_field :email, 
-              autocomplete: "email", 
-              placeholder: "john.doe@example.com", 
-              class: "appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm",
-              maxlength: "50",
-              pattern: "[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$",
-              title: "Please enter a valid email address (maximum 50 characters)" %>
-          <p class="mt-1 text-xs text-gray-500">Enter a valid email address</p>
-        </div>
-        
-        <!-- Phone Field -->
-        <div>
-          <%= f.label :phone, "Mobile Number *", class: "block text-xs font-medium text-gray-700 mb-1" %>
-          <%= f.telephone_field :phone, 
-              autocomplete: "tel", 
-              placeholder: "9876543210", 
-              class: "appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm",
-              id: "user_phone",
-              pattern: "[0-9]*",
-              inputmode: "numeric",
-              maxlength: "10",
-              oninput: "this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)" %>
-          <p class="mt-1 text-xs text-gray-500">10-digit Indian mobile number (starts with 6, 7, 8, or 9)</p>
-        </div>
-        
-        <!-- Password Field -->
-        <div>
-          <%= f.label :password, "Password *", class: "block text-xs font-medium text-gray-700 mb-1" %>
+    <!-- Main Form Card -->
+    <div class="card">
+      <div class="card-body">
+        <%= form_with(model: @user || User.new, 
+                      url: register_path, 
+                      method: :post, 
+                      local: false,
+                      data: { 
+                        registration_target: "form",
+                        action: "submit->registration#submit",
+                        turbo: true
+                      }) do |f| %>
           
-          <%= f.password_field :password, 
-              autocomplete: "new-password", 
-              placeholder: "Enter password", 
-              class: "appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm password-field",
-              id: "user_password",
-              maxlength: "16" %>
-          
-                                  <!-- Password Strength Progress Bar -->
-            <div class="mt-2 hidden" id="password-strength-container">
-              <div class="flex items-center justify-between mb-1">
-                <span class="text-xs text-gray-500">Password strength:</span>
-                <span class="text-xs font-medium text-gray-400" id="strength-text">Very Weak</span>
+          <!-- Flash Messages -->
+          <div data-registration-target="flashMessages">
+            <% if @user&.errors&.any? %>
+              <div class="alert alert-error mb-4" data-registration-target="errorMessage">
+                <div class="flex items-center">
+                  <span class="icon icon-sm text-danger mr-2">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                  </span>
+                  <div class="text-sm font-medium">
+                    <ul class="list-disc list-inside space-y-1">
+                      <% @user.errors.full_messages.each do |message| %>
+                        <li><%= message %></li>
+                      <% end %>
+                    </ul>
+                  </div>
+                </div>
               </div>
-              <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-                <div class="h-2 rounded-full transition-all duration-300 ease-in-out bg-red-500" 
-                     style="width: 0%; min-width: 0;" 
-                     id="progress-bar"></div>
+            <% end %>
+            
+            <% if flash[:alert] %>
+              <div class="alert alert-error mb-4" data-registration-target="errorMessage">
+                <div class="flex items-center">
+                  <span class="icon icon-sm text-danger mr-2">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                  </span>
+                  <span class="text-sm font-medium">
+                    <%= flash[:alert] %>
+                  </span>
+                </div>
+              </div>
+            <% end %>
+          </div>
+          
+          <div class="space-y-4">
+            <!-- Name Fields -->
+            <div class="grid grid-cols-2 gap-4">
+              <div class="form-group">
+                <%= f.label :first_name, "First Name *", class: "form-label" %>
+                <%= f.text_field :first_name, 
+                    autocomplete: "given-name", 
+                    placeholder: "John", 
+                    data: {
+                      form_validation_target: "field",
+                      action: "input->form-validation#validateField blur->form-validation#validateField",
+                      field_type: "name"
+                    },
+                    class: "form-input" %>
+                <p class="text-xs text-gray-500 mt-1">4-20 characters, letters only</p>
+                <div data-form-validation-target="error" class="form-error hidden"></div>
+              </div>
+              <div class="form-group">
+                <%= f.label :last_name, "Last Name *", class: "form-label" %>
+                <%= f.text_field :last_name, 
+                    autocomplete: "family-name", 
+                    placeholder: "Doe", 
+                    data: {
+                      form_validation_target: "field",
+                      action: "input->form-validation#validateField blur->form-validation#validateField",
+                      field_type: "name"
+                    },
+                    class: "form-input" %>
+                <p class="text-xs text-gray-500 mt-1">4-20 characters, letters only</p>
+                <div data-form-validation-target="error" class="form-error hidden"></div>
               </div>
             </div>
             
-            <!-- Password Requirements -->
-            <div class="mt-2 p-2 bg-gray-50 rounded-md hidden" id="password-requirements-container">
-              <p class="text-xs font-medium text-gray-700 mb-1">Password requirements:</p>
-              <div class="space-y-1">
-                <div class="flex items-center space-x-2 requirement-item" data-requirement="length">
-                  <span class="requirement-icon">
-                    <svg class="w-3 h-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"></path>
-                    </svg>
-                  </span>
-                  <span class="requirement-text text-xs text-gray-400">8-16 characters long</span>
+            <!-- Email Field -->
+            <div class="form-group">
+              <%= f.label :email, "Email Address *", class: "form-label" %>
+              <%= f.email_field :email, 
+                  autocomplete: "email", 
+                  placeholder: "john.doe@example.com", 
+                  data: {
+                    form_validation_target: "field",
+                    action: "input->form-validation#validateField blur->form-validation#validateField",
+                    field_type: "email"
+                  },
+                  class: "form-input",
+                  maxlength: "50" %>
+              <p class="text-xs text-gray-500 mt-1">Enter a valid email address</p>
+              <div data-form-validation-target="error" class="form-error hidden"></div>
+            </div>
+            
+            <!-- Phone Field -->
+            <div class="form-group">
+              <%= f.label :phone, "Mobile Number *", class: "form-label" %>
+              <%= f.telephone_field :phone, 
+                  autocomplete: "tel", 
+                  placeholder: "9876543210", 
+                  data: {
+                    form_validation_target: "field",
+                    action: "input->form-validation#validateField blur->form-validation#validateField",
+                    field_type: "phone"
+                  },
+                  class: "form-input",
+                  pattern: "[0-9]*",
+                  inputmode: "numeric",
+                  maxlength: "10" %>
+              <p class="text-xs text-gray-500 mt-1">10-digit Indian mobile number</p>
+              <div data-form-validation-target="error" class="form-error hidden"></div>
+            </div>
+            
+            <!-- Password Field -->
+            <div class="form-group">
+              <%= f.label :password, "Password *", class: "form-label" %>
+              
+              <%= f.password_field :password, 
+                  autocomplete: "new-password", 
+                  placeholder: "Enter password", 
+                  data: {
+                    password_strength_target: "password",
+                    form_validation_target: "field",
+                    action: "input->password-strength#updatePasswordStrength input->form-validation#validateField",
+                    field_type: "password"
+                  },
+                  class: "form-input",
+                  maxlength: "16" %>
+              
+              <!-- Password Strength Progress Bar -->
+              <div class="password-strength hidden" data-password-strength-target="strengthContainer">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs text-gray-500 font-medium">Password strength:</span>
+                  <span class="text-xs font-semibold text-gray-400" data-password-strength-target="strengthText">Very Weak</span>
                 </div>
-                <div class="flex items-center space-x-2 requirement-item" data-requirement="letter">
-                  <span class="requirement-icon">
-                    <svg class="w-3 h-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"></path>
-                    </svg>
-                  </span>
-                  <span class="requirement-text text-xs text-gray-400">At least one letter (a-z, A-Z)</span>
-                </div>
-                <div class="flex items-center space-x-2 requirement-item" data-requirement="number">
-                  <span class="requirement-icon">
-                    <svg class="w-3 h-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"></path>
-                    </svg>
-                  </span>
-                  <span class="requirement-text text-xs text-gray-400">At least one number (0-9)</span>
-                </div>
-                <div class="flex items-center space-x-2 requirement-item" data-requirement="special">
-                  <span class="requirement-icon">
-                    <svg class="w-3 h-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"></path>
-                    </svg>
-                  </span>
-                  <span class="requirement-text text-xs text-gray-400">At least one special character (!@#$%^&*()_+-=[]{}|;:,.<>?)</span>
+                <div class="strength-bar">
+                  <div class="strength-fill" 
+                       style="width: 0%; min-width: 0;" 
+                       data-password-strength-target="progress"></div>
                 </div>
               </div>
+              
+              <!-- Password Requirements -->
+              <div class="password-requirements hidden mt-3 p-3 bg-gray-50 rounded" data-password-strength-target="requirementsContainer">
+                <p class="text-xs font-semibold text-gray-700 mb-3">Password requirements:</p>
+                <div class="space-y-2">
+                  <div class="flex items-center space-x-3" data-password-strength-target="requirement" data-requirement="length">
+                    <span class="requirement-icon">
+                      <svg class="icon icon-sm text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"></path>
+                      </svg>
+                    </span>
+                    <span class="requirement-text text-xs text-gray-400">8-16 characters long</span>
+                  </div>
+                  <div class="flex items-center space-x-3" data-password-strength-target="requirement" data-requirement="letter">
+                    <span class="requirement-icon">
+                      <svg class="icon icon-sm text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"></path>
+                      </svg>
+                    </span>
+                    <span class="requirement-text text-xs text-gray-400">At least one letter (a-z, A-Z)</span>
+                  </div>
+                  <div class="flex items-center space-x-3" data-password-strength-target="requirement" data-requirement="number">
+                    <span class="requirement-icon">
+                      <svg class="icon icon-sm text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"></path>
+                      </svg>
+                    </span>
+                    <span class="requirement-text text-xs text-gray-400">At least one number (0-9)</span>
+                  </div>
+                  <div class="flex items-center space-x-3" data-password-strength-target="requirement" data-requirement="special">
+                    <span class="requirement-icon">
+                      <svg class="icon icon-sm text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"></path>
+                      </svg>
+                    </span>
+                    <span class="requirement-text text-xs text-gray-400">At least one special character</span>
+                  </div>
+                </div>
+              </div>
+              <div data-form-validation-target="error" class="form-error hidden"></div>
             </div>
-        </div>
-        
-        <!-- Password Confirmation Field -->
-        <div>
-          <%= f.label :password_confirmation, "Confirm Password *", class: "block text-xs font-medium text-gray-700 mb-1" %>
-          <%= f.password_field :password_confirmation, 
-              autocomplete: "new-password", 
-              placeholder: "Confirm your password", 
-              class: "appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm",
-              maxlength: "16" %>
-          <p class="mt-1 text-xs text-gray-500">Must match your password</p>
-        </div>
-      </div>
-
-      <!-- Terms and Conditions -->
-      <div class="mt-4">
-        <div class="flex items-start">
-          <div class="flex items-center h-5">
-            <input id="terms" name="terms" type="checkbox" required
-                   class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded">
+            
+            <!-- Password Confirmation Field -->
+            <div class="form-group">
+              <%= f.label :password_confirmation, "Confirm Password *", class: "form-label" %>
+              <%= f.password_field :password_confirmation, 
+                  autocomplete: "new-password", 
+                  placeholder: "Confirm your password", 
+                  data: {
+                    form_validation_target: "field",
+                    action: "input->form-validation#validateField blur->form-validation#validateField",
+                    field_type: "password_confirmation"
+                  },
+                  class: "form-input",
+                  maxlength: "16" %>
+              <p class="text-xs text-gray-500 mt-1">Must match your password</p>
+              <div data-form-validation-target="error" class="form-error hidden"></div>
+            </div>
           </div>
-          <div class="ml-3 text-sm">
-            <label for="terms" class="text-gray-700">
-              I agree to the
-              <%= link_to "Terms of Service", terms_path, class: "text-blue-600 hover:text-blue-500 underline" %>
-              and
-              <%= link_to "Privacy Policy", privacy_path, class: "text-blue-600 hover:text-blue-500 underline" %>
-            </label>
-          </div>
-        </div>
-      </div>
 
-      <div class="mt-4">
-        <%= f.submit "Create Account", 
-            class: "group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200" %>
+          <!-- Terms and Conditions -->
+          <div class="form-group">
+            <div class="flex items-start">
+              <div class="flex items-center h-5">
+                <input id="terms" name="terms" type="checkbox" required
+                       data-form-validation-target="field"
+                       data-action="change->form-validation#validateField"
+                       data-field-type="terms"
+                       class="mr-2">
+              </div>
+              <div class="ml-3 text-sm">
+                <label for="terms" class="text-gray-700">
+                  I agree to the
+                  <%= link_to "Terms of Service", terms_path, class: "text-primary hover:text-primary-dark underline" %>
+                  and
+                  <%= link_to "Privacy Policy", privacy_path, class: "text-primary hover:text-primary-dark underline" %>
+                </label>
+              </div>
+            </div>
+            <div data-form-validation-target="error" class="form-error hidden"></div>
+          </div>
+
+          <div class="form-group mb-0">
+            <%= f.submit "Create Account", 
+                data: { registration_target: "submitButton" },
+                class: "btn btn-primary btn-block" %>
+          </div>
+        <% end %>
       </div>
-    <% end %>
+    </div>
     
-    <div class="text-center mt-4">
-      <p class="text-xs text-gray-600">
+    <!-- Registration Link -->
+    <div class="text-center mt-6">
+      <p class="text-sm text-gray-600">
         Already have an account?
-        <%= link_to "Sign in here", login_path, class: "font-medium text-blue-600 hover:text-blue-500" %>
+        <%= link_to "Sign in here", login_path, class: "text-primary hover:text-primary-dark font-medium" %>
       </p>
     </div>
   </div>
 </div>
 
-<script>
-// Global function to initialize password strength - can be called multiple times
-function initializePasswordStrength() {
-  console.log('Initializing password strength functionality...');
-  
-  const passwordField = document.getElementById('user_password');
-  const progressBar = document.getElementById('progress-bar');
-  const strengthText = document.getElementById('strength-text');
-  const requirementItems = document.querySelectorAll('.requirement-item');
-  const strengthContainer = document.getElementById('password-strength-container');
-  const requirementsContainer = document.getElementById('password-requirements-container');
-  
-  console.log('Found elements:', {
-    passwordField: !!passwordField,
-    progressBar: !!progressBar,
-    strengthText: !!strengthText,
-    requirementItems: requirementItems.length,
-    strengthContainer: !!strengthContainer,
-    requirementsContainer: !!requirementsContainer
-  });
-  
-  // Check if we're on a page that has password strength functionality
-  if (!passwordField || !progressBar || !strengthText || !strengthContainer || !requirementsContainer) {
-    console.log('Password strength elements not found - not on registration page, skipping initialization');
-    return;
-  }
-  
-  function updatePasswordStrength() {
-    const password = passwordField.value;
-    console.log('Password changed:', password);
-    
-    // Show/hide containers based on whether password has content
-    if (password.length > 0) {
-      strengthContainer.classList.remove('hidden');
-      requirementsContainer.classList.remove('hidden');
-    } else {
-      strengthContainer.classList.add('hidden');
-      requirementsContainer.classList.add('hidden');
-      return; // Don't calculate strength for empty password
-    }
-    
-    // Calculate strength
-    let score = 0;
-    const checks = {
-      length: password.length >= 8 && password.length <= 16,
-      letter: /[a-zA-Z]/.test(password),
-      number: /\d/.test(password),
-      special: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)
-    };
-    
-    console.log('Password checks:', checks);
-    
-    // Count how many requirements are met
-    const metRequirements = Object.values(checks).filter(check => check).length;
-    
-    // Base score: 20 points per requirement met (max 80 points)
-    score = metRequirements * 20;
-    
-    // Bonus for length (max 20 points)
-    let lengthBonus = 0;
-    if (password.length >= 12) {
-      lengthBonus = 20;
-      score += 20;
-    } else if (password.length >= 10) {
-      lengthBonus = 10;
-      score += 10;
-    } else if (password.length >= 8) {
-      lengthBonus = 5;
-      score += 5;
-    }
-    
-    score = Math.min(score, 100);
-    console.log('Calculated score:', score);
-    console.log('Met requirements:', metRequirements, 'out of 4');
-    console.log('Length bonus:', lengthBonus);
-    console.log('Password length:', password.length);
-    
-    // Update progress bar - ensure proper reset and setting
-    progressBar.style.width = '0%'; // Reset first
-    progressBar.style.minWidth = '0%';
-    progressBar.style.maxWidth = '100%';
-    
-    // Force a reflow
-    progressBar.offsetHeight;
-    
-    // Now set the actual width
-    progressBar.style.width = score + '%';
-    
-    console.log('Progress bar width set to:', score + '%');
-    
-    // Update color
-    let colorClass = 'bg-red-500';
-    if (score >= 80) colorClass = 'bg-green-500';
-    else if (score >= 60) colorClass = 'bg-blue-500';
-    else if (score >= 40) colorClass = 'bg-yellow-500';
-    else if (score >= 20) colorClass = 'bg-orange-500';
-    
-    progressBar.className = 'h-2 rounded-full transition-all duration-300 ease-in-out ' + colorClass;
-    
-    // Update strength text
-    let text = 'Very Weak';
-    let textColor = 'text-red-600';
-    if (score >= 80) {
-      text = 'Very Strong';
-      textColor = 'text-green-600';
-    } else if (score >= 60) {
-      text = 'Strong';
-      textColor = 'text-blue-600';
-    } else if (score >= 40) {
-      text = 'Medium';
-      textColor = 'text-yellow-600';
-    } else if (score >= 20) {
-      text = 'Weak';
-      textColor = 'text-orange-600';
-    }
-    
-    strengthText.textContent = text;
-    strengthText.className = 'text-xs font-medium ' + textColor;
-    
-    // Update requirements
-    const requirementTypes = ['length', 'letter', 'number', 'special'];
-    requirementTypes.forEach((type, index) => {
-      const item = requirementItems[index];
-      const check = checks[type];
-      const icon = item.querySelector('.requirement-icon');
-      const text = item.querySelector('.requirement-text');
-      
-      if (check) {
-        icon.innerHTML = '<svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>';
-        text.classList.remove('text-gray-400');
-        text.classList.add('text-green-600');
-      } else {
-        icon.innerHTML = '<svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"></path></svg>';
-        text.classList.remove('text-green-600');
-        text.classList.add('text-gray-400');
-      }
-    });
-  }
-  
-  // Add event listener
-  passwordField.addEventListener('input', updatePasswordStrength);
-  
-  // Initial call
-  updatePasswordStrength();
-  
-  // Phone number validation - only allow numbers
-  const phoneField = document.getElementById('user_phone');
-  if (phoneField) {
-    // Clean the phone field on page load (remove +91 prefix if present)
-    if (phoneField.value) {
-      phoneField.value = phoneField.value.replace(/^\+?91/, '').replace(/[^0-9]/g, '').slice(0, 10);
-    }
-    
-    phoneField.addEventListener('input', function(e) {
-      // Remove any non-numeric characters
-      this.value = this.value.replace(/[^0-9]/g, '');
-      
-      // Limit to 10 digits
-      if (this.value.length > 10) {
-        this.value = this.value.slice(0, 10);
-      }
-    });
-    
-    // Prevent paste of non-numeric content
-    phoneField.addEventListener('paste', function(e) {
-      e.preventDefault();
-      const pastedText = (e.clipboardData || window.clipboardData).getData('text');
-      const numericOnly = pastedText.replace(/[^0-9]/g, '').slice(0, 10);
-      this.value = numericOnly;
-    });
-    
-    // Prevent drag and drop of non-numeric content
-    phoneField.addEventListener('drop', function(e) {
-      e.preventDefault();
-    });
-  }
-  
-  console.log('Password strength setup complete!');
-  
-  // Email validation - real-time feedback
-  const emailField = document.querySelector('input[type="email"]');
-  if (emailField) {
-    emailField.addEventListener('input', function() {
-      const email = this.value;
-      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-      
-      // Remove existing validation classes
-      this.classList.remove('border-red-500', 'border-green-500', 'focus:ring-red-500', 'focus:ring-green-500');
-      
-      if (email.length === 0) {
-        // Empty field - neutral state
-        this.classList.add('border-gray-300', 'focus:ring-green-500');
-      } else if (email.length > 50) {
-        // Too long
-        this.classList.add('border-red-500', 'focus:ring-red-500');
-      } else if (emailRegex.test(email)) {
-        // Valid email
-        this.classList.add('border-green-500', 'focus:ring-green-500');
-      } else {
-        // Invalid format
-        this.classList.add('border-red-500', 'focus:ring-red-500');
-      }
-    });
-  }
+<!-- Success Modal -->
+<div data-registration-target="successModal" class="hidden modal-backdrop">
+  <div class="modal">
+    <div class="modal-body text-center">
+      <div class="icon icon-xl bg-success text-white rounded-full p-3 mx-auto mb-4">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+      </div>
+      <h3 class="text-xl font-bold text-gray-900 mb-4">Registration Successful!</h3>
+      <p class="text-gray-600 mb-6">
+        Your account has been created successfully. You can now sign in to your account.
+      </p>
+      <button data-action="click->registration#goToLogin" 
+              class="btn btn-primary">
+        Go to Login
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Additional styles for registration page */
+.grid {
+  display: grid;
 }
 
-// Initialize on DOM load
-document.addEventListener('DOMContentLoaded', function() {
-  console.log('DOM loaded, initializing password strength...');
-  initializePasswordStrength();
-});
-
-// Re-initialize when form is re-rendered (after validation errors)
-document.addEventListener('turbo:load', function() {
-  console.log('Turbo load event, re-initializing password strength...');
-  initializePasswordStrength();
-});
-
-// Also listen for Rails UJS events
-document.addEventListener('rails:attachBindings', function() {
-  console.log('Rails UJS event, re-initializing password strength...');
-  initializePasswordStrength();
-});
-
-// Initialize immediately if DOM is already loaded
-if (document.readyState === 'loading') {
-  // DOM is still loading, wait for DOMContentLoaded
-} else {
-  // DOM is already loaded, initialize immediately
-  console.log('DOM already loaded, initializing immediately...');
-  initializePasswordStrength();
+.grid-cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
-</script>
+
+.gap-4 {
+  gap: 1rem;
+}
+
+.space-y-4 > * + * {
+  margin-top: 1rem;
+}
+
+.space-y-2 > * + * {
+  margin-top: 0.5rem;
+}
+
+.mb-0 {
+  margin-bottom: 0;
+}
+
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.mb-6 {
+  margin-bottom: 1.5rem;
+}
+
+.mb-8 {
+  margin-bottom: 2rem;
+}
+
+.mt-1 {
+  margin-top: 0.25rem;
+}
+
+.mt-3 {
+  margin-top: 0.75rem;
+}
+
+.mt-6 {
+  margin-top: 1.5rem;
+}
+
+.ml-3 {
+  margin-left: 0.75rem;
+}
+
+.mr-2 {
+  margin-right: 0.5rem;
+}
+
+.text-2xl {
+  font-size: 1.5rem;
+}
+
+.text-xl {
+  font-size: 1.25rem;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+}
+
+.text-xs {
+  font-size: 0.75rem;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.max-w-md {
+  max-width: 28rem;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.min-h-screen {
+  min-height: 100vh;
+}
+
+.flex {
+  display: flex;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.items-start {
+  align-items: flex-start;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.relative {
+  position: relative;
+}
+
+.absolute {
+  position: absolute;
+}
+
+.inset-0 {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.bg-gray-50 {
+  background-color: var(--gray-50);
+}
+
+.bg-success {
+  background-color: var(--success);
+}
+
+.text-gray-400 {
+  color: var(--gray-400);
+}
+
+.text-gray-500 {
+  color: var(--gray-500);
+}
+
+.text-gray-600 {
+  color: var(--gray-600);
+}
+
+.text-gray-700 {
+  color: var(--gray-700);
+}
+
+.text-gray-900 {
+  color: var(--gray-900);
+}
+
+.text-primary {
+  color: var(--primary);
+}
+
+.text-primary-dark {
+  color: var(--primary-dark);
+}
+
+.text-danger {
+  color: var(--danger);
+}
+
+.p-3 {
+  padding: 0.75rem;
+}
+
+.p-4 {
+  padding: 1rem;
+}
+
+.rounded {
+  border-radius: var(--radius-md);
+}
+
+.rounded-full {
+  border-radius: var(--radius-full);
+}
+
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.underline {
+  text-decoration: underline;
+}
+
+/* Password strength styles */
+.password-strength {
+  margin-top: var(--space-sm);
+}
+
+.password-requirements {
+  margin-top: var(--space-md);
+}
+
+.space-x-3 > * + * {
+  margin-left: 0.75rem;
+}
+
+/* Checkbox styles */
+input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius-sm);
+  background-color: var(--white);
+}
+
+input[type="checkbox"]:checked {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .p-4 {
+    padding: 0.5rem;
+  }
+  
+  .max-w-md {
+    max-width: 100%;
+  }
+  
+  .grid-cols-2 {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
