@@ -66,7 +66,19 @@ Rails.application.configure do
   config.active_job.verbose_enqueue_logs = true
 
   # Suppress logger output for asset requests.
-  # config.assets.quiet = true
+  config.assets.quiet = true
+  
+  # Debug mode disables concatenation and preprocessing of assets.
+  config.assets.debug = true
+  
+  # Suppress logger output for asset requests.
+  config.assets.quiet = true
+  
+  # Enable serving of images, stylesheets, and JavaScripts from an asset server.
+  config.asset_host = nil
+  
+  # Compile assets in development
+  config.assets.compile = true
 
   # Raises error for missing translations.
   # config.i18n.raise_on_missing_translations = true
