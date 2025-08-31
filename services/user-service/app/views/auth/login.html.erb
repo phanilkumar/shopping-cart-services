@@ -1,488 +1,596 @@
-<div class="min-h-screen bg-gray-50 flex items-center justify-center p-4" 
-     data-controller="login form-validation">
-  <div class="w-full max-w-md">
-    <!-- Header Section -->
-    <div class="text-center mb-8">
-      <div class="icon icon-xl bg-primary text-white rounded-full p-3 mx-auto mb-4">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-        </svg>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In - UserService</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.6;
+      color: #1a202c;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 0;
+    }
+    
+    .login-container {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+      padding: 3rem;
+      width: 100%;
+      max-width: 450px;
+      margin: 2rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    
+    .logo {
+      width: 72px;
+      height: 72px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      color: white;
+      font-size: 2rem;
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    }
+    
+    .title {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #1a202c;
+      margin-bottom: 0.5rem;
+    }
+    
+    .subtitle {
+      color: #4a5568;
+      font-size: 1rem;
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #2d3748;
+      margin-bottom: 0.5rem;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 1rem 1.25rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: white;
+      color: #1a202c;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+      transform: translateY(-1px);
+    }
+    
+    .form-input.error {
+      border-color: #e53e3e;
+      box-shadow: 0 0 0 4px rgba(229, 62, 62, 0.1);
+    }
+    
+    .form-input.success {
+      border-color: #38a169;
+      box-shadow: 0 0 0 4px rgba(56, 161, 105, 0.1);
+    }
+    
+    .error-message {
+      color: #e53e3e;
+      font-size: 0.75rem;
+      margin-top: 0.5rem;
+      display: none;
+      font-weight: 500;
+    }
+    
+    .success-message {
+      color: #38a169;
+      font-size: 0.75rem;
+      margin-top: 0.5rem;
+      display: none;
+      font-weight: 500;
+    }
+    
+    .password-toggle {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #a0aec0;
+      cursor: pointer;
+      font-size: 1.125rem;
+      transition: color 0.3s ease;
+    }
+    
+    .password-toggle:hover {
+      color: #4a5568;
+    }
+    
+    .password-field {
+      position: relative;
+    }
+    
+    .form-options {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .checkbox {
+      width: 1rem;
+      height: 1rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    .checkbox-label {
+      font-size: 0.875rem;
+      color: #4a5568;
+      cursor: pointer;
+    }
+    
+    .forgot-link {
+      color: #667eea;
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+    
+    .forgot-link:hover {
+      color: #5a6fd8;
+      text-decoration: underline;
+    }
+    
+    .btn {
+      width: 100%;
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .btn-secondary {
+      background: #f7fafc;
+      color: #4a5568;
+      border: 2px solid #e2e8f0;
+    }
+    
+    .btn-secondary:hover {
+      background: #edf2f7;
+      transform: translateY(-1px);
+    }
+    
+    .divider {
+      text-align: center;
+      margin: 2rem 0;
+      position: relative;
+    }
+    
+    .divider::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: #e2e8f0;
+    }
+    
+    .divider span {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 0 1rem;
+      color: #4a5568;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+    
+    .loading {
+      display: none;
+      text-align: center;
+      margin: 1rem 0;
+    }
+    
+    .spinner {
+      width: 24px;
+      height: 24px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 0.5rem;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .alert {
+      padding: 1rem 1.25rem;
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      display: none;
+      font-weight: 500;
+    }
+    
+    .alert-success {
+      background: #f0fff4;
+      color: #22543d;
+      border: 1px solid #9ae6b4;
+    }
+    
+    .alert-error {
+      background: #fed7d7;
+      color: #742a2a;
+      border: 1px solid #feb2b2;
+    }
+    
+    .links {
+      text-align: center;
+      margin-top: 2rem;
+    }
+    
+    .links a {
+      color: #667eea;
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin: 0 0.5rem;
+      transition: color 0.3s ease;
+    }
+    
+    .links a:hover {
+      color: #5a6fd8;
+      text-decoration: underline;
+    }
+    
+    .social-login {
+      margin-top: 1.5rem;
+    }
+    
+    .social-btn {
+      width: 100%;
+      padding: 0.875rem 1.5rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      background: white;
+      color: #4a5568;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+    
+    .social-btn:hover {
+      background: #f7fafc;
+      border-color: #cbd5e0;
+      transform: translateY(-1px);
+    }
+    
+    @media (max-width: 480px) {
+      .login-container {
+        margin: 1rem;
+        padding: 2rem;
+      }
+      
+      .title {
+        font-size: 1.75rem;
+      }
+      
+      .form-options {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="header">
+      <div class="logo">🔐</div>
+      <h1 class="title">Welcome Back</h1>
+      <p class="subtitle">Sign in to your UserService account</p>
+    </div>
+
+    <div class="alert alert-success" id="successAlert">
+      ✅ Login successful! Redirecting to dashboard...
+    </div>
+
+    <div class="alert alert-error" id="errorAlert">
+      ❌ Invalid email or password. Please try again.
+    </div>
+
+    <form id="loginForm">
+      <div class="form-group">
+        <label class="form-label" for="email">Email Address</label>
+        <input type="email" id="email" name="email" class="form-input" placeholder="Enter your email" required>
+        <div class="error-message" id="emailError">Please enter a valid email address</div>
+        <div class="success-message" id="emailSuccess">✓ Email looks good!</div>
       </div>
-      <h2 class="text-2xl font-bold text-gray-900 mb-2">
-        Welcome back
-      </h2>
-      <p class="text-gray-600">
-        Sign in to your account to continue
-      </p>
-    </div>
 
-    <!-- Main Form Card -->
-    <div class="card">
-      <div class="card-body">
-        <%= form_with(scope: :user, 
-                      url: user_session_path, 
-                      method: :post, 
-                      local: false,
-                      data: { 
-                        login_target: "form",
-                        action: "submit->login#submit",
-                        turbo: true
-                      }) do |f| %>
-          
-          <!-- Flash Messages -->
-          <div data-login-target="flashMessages">
-            <% if flash[:alert] %>
-              <div class="alert alert-error mb-4" data-login-target="errorMessage">
-                <div class="flex items-center">
-                  <span class="icon icon-sm text-danger mr-2">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                  </span>
-                  <span class="text-sm font-medium">
-                    <%= flash[:alert] %>
-                  </span>
-                </div>
-              </div>
-            <% end %>
-            
-            <% if flash[:notice] %>
-              <div class="alert alert-success mb-4" data-login-target="successMessage">
-                <div class="flex items-center">
-                  <span class="icon icon-sm text-success mr-2">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                  </span>
-                  <span class="text-sm font-medium">
-                    <%= flash[:notice] %>
-                  </span>
-                </div>
-              </div>
-            <% end %>
-          </div>
-
-          <!-- Email/Phone Field -->
-          <div class="form-group">
-            <%= f.label :email, "Email or Phone Number", class: "form-label" %>
-            <%= f.text_field :email, 
-                autocomplete: "email", 
-                placeholder: "Enter your email or phone number", 
-                data: {
-                  form_validation_target: "field",
-                  action: "input->form-validation#validateField blur->form-validation#validateField",
-                  field_type: "login_identifier"
-                },
-                class: "form-input" %>
-            <div data-form-validation-target="error" class="form-error hidden"></div>
-          </div>
-
-          <!-- Password Field -->
-          <div class="form-group">
-            <%= f.label :password, "Password", class: "form-label" %>
-            <div class="relative">
-              <%= f.password_field :password, 
-                  autocomplete: "current-password", 
-                  placeholder: "Enter your password", 
-                  data: {
-                    form_validation_target: "field",
-                    login_target: "passwordField",
-                    action: "input->form-validation#validateField",
-                    field_type: "password"
-                  },
-                  class: "form-input pr-12" %>
-              
-              <!-- Password Toggle Button -->
-              <button type="button" 
-                      data-login-target="passwordToggle"
-                      data-action="click->login#togglePassword"
-                      class="absolute right-3 top-1/2 transform -translate-y-1/2">
-                <span class="icon icon-sm text-gray-400 hover:text-gray-600" data-login-target="eyeIcon">
-                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                  </svg>
-                </span>
-                <span class="icon icon-sm text-gray-400 hover:text-gray-600 hidden" data-login-target="eyeSlashIcon">
-                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"></path>
-                  </svg>
-                </span>
-              </button>
-            </div>
-            <div data-form-validation-target="error" class="form-error hidden"></div>
-          </div>
-
-          <!-- Remember Me & Forgot Password -->
-          <div class="flex items-center justify-between mb-6">
-            <div class="flex items-center">
-              <%= f.check_box :remember_me, 
-                  class: "mr-2" %>
-              <%= f.label :remember_me, "Remember me", class: "text-sm text-gray-700" %>
-            </div>
-
-            <div class="text-sm">
-              <%= link_to "Forgot password?", new_user_password_path, 
-                  class: "text-primary hover:text-primary-dark" %>
-            </div>
-          </div>
-
-          <!-- Submit Button -->
-          <div class="form-group mb-0">
-            <%= f.submit "Sign in", 
-                data: { login_target: "submitButton" },
-                class: "btn btn-primary btn-block" %>
-          </div>
-        <% end %>
-
-        <!-- Divider -->
-        <div class="relative my-6">
-          <div class="absolute inset-0 flex items-center">
-            <div class="w-full border-t border-gray-300"></div>
-          </div>
-          <div class="relative flex justify-center text-sm">
-            <span class="px-4 bg-white text-gray-500">Or continue with</span>
-          </div>
+      <div class="form-group">
+        <label class="form-label" for="password">Password</label>
+        <div class="password-field">
+          <input type="password" id="password" name="password" class="form-input" placeholder="Enter your password" required>
+          <button type="button" class="password-toggle" id="passwordToggle">👁️</button>
         </div>
-
-        <!-- Alternative Login Methods -->
-        <div class="space-y-3">
-          <!-- OTP Login Button -->
-          <button type="button" 
-                  data-action="click->login#showOtpForm"
-                  data-login-target="otpButton"
-                  class="btn btn-secondary btn-block">
-            <span class="icon icon-sm mr-2">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-              </svg>
-            </span>
-            Sign in with OTP
-          </button>
-        </div>
+        <div class="error-message" id="passwordError">Password is required</div>
       </div>
+
+      <div class="form-options">
+        <div class="checkbox-group">
+          <input type="checkbox" id="remember" class="checkbox">
+          <label for="remember" class="checkbox-label">Remember me</label>
+        </div>
+        <a href="/users/password/new" class="forgot-link">Forgot password?</a>
+      </div>
+
+      <button type="submit" class="btn btn-primary" id="loginBtn">
+        🔑 Sign In
+      </button>
+    </form>
+
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <p>Signing you in...</p>
     </div>
 
-    <!-- Registration Link -->
-    <div class="text-center mt-6">
-      <p class="text-sm text-gray-600">
-        Don't have an account?
-        <%= link_to "Sign up here", register_path, class: "text-primary hover:text-primary-dark font-medium" %>
-      </p>
+    <div class="divider">
+      <span>or continue with</span>
     </div>
 
-    <!-- Terms and Privacy -->
-    <div class="text-center mt-4">
-      <p class="text-xs text-gray-500">
-        By signing in, you agree to our
-        <%= link_to "Terms", terms_path, class: "text-primary hover:text-primary-dark" %>
-        and
-        <%= link_to "Privacy Policy", privacy_path, class: "text-primary hover:text-primary-dark" %>
-      </p>
-    </div>
-  </div>
-</div>
-
-<!-- OTP Login Modal -->
-<div data-login-target="otpModal" class="hidden modal-backdrop">
-  <div class="modal">
-    <div class="modal-header">
-      <h3 class="text-lg font-semibold text-gray-900">Sign in with OTP</h3>
-      <button type="button" 
-              data-action="click->login#hideOtpForm"
-              class="icon icon-sm text-gray-400 hover:text-gray-600">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-        </svg>
+    <div class="social-login">
+      <button class="social-btn" onclick="socialLogin('google')">
+        <span>🔍</span>
+        Continue with Google
+      </button>
+      <button class="social-btn" onclick="socialLogin('github')">
+        <span>🐙</span>
+        Continue with GitHub
       </button>
     </div>
-    
-    <div class="modal-body">
-      <!-- OTP Form -->
-      <form data-login-target="otpForm" data-action="submit->login#submitOtp">
-        <div class="space-y-4">
-          <!-- Phone Number -->
-          <div class="form-group">
-            <label class="form-label">Phone Number</label>
-            <input type="tel" 
-                   data-login-target="otpPhone"
-                   data-form-validation-target="field"
-                   data-action="input->form-validation#validateField"
-                   data-field-type="phone"
-                   placeholder="Enter your phone number"
-                   class="form-input"
-                   pattern="[0-9]*"
-                   inputmode="numeric"
-                   maxlength="10">
-            <div data-form-validation-target="error" class="form-error hidden"></div>
-          </div>
-          
-          <!-- OTP Input -->
-          <div data-login-target="otpInputContainer" class="hidden">
-            <label class="form-label">OTP Code</label>
-            <input type="text" 
-                   data-login-target="otpCode"
-                   placeholder="Enter 6-digit OTP"
-                   class="form-input"
-                   maxlength="6"
-                   pattern="[0-9]*"
-                   inputmode="numeric">
-            <p class="text-xs text-gray-500 mt-2">Enter the 6-digit code sent to your phone</p>
-          </div>
-          
-          <!-- Action Buttons -->
-          <div class="flex gap-3">
-            <button type="button" 
-                    data-login-target="sendOtpButton"
-                    data-action="click->login#sendOtp"
-                    class="btn btn-primary flex-1">
-              Send OTP
-            </button>
-            
-            <button type="submit" 
-                    data-login-target="verifyOtpButton"
-                    data-action="submit->login#submitOtp"
-                    class="btn btn-success flex-1 hidden">
-              Verify OTP
-            </button>
-          </div>
-        </div>
-      </form>
+
+    <div class="links">
+      <a href="/users/sign_up">Create Account</a>
+      <span>•</span>
+      <a href="/">Back to Home</a>
     </div>
   </div>
-</div>
 
-<style>
-/* Additional styles for login page */
-.pr-12 {
-  padding-right: 3rem;
-}
+  <script>
+    const form = document.getElementById('loginForm');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const passwordToggle = document.getElementById('passwordToggle');
+    const loginBtn = document.getElementById('loginBtn');
+    const loading = document.getElementById('loading');
+    const successAlert = document.getElementById('successAlert');
+    const errorAlert = document.getElementById('errorAlert');
 
-.right-3 {
-  right: 0.75rem;
-}
+    // Password toggle functionality
+    passwordToggle.addEventListener('click', function() {
+      const type = passwordInput.type === 'password' ? 'text' : 'password';
+      passwordInput.type = type;
+      this.textContent = type === 'password' ? '👁️' : '🙈';
+    });
 
-.top-1\/2 {
-  top: 50%;
-}
+    // Form validation
+    function validateEmail(email) {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return re.test(email);
+    }
 
-.transform {
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
+    function showError(input, message) {
+      input.classList.add('error');
+      input.classList.remove('success');
+      const errorElement = document.getElementById(input.id + 'Error');
+      if (errorElement) {
+        errorElement.textContent = message;
+        errorElement.style.display = 'block';
+      }
+    }
 
-.-translate-y-1\/2 {
-  --tw-translate-y: -50%;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
+    function showSuccess(input) {
+      input.classList.remove('error');
+      input.classList.add('success');
+      const errorElement = document.getElementById(input.id + 'Error');
+      if (errorElement) {
+        errorElement.style.display = 'none';
+      }
+    }
 
-.space-y-3 > * + * {
-  margin-top: 0.75rem;
-}
+    function clearError(input) {
+      input.classList.remove('error', 'success');
+      const errorElement = document.getElementById(input.id + 'Error');
+      if (errorElement) {
+        errorElement.style.display = 'none';
+      }
+    }
 
-.space-y-4 > * + * {
-  margin-top: 1rem;
-}
+    // Real-time validation
+    emailInput.addEventListener('blur', function() {
+      if (!this.value) {
+        showError(this, 'Email is required');
+      } else if (!validateEmail(this.value)) {
+        showError(this, 'Please enter a valid email address');
+      } else {
+        showSuccess(this);
+      }
+    });
 
-.mb-0 {
-  margin-bottom: 0;
-}
+    passwordInput.addEventListener('blur', function() {
+      if (!this.value) {
+        showError(this, 'Password is required');
+      } else {
+        clearError(this);
+      }
+    });
 
-.my-6 {
-  margin-top: 1.5rem;
-  margin-bottom: 1.5rem;
-}
+    // Form submission
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      // Clear previous messages
+      successAlert.style.display = 'none';
+      errorAlert.style.display = 'none';
+      
+      // Validate form
+      let isValid = true;
+      
+      if (!emailInput.value) {
+        showError(emailInput, 'Email is required');
+        isValid = false;
+      } else if (!validateEmail(emailInput.value)) {
+        showError(emailInput, 'Please enter a valid email address');
+        isValid = false;
+      } else {
+        showSuccess(emailInput);
+      }
+      
+      if (!passwordInput.value) {
+        showError(passwordInput, 'Password is required');
+        isValid = false;
+      } else {
+        clearError(passwordInput);
+      }
+      
+      if (!isValid) return;
+      
+      // Show loading state
+      loginBtn.disabled = true;
+      loading.style.display = 'block';
+      
+      try {
+        // Simulate API call (replace with actual login logic)
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Show success
+        successAlert.style.display = 'block';
+        
+        // Redirect after 2 seconds
+        setTimeout(() => {
+          window.location.href = '/auth/dashboard';
+        }, 2000);
+        
+      } catch (error) {
+        errorAlert.style.display = 'block';
+        loginBtn.disabled = false;
+        loading.style.display = 'none';
+      }
+    });
 
-.mt-4 {
-  margin-top: 1rem;
-}
+    // Social login functions
+    function socialLogin(provider) {
+      console.log(`Logging in with ${provider}...`);
+      // Implement social login logic here
+      alert(`${provider} login functionality would be implemented here`);
+    }
 
-.mt-6 {
-  margin-top: 1.5rem;
-}
+    // Add input focus effects
+    document.querySelectorAll('.form-input').forEach(input => {
+      input.addEventListener('focus', function() {
+        this.parentElement.style.transform = 'translateY(-2px)';
+      });
+      
+      input.addEventListener('blur', function() {
+        this.parentElement.style.transform = 'translateY(0)';
+      });
+    });
 
-.mb-4 {
-  margin-bottom: 1rem;
-}
+    // Add smooth transitions
+    document.querySelectorAll('.form-group').forEach(group => {
+      group.style.transition = 'transform 0.3s ease';
+    });
 
-.mb-6 {
-  margin-bottom: 1.5rem;
-}
+    // Add hover effects for buttons
+    document.querySelectorAll('.btn, .social-btn').forEach(btn => {
+      btn.addEventListener('mouseenter', function() {
+        if (!this.disabled) {
+          this.style.transform = 'translateY(-2px)';
+        }
+      });
+      
+      btn.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0)';
+      });
+    });
 
-.mb-8 {
-  margin-bottom: 2rem;
-}
-
-.mr-2 {
-  margin-right: 0.5rem;
-}
-
-.text-2xl {
-  font-size: 1.5rem;
-}
-
-.text-lg {
-  font-size: 1.125rem;
-}
-
-.text-sm {
-  font-size: 0.875rem;
-}
-
-.text-xs {
-  font-size: 0.75rem;
-}
-
-.font-bold {
-  font-weight: 700;
-}
-
-.font-semibold {
-  font-weight: 600;
-}
-
-.font-medium {
-  font-weight: 500;
-}
-
-.max-w-md {
-  max-width: 28rem;
-}
-
-.w-full {
-  width: 100%;
-}
-
-.min-h-screen {
-  min-height: 100vh;
-}
-
-.flex {
-  display: flex;
-}
-
-.items-center {
-  align-items: center;
-}
-
-.justify-center {
-  justify-content: center;
-}
-
-.justify-between {
-  justify-content: space-between;
-}
-
-.text-center {
-  text-align: center;
-}
-
-.relative {
-  position: relative;
-}
-
-.absolute {
-  position: absolute;
-}
-
-.inset-0 {
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-}
-
-.border-t {
-  border-top-width: 1px;
-}
-
-.border-gray-300 {
-  border-color: var(--gray-300);
-}
-
-.bg-white {
-  background-color: var(--white);
-}
-
-.text-gray-500 {
-  color: var(--gray-500);
-}
-
-.text-gray-600 {
-  color: var(--gray-600);
-}
-
-.text-gray-700 {
-  color: var(--gray-700);
-}
-
-.text-gray-900 {
-  color: var(--gray-900);
-}
-
-.text-primary {
-  color: var(--primary);
-}
-
-.text-primary-dark {
-  color: var(--primary-dark);
-}
-
-.text-success {
-  color: var(--success);
-}
-
-.text-danger {
-  color: var(--danger);
-}
-
-.p-3 {
-  padding: 0.75rem;
-}
-
-.p-4 {
-  padding: 1rem;
-}
-
-.px-4 {
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
-
-.rounded-full {
-  border-radius: var(--radius-full);
-}
-
-.mx-auto {
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.hidden {
-  display: none !important;
-}
-
-/* Checkbox styles */
-input[type="checkbox"] {
-  width: 1rem;
-  height: 1rem;
-  border: 1px solid var(--gray-300);
-  border-radius: var(--radius-sm);
-  background-color: var(--white);
-}
-
-input[type="checkbox"]:checked {
-  background-color: var(--primary);
-  border-color: var(--primary);
-}
-
-/* Responsive adjustments */
-@media (max-width: 480px) {
-  .p-4 {
-    padding: 0.5rem;
-  }
-  
-  .max-w-md {
-    max-width: 100%;
-  }
-}
-</style>
+    // Auto-focus email input on page load
+    window.addEventListener('load', function() {
+      emailInput.focus();
+    });
+  </script>
+</body>
+</html>
