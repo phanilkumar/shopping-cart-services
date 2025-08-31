@@ -1,84 +1,92 @@
 import { Controller } from "@hotwired/stimulus"
 
+// Registration controller for enhanced UX
 export default class extends Controller {
-  static targets = ["form", "modal", "email"]
-
+  static targets = ["passwordConfirmation", "submitButton"]
+  
   connect() {
-    console.log("Registration controller connected")
+    this.validateOnLoad()
   }
-
-  // Handle form submission
-  submit(event) {
-    // Form will be handled by Turbo
-    console.log("Form submitted")
-  }
-
-  // Show congratulations modal
-  showCongratulations(event) {
-    if (event.detail.success) {
-      this.modalTarget.classList.remove("hidden")
+  
+  validateOnLoad() {
+    // Check if we have any server-side errors to display
+    const errors = document.querySelectorAll('.field_with_errors')
+    if (errors.length > 0) {
+      errors.forEach(errorField => {
+        const input = errorField.querySelector('input')
+        if (input) {
+          input.classList.add('error')
+        }
+      })
     }
   }
-
-  // Hide congratulations modal
-  hideCongratulations() {
-    this.modalTarget.classList.add("hidden")
-  }
-
-  // Navigate to login
-  goToLogin() {
-    this.hideCongratulations()
-    window.location.href = "/login"
-  }
-
-  // Real-time validation
-  validateField(event) {
-    const field = event.target
-    const value = field.value
-    const fieldName = field.name
-
-    // Remove existing error styling
-    field.classList.remove("border-red-500")
-    this.removeErrorMessage(field)
-
-    // Basic validation
-    if (fieldName === "email" && value && !this.isValidEmail(value)) {
-      this.showFieldError(field, "Please enter a valid email address")
-    }
-
-    if (fieldName === "phone" && value && !this.isValidPhone(value)) {
-      this.showFieldError(field, "Please enter a valid 10-digit phone number")
-    }
-
-    if (fieldName === "password" && value && value.length < 6) {
-      this.showFieldError(field, "Password must be at least 6 characters")
+  
+  validatePasswordMatch(event) {
+    const confirmationField = event.target
+    const passwordField = document.querySelector('input[name="user[password]"]')
+    
+    if (!passwordField || !confirmationField.value) return
+    
+    const errorElement = document.getElementById('password-confirmation-error')
+    
+    if (confirmationField.value !== passwordField.value) {
+      confirmationField.classList.add('error')
+      confirmationField.classList.remove('success')
+      if (errorElement) {
+        errorElement.textContent = 'Passwords do not match'
+        errorElement.hidden = false
+      }
+    } else {
+      confirmationField.classList.remove('error')
+      confirmationField.classList.add('success')
+      if (errorElement) {
+        errorElement.hidden = true
+      }
     }
   }
-
-  // Helper methods
-  isValidEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    return emailRegex.test(email)
-  }
-
-  isValidPhone(phone) {
-    const phoneRegex = /^[6-9]\d{9}$/
-    return phoneRegex.test(phone.replace(/\D/g, ''))
-  }
-
-  showFieldError(field, message) {
-    field.classList.add("border-red-500")
-    const errorDiv = document.createElement("div")
-    errorDiv.className = "text-red-500 text-sm mt-1"
-    errorDiv.textContent = message
-    errorDiv.id = `${field.name}_error`
-    field.parentNode.appendChild(errorDiv)
-  }
-
-  removeErrorMessage(field) {
-    const existingError = document.getElementById(`${field.name}_error`)
-    if (existingError) {
-      existingError.remove()
+  
+  handleValidForm(event) {
+    // Form is valid, show loading state
+    if (this.hasSubmitButtonTarget) {
+      this.submitButtonTarget.disabled = true
+      this.submitButtonTarget.innerHTML = '<span class="calm-spinner"></span> Creating your account...'
     }
+    
+    // Show success toast
+    this.showToast('Creating your account...', 'info')
+  }
+  
+  showToast(message, type = 'info') {
+    // Reuse the toast functionality from unified_auth_controller
+    const toast = document.createElement('div')
+    toast.className = `calm-toast calm-toast-${type} animate-fade-in`
+    toast.innerHTML = `
+      <span class="calm-toast-icon">${this.getToastIcon(type)}</span>
+      <span class="calm-toast-message">${message}</span>
+    `
+    
+    let container = document.querySelector('.calm-toast-container')
+    if (!container) {
+      container = document.createElement('div')
+      container.className = 'calm-toast-container'
+      document.body.appendChild(container)
+    }
+    
+    container.appendChild(toast)
+    
+    setTimeout(() => {
+      toast.style.opacity = '0'
+      setTimeout(() => toast.remove(), 300)
+    }, 4000)
+  }
+  
+  getToastIcon(type) {
+    const icons = {
+      success: '✓',
+      error: '✕',
+      info: 'ℹ',
+      warning: '!'
+    }
+    return icons[type] || icons.info
   }
 }

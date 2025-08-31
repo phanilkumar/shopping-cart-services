@@ -1,540 +1,286 @@
-<div class="min-h-screen bg-gray-50 flex items-center justify-center p-4" 
-     data-controller="registration password-strength form-validation">
-  <div class="w-full max-w-md">
-    <!-- Header Section -->
-    <div class="text-center mb-8">
-      <div class="icon icon-xl bg-primary text-white rounded-full p-3 mx-auto mb-4">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+<% content_for :title, t('auth.register.title', default: 'Sign Up') %>
+
+<div class="calm-auth-container" data-controller="registration">
+  <div class="calm-auth-card calm-auth-card-lg animate-fade-in">
+    <!-- Logo and Welcome -->
+    <div class="calm-auth-header">
+      <div class="calm-auth-logo">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+          <path d="M20 8v6M23 11h-6"></path>
         </svg>
       </div>
-      <h2 class="text-2xl font-bold text-gray-900 mb-2">
-        Create your account
-      </h2>
-      <p class="text-gray-600">
-        Or
-        <%= link_to "sign in to your account", login_path, class: "text-primary hover:text-primary-dark font-medium" %>
+      <h1 class="calm-auth-title"><%= t('auth.register.create_account', default: 'Create your account') %></h1>
+      <p class="calm-auth-subtitle">
+        <%= t('auth.register.subtitle', default: 'Join us for a peaceful experience') %>
       </p>
     </div>
-    
-    <!-- Main Form Card -->
-    <div class="card">
-      <div class="card-body">
-        <%= form_with(model: @user || User.new, 
-                      url: register_path, 
-                      method: :post, 
-                      local: false,
+
+    <!-- Registration Form -->
+    <turbo-frame id="registration-form">
+      <%= form_with(model: resource, 
+                    as: resource_name, 
+                    url: registration_path(resource_name),
+                    data: { 
+                      controller: "form-validation password-strength",
+                      form_validation_realtime_value: true,
+                      form_validation_submit_on_valid_value: false,
+                      action: "form:valid->registration#handleValidForm"
+                    }) do |f| %>
+        
+        <!-- Name Fields -->
+        <div class="calm-form-row">
+          <div class="calm-form-group">
+            <%= f.label :first_name, class: "calm-form-label" %>
+            <%= f.text_field :first_name, 
+                            autofocus: true,
+                            placeholder: t('auth.register.first_name_placeholder', default: 'John'),
+                            class: "calm-form-input",
+                            data: { 
+                              form_validation_target: "field",
+                              required: true,
+                              min_length: 2,
+                              required_message: t('validations.first_name_required'),
+                              min_length_message: t('validations.name_min_length', count: 2)
+                            },
+                            "aria-describedby": "first-name-error" %>
+            <span id="first-name-error" class="calm-form-error" hidden></span>
+          </div>
+          
+          <div class="calm-form-group">
+            <%= f.label :last_name, class: "calm-form-label" %>
+            <%= f.text_field :last_name,
+                            placeholder: t('auth.register.last_name_placeholder', default: 'Doe'),
+                            class: "calm-form-input",
+                            data: { 
+                              form_validation_target: "field",
+                              required: true,
+                              min_length: 2,
+                              required_message: t('validations.last_name_required'),
+                              min_length_message: t('validations.name_min_length', count: 2)
+                            },
+                            "aria-describedby": "last-name-error" %>
+            <span id="last-name-error" class="calm-form-error" hidden></span>
+          </div>
+        </div>
+
+        <!-- Email Field -->
+        <div class="calm-form-group">
+          <%= f.label :email, class: "calm-form-label" %>
+          <%= f.email_field :email, 
+                           autocomplete: "email",
+                           placeholder: t('auth.register.email_placeholder', default: 'your@email.com'),
+                           class: "calm-form-input",
+                           data: { 
+                             form_validation_target: "field",
+                             required: true,
+                             email: true,
+                             required_message: t('validations.email_required'),
+                             email_message: t('validations.email_invalid')
+                           },
+                           "aria-describedby": "email-error" %>
+          <span id="email-error" class="calm-form-error" hidden></span>
+        </div>
+
+        <!-- Phone Field (Optional) -->
+        <div class="calm-form-group">
+          <%= f.label :phone, class: "calm-form-label" do %>
+            <%= t('auth.register.phone_label', default: 'Phone Number') %>
+            <span class="calm-text-muted">(optional)</span>
+          <% end %>
+          <div class="calm-phone-input-wrapper">
+            <span class="calm-phone-prefix">+91</span>
+            <%= f.telephone_field :phone,
+                                 placeholder: t('auth.register.phone_placeholder', default: '9876543210'),
+                                 class: "calm-form-input calm-phone-input",
+                                 maxlength: 10,
+                                 pattern: "[6-9][0-9]{9}",
+                                 data: { 
+                                   form_validation_target: "field",
+                                   pattern: "^[6-9][0-9]{9}$",
+                                   pattern_message: t('validations.phone_invalid')
+                                 },
+                                 "aria-describedby": "phone-error" %>
+          </div>
+          <span id="phone-error" class="calm-form-error" hidden></span>
+        </div>
+
+        <!-- Password Field with Strength Indicator -->
+        <div class="calm-form-group">
+          <%= f.label :password, class: "calm-form-label" %>
+          <%= f.password_field :password, 
+                              autocomplete: "new-password",
+                              placeholder: t('auth.register.password_placeholder', default: 'Create a strong password'),
+                              class: "calm-form-input",
+                              data: { 
+                                form_validation_target: "field",
+                                password_strength_target: "input",
+                                required: true,
+                                min_length: 8,
+                                required_message: t('validations.password_required'),
+                                min_length_message: t('validations.password_min_length', count: 8),
+                                action: "input->password-strength#checkStrength"
+                              },
+                              "aria-describedby": "password-error password-strength" %>
+          <span id="password-error" class="calm-form-error" hidden></span>
+          
+          <!-- Password Strength Indicator -->
+          <div class="calm-password-strength" id="password-strength" data-password-strength-target="indicator">
+            <div class="calm-strength-bar">
+              <div class="calm-strength-fill" data-password-strength-target="fill"></div>
+            </div>
+            <p class="calm-strength-text" data-password-strength-target="text">
+              <%= t('auth.register.password_strength', default: 'Password strength') %>: 
+              <span data-password-strength-target="level">-</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Password Confirmation -->
+        <div class="calm-form-group">
+          <%= f.label :password_confirmation, class: "calm-form-label" %>
+          <%= f.password_field :password_confirmation,
+                              autocomplete: "new-password",
+                              placeholder: t('auth.register.password_confirmation_placeholder', default: 'Confirm your password'),
+                              class: "calm-form-input",
+                              data: { 
+                                form_validation_target: "field",
+                                registration_target: "passwordConfirmation",
+                                required: true,
+                                required_message: t('validations.password_confirmation_required'),
+                                action: "input->registration#validatePasswordMatch"
+                              },
+                              "aria-describedby": "password-confirmation-error" %>
+          <span id="password-confirmation-error" class="calm-form-error" hidden></span>
+        </div>
+
+        <!-- Terms and Conditions -->
+        <div class="calm-form-group">
+          <label class="calm-checkbox-label">
+            <%= f.check_box :terms_accepted, 
+                           class: "calm-checkbox",
+                           data: { 
+                             form_validation_target: "field",
+                             required: true,
+                             required_message: t('validations.terms_required')
+                           } %>
+            <span>
+              <%= t('auth.register.agree_to', default: 'I agree to the') %>
+              <%= link_to t('auth.register.terms', default: 'Terms of Service'), 
+                         terms_path, 
+                         class: "calm-link", 
+                         target: "_blank",
+                         data: { turbo: false } %>
+              <%= t('auth.register.and', default: 'and') %>
+              <%= link_to t('auth.register.privacy', default: 'Privacy Policy'), 
+                         privacy_path, 
+                         class: "calm-link", 
+                         target: "_blank",
+                         data: { turbo: false } %>
+            </span>
+          </label>
+          <span id="terms-error" class="calm-form-error" hidden></span>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="calm-form-actions">
+          <%= f.submit t('auth.register.create_account_button', default: 'Create Account'), 
+                      class: "calm-btn calm-btn-primary calm-btn-block calm-btn-lg",
                       data: { 
-                        registration_target: "form",
-                        action: "submit->registration#submit",
-                        turbo: true
-                      }) do |f| %>
-          
-          <!-- Flash Messages -->
-          <div data-registration-target="flashMessages">
-            <% if @user&.errors&.any? %>
-              <div class="alert alert-error mb-4" data-registration-target="errorMessage">
-                <div class="flex items-center">
-                  <span class="icon icon-sm text-danger mr-2">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                  </span>
-                  <div class="text-sm font-medium">
-                    <ul class="list-disc list-inside space-y-1">
-                      <% @user.errors.full_messages.each do |message| %>
-                        <li><%= message %></li>
-                      <% end %>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            <% end %>
-            
-            <% if flash[:alert] %>
-              <div class="alert alert-error mb-4" data-registration-target="errorMessage">
-                <div class="flex items-center">
-                  <span class="icon icon-sm text-danger mr-2">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                  </span>
-                  <span class="text-sm font-medium">
-                    <%= flash[:alert] %>
-                  </span>
-                </div>
-              </div>
-            <% end %>
-          </div>
-          
-          <div class="space-y-4">
-            <!-- Name Fields -->
-            <div class="grid grid-cols-2 gap-4">
-              <div class="form-group">
-                <%= f.label :first_name, "First Name *", class: "form-label" %>
-                <%= f.text_field :first_name, 
-                    autocomplete: "given-name", 
-                    placeholder: "John", 
-                    data: {
-                      form_validation_target: "field",
-                      action: "input->form-validation#validateField blur->form-validation#validateField",
-                      field_type: "name"
-                    },
-                    class: "form-input" %>
-                <p class="text-xs text-gray-500 mt-1">4-20 characters, letters only</p>
-                <div data-form-validation-target="error" class="form-error hidden"></div>
-              </div>
-              <div class="form-group">
-                <%= f.label :last_name, "Last Name *", class: "form-label" %>
-                <%= f.text_field :last_name, 
-                    autocomplete: "family-name", 
-                    placeholder: "Doe", 
-                    data: {
-                      form_validation_target: "field",
-                      action: "input->form-validation#validateField blur->form-validation#validateField",
-                      field_type: "name"
-                    },
-                    class: "form-input" %>
-                <p class="text-xs text-gray-500 mt-1">4-20 characters, letters only</p>
-                <div data-form-validation-target="error" class="form-error hidden"></div>
-              </div>
-            </div>
-            
-            <!-- Email Field -->
-            <div class="form-group">
-              <%= f.label :email, "Email Address *", class: "form-label" %>
-              <%= f.email_field :email, 
-                  autocomplete: "email", 
-                  placeholder: "john.doe@example.com", 
-                  data: {
-                    form_validation_target: "field",
-                    action: "input->form-validation#validateField blur->form-validation#validateField",
-                    field_type: "email"
-                  },
-                  class: "form-input",
-                  maxlength: "50" %>
-              <p class="text-xs text-gray-500 mt-1">Enter a valid email address</p>
-              <div data-form-validation-target="error" class="form-error hidden"></div>
-            </div>
-            
-            <!-- Phone Field -->
-            <div class="form-group">
-              <%= f.label :phone, "Mobile Number *", class: "form-label" %>
-              <%= f.telephone_field :phone, 
-                  autocomplete: "tel", 
-                  placeholder: "9876543210", 
-                  data: {
-                    form_validation_target: "field",
-                    action: "input->form-validation#validateField blur->form-validation#validateField",
-                    field_type: "phone"
-                  },
-                  class: "form-input",
-                  pattern: "[0-9]*",
-                  inputmode: "numeric",
-                  maxlength: "10" %>
-              <p class="text-xs text-gray-500 mt-1">10-digit Indian mobile number</p>
-              <div data-form-validation-target="error" class="form-error hidden"></div>
-            </div>
-            
-            <!-- Password Field -->
-            <div class="form-group">
-              <%= f.label :password, "Password *", class: "form-label" %>
-              
-              <%= f.password_field :password, 
-                  autocomplete: "new-password", 
-                  placeholder: "Enter password", 
-                  data: {
-                    password_strength_target: "password",
-                    form_validation_target: "field",
-                    action: "input->password-strength#updatePasswordStrength input->form-validation#validateField",
-                    field_type: "password"
-                  },
-                  class: "form-input",
-                  maxlength: "16" %>
-              
-              <!-- Password Strength Progress Bar -->
-              <div class="password-strength hidden" data-password-strength-target="strengthContainer">
-                <div class="flex items-center justify-between mb-2">
-                  <span class="text-xs text-gray-500 font-medium">Password strength:</span>
-                  <span class="text-xs font-semibold text-gray-400" data-password-strength-target="strengthText">Very Weak</span>
-                </div>
-                <div class="strength-bar">
-                  <div class="strength-fill" 
-                       style="width: 0%; min-width: 0;" 
-                       data-password-strength-target="progress"></div>
-                </div>
-              </div>
-              
-              <!-- Password Requirements -->
-              <div class="password-requirements hidden mt-3 p-3 bg-gray-50 rounded" data-password-strength-target="requirementsContainer">
-                <p class="text-xs font-semibold text-gray-700 mb-3">Password requirements:</p>
-                <div class="space-y-2">
-                  <div class="flex items-center space-x-3" data-password-strength-target="requirement" data-requirement="length">
-                    <span class="requirement-icon">
-                      <svg class="icon icon-sm text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"></path>
-                      </svg>
-                    </span>
-                    <span class="requirement-text text-xs text-gray-400">8-16 characters long</span>
-                  </div>
-                  <div class="flex items-center space-x-3" data-password-strength-target="requirement" data-requirement="letter">
-                    <span class="requirement-icon">
-                      <svg class="icon icon-sm text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"></path>
-                      </svg>
-                    </span>
-                    <span class="requirement-text text-xs text-gray-400">At least one letter (a-z, A-Z)</span>
-                  </div>
-                  <div class="flex items-center space-x-3" data-password-strength-target="requirement" data-requirement="number">
-                    <span class="requirement-icon">
-                      <svg class="icon icon-sm text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"></path>
-                      </svg>
-                    </span>
-                    <span class="requirement-text text-xs text-gray-400">At least one number (0-9)</span>
-                  </div>
-                  <div class="flex items-center space-x-3" data-password-strength-target="requirement" data-requirement="special">
-                    <span class="requirement-icon">
-                      <svg class="icon icon-sm text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"></path>
-                      </svg>
-                    </span>
-                    <span class="requirement-text text-xs text-gray-400">At least one special character</span>
-                  </div>
-                </div>
-              </div>
-              <div data-form-validation-target="error" class="form-error hidden"></div>
-            </div>
-            
-            <!-- Password Confirmation Field -->
-            <div class="form-group">
-              <%= f.label :password_confirmation, "Confirm Password *", class: "form-label" %>
-              <%= f.password_field :password_confirmation, 
-                  autocomplete: "new-password", 
-                  placeholder: "Confirm your password", 
-                  data: {
-                    form_validation_target: "field",
-                    action: "input->form-validation#validateField blur->form-validation#validateField",
-                    field_type: "password_confirmation"
-                  },
-                  class: "form-input",
-                  maxlength: "16" %>
-              <p class="text-xs text-gray-500 mt-1">Must match your password</p>
-              <div data-form-validation-target="error" class="form-error hidden"></div>
-            </div>
-          </div>
+                        form_validation_target: "submit",
+                        registration_target: "submitButton"
+                      } %>
+        </div>
+      <% end %>
+    </turbo-frame>
 
-          <!-- Terms and Conditions -->
-          <div class="form-group">
-            <div class="flex items-start">
-              <div class="flex items-center h-5">
-                <input id="terms" name="terms" type="checkbox" required
-                       data-form-validation-target="field"
-                       data-action="change->form-validation#validateField"
-                       data-field-type="terms"
-                       class="mr-2">
-              </div>
-              <div class="ml-3 text-sm">
-                <label for="terms" class="text-gray-700">
-                  I agree to the
-                  <%= link_to "Terms of Service", terms_path, class: "text-primary hover:text-primary-dark underline" %>
-                  and
-                  <%= link_to "Privacy Policy", privacy_path, class: "text-primary hover:text-primary-dark underline" %>
-                </label>
-              </div>
-            </div>
-            <div data-form-validation-target="error" class="form-error hidden"></div>
-          </div>
-
-          <div class="form-group mb-0">
-            <%= f.submit "Create Account", 
-                data: { registration_target: "submitButton" },
-                class: "btn btn-primary btn-block" %>
-          </div>
-        <% end %>
-      </div>
-    </div>
-    
-    <!-- Registration Link -->
-    <div class="text-center mt-6">
-      <p class="text-sm text-gray-600">
-        Already have an account?
-        <%= link_to "Sign in here", login_path, class: "text-primary hover:text-primary-dark font-medium" %>
+    <!-- Additional Links -->
+    <div class="calm-auth-footer">
+      <p>
+        <%= t('auth.register.have_account', default: 'Already have an account?') %>
+        <%= link_to t('auth.register.sign_in', default: 'Sign in'), 
+                   new_session_path(resource_name), 
+                   class: "calm-link calm-link-primary",
+                   data: { turbo_frame: "_top" } %>
       </p>
-    </div>
-  </div>
-</div>
-
-<!-- Success Modal -->
-<div data-registration-target="successModal" class="hidden modal-backdrop">
-  <div class="modal">
-    <div class="modal-body text-center">
-      <div class="icon icon-xl bg-success text-white rounded-full p-3 mx-auto mb-4">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-        </svg>
-      </div>
-      <h3 class="text-xl font-bold text-gray-900 mb-4">Registration Successful!</h3>
-      <p class="text-gray-600 mb-6">
-        Your account has been created successfully. You can now sign in to your account.
-      </p>
-      <button data-action="click->registration#goToLogin" 
-              class="btn btn-primary">
-        Go to Login
-      </button>
     </div>
   </div>
 </div>
 
 <style>
-/* Additional styles for registration page */
-.grid {
-  display: grid;
-}
-
-.grid-cols-2 {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.gap-4 {
-  gap: 1rem;
-}
-
-.space-y-4 > * + * {
-  margin-top: 1rem;
-}
-
-.space-y-2 > * + * {
-  margin-top: 0.5rem;
-}
-
-.mb-0 {
-  margin-bottom: 0;
-}
-
-.mb-2 {
-  margin-bottom: 0.5rem;
-}
-
-.mb-4 {
-  margin-bottom: 1rem;
-}
-
-.mb-6 {
-  margin-bottom: 1.5rem;
-}
-
-.mb-8 {
-  margin-bottom: 2rem;
-}
-
-.mt-1 {
-  margin-top: 0.25rem;
-}
-
-.mt-3 {
-  margin-top: 0.75rem;
-}
-
-.mt-6 {
-  margin-top: 1.5rem;
-}
-
-.ml-3 {
-  margin-left: 0.75rem;
-}
-
-.mr-2 {
-  margin-right: 0.5rem;
-}
-
-.text-2xl {
-  font-size: 1.5rem;
-}
-
-.text-xl {
-  font-size: 1.25rem;
-}
-
-.text-sm {
-  font-size: 0.875rem;
-}
-
-.text-xs {
-  font-size: 0.75rem;
-}
-
-.font-bold {
-  font-weight: 700;
-}
-
-.font-semibold {
-  font-weight: 600;
-}
-
-.font-medium {
-  font-weight: 500;
-}
-
-.max-w-md {
-  max-width: 28rem;
-}
-
-.w-full {
-  width: 100%;
-}
-
-.min-h-screen {
-  min-height: 100vh;
-}
-
-.flex {
-  display: flex;
-}
-
-.items-center {
-  align-items: center;
-}
-
-.items-start {
-  align-items: flex-start;
-}
-
-.justify-center {
-  justify-content: center;
-}
-
-.justify-between {
-  justify-content: space-between;
-}
-
-.text-center {
-  text-align: center;
-}
-
-.relative {
-  position: relative;
-}
-
-.absolute {
-  position: absolute;
-}
-
-.inset-0 {
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-}
-
-.bg-gray-50 {
-  background-color: var(--gray-50);
-}
-
-.bg-success {
-  background-color: var(--success);
-}
-
-.text-gray-400 {
-  color: var(--gray-400);
-}
-
-.text-gray-500 {
-  color: var(--gray-500);
-}
-
-.text-gray-600 {
-  color: var(--gray-600);
-}
-
-.text-gray-700 {
-  color: var(--gray-700);
-}
-
-.text-gray-900 {
-  color: var(--gray-900);
-}
-
-.text-primary {
-  color: var(--primary);
-}
-
-.text-primary-dark {
-  color: var(--primary-dark);
-}
-
-.text-danger {
-  color: var(--danger);
-}
-
-.p-3 {
-  padding: 0.75rem;
-}
-
-.p-4 {
-  padding: 1rem;
-}
-
-.rounded {
-  border-radius: var(--radius-md);
-}
-
-.rounded-full {
-  border-radius: var(--radius-full);
-}
-
-.mx-auto {
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.hidden {
-  display: none !important;
-}
-
-.underline {
-  text-decoration: underline;
-}
-
-/* Password strength styles */
-.password-strength {
-  margin-top: var(--space-sm);
-}
-
-.password-requirements {
-  margin-top: var(--space-md);
-}
-
-.space-x-3 > * + * {
-  margin-left: 0.75rem;
-}
-
-/* Checkbox styles */
-input[type="checkbox"] {
-  width: 1rem;
-  height: 1rem;
-  border: 1px solid var(--gray-300);
-  border-radius: var(--radius-sm);
-  background-color: var(--white);
-}
-
-input[type="checkbox"]:checked {
-  background-color: var(--primary);
-  border-color: var(--primary);
-}
-
-/* Responsive adjustments */
-@media (max-width: 480px) {
-  .p-4 {
-    padding: 0.5rem;
+  /* Registration specific styles */
+  .calm-auth-card-lg {
+    max-width: 520px;
   }
   
-  .max-w-md {
-    max-width: 100%;
+  .calm-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
   }
   
-  .grid-cols-2 {
-    grid-template-columns: 1fr;
+  /* Password strength indicator */
+  .calm-password-strength {
+    margin-top: 0.5rem;
   }
-}
+  
+  .calm-strength-bar {
+    height: 4px;
+    background: var(--calm-gray-200);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+  }
+  
+  .calm-strength-fill {
+    height: 100%;
+    width: 0;
+    transition: width 0.3s ease, background-color 0.3s ease;
+  }
+  
+  .calm-strength-fill[data-strength="0"] {
+    width: 0;
+  }
+  
+  .calm-strength-fill[data-strength="1"] {
+    width: 25%;
+    background-color: var(--calm-danger);
+  }
+  
+  .calm-strength-fill[data-strength="2"] {
+    width: 50%;
+    background-color: var(--calm-warning);
+  }
+  
+  .calm-strength-fill[data-strength="3"] {
+    width: 75%;
+    background-color: var(--calm-info);
+  }
+  
+  .calm-strength-fill[data-strength="4"] {
+    width: 100%;
+    background-color: var(--calm-success);
+  }
+  
+  .calm-strength-text {
+    font-size: 0.75rem;
+    color: var(--calm-gray-600);
+  }
+  
+  /* Form validation states */
+  .calm-form-input.success {
+    border-color: var(--calm-success);
+  }
+  
+  .calm-form-input.error {
+    border-color: var(--calm-danger);
+  }
+  
+  /* Mobile responsive */
+  @media (max-width: 480px) {
+    .calm-form-row {
+      grid-template-columns: 1fr;
+    }
+  }
 </style>

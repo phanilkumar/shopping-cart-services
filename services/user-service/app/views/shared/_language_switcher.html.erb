@@ -1,105 +1,194 @@
-<div class="language-switcher">
-  <div class="relative inline-block text-left">
-    <div>
-      <button type="button" 
-              class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              id="languageDropdown"
-              onclick="toggleLanguageMenu()">
-        <% case I18n.locale %>
-        <% when :en %>
-          <span class="mr-2">🇺🇸</span>
-          <%= t('common.english') %>
-        <% when :hi %>
-          <span class="mr-2">🇮🇳</span>
-          <%= t('common.hindi') %>
-        <% when :te %>
-          <span class="mr-2">🇮🇳</span>
-          <%= t('common.telugu') %>
-        <% when :kn %>
-          <span class="mr-2">🇮🇳</span>
-          <%= t('common.kannada') %>
-        <% when :ta %>
-          <span class="mr-2">🇮🇳</span>
-          <%= t('common.tamil') %>
-        <% when :ml %>
-          <span class="mr-2">🇮🇳</span>
-          <%= t('common.malayalam') %>
-        <% else %>
-          <span class="mr-2">🇺🇸</span>
-          <%= t('common.english') %>
-        <% end %>
-        <svg class="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-        </svg>
-      </button>
-    </div>
+<div class="language-switcher" data-controller="dropdown">
+  <button type="button" 
+          class="calm-btn calm-btn-sm"
+          data-dropdown-target="button"
+          data-action="click->dropdown#toggle click@window->dropdown#close"
+          aria-expanded="false"
+          aria-haspopup="true">
+    <% case I18n.locale %>
+    <% when :en %>
+      <span class="language-flag">🇺🇸</span>
+      <span class="language-name"><%= t('common.english') %></span>
+    <% when :hi %>
+      <span class="language-flag">🇮🇳</span>
+      <span class="language-name"><%= t('common.hindi') %></span>
+    <% when :te %>
+      <span class="language-flag">🇮🇳</span>
+      <span class="language-name"><%= t('common.telugu') %></span>
+    <% when :kn %>
+      <span class="language-flag">🇮🇳</span>
+      <span class="language-name"><%= t('common.kannada') %></span>
+    <% when :ta %>
+      <span class="language-flag">🇮🇳</span>
+      <span class="language-name"><%= t('common.tamil') %></span>
+    <% when :ml %>
+      <span class="language-flag">🇮🇳</span>
+      <span class="language-name"><%= t('common.malayalam') %></span>
+    <% else %>
+      <span class="language-flag">🇺🇸</span>
+      <span class="language-name"><%= t('common.english') %></span>
+    <% end %>
+    <svg class="dropdown-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+    </svg>
+  </button>
+  
+  <div class="dropdown-menu hidden" data-dropdown-target="menu" role="menu">
+    <%= link_to change_language_path(:en), 
+        class: "dropdown-item #{I18n.locale == :en ? 'active' : ''}", 
+        data: { turbo_method: :post, turbo_action: "replace" },
+        role: "menuitem" do %>
+      <span class="language-flag">🇺🇸</span>
+      <span class="language-name">English</span>
+      <% if I18n.locale == :en %>
+        <span class="check-icon">✓</span>
+      <% end %>
+    <% end %>
     
-    <div id="languageMenu" class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
-      <div class="py-1" role="menu" aria-orientation="vertical">
-        <%= link_to change_language_path(:en), 
-            class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 #{I18n.locale == :en ? 'bg-blue-100 text-blue-900' : ''}", 
-            role: "menuitem" do %>
-          <span class="mr-2">🇺🇸</span>
-          English
-        <% end %>
-        
-        <%= link_to change_language_path(:hi), 
-            class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 #{I18n.locale == :hi ? 'bg-blue-100 text-blue-900' : ''}", 
-            role: "menuitem" do %>
-          <span class="mr-2">🇮🇳</span>
-          हिंदी
-        <% end %>
-        
-        <%= link_to change_language_path(:te), 
-            class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 #{I18n.locale == :te ? 'bg-blue-100 text-blue-900' : ''}", 
-            role: "menuitem" do %>
-          <span class="mr-2">🇮🇳</span>
-          తెలుగు
-        <% end %>
-        
-        <%= link_to change_language_path(:kn), 
-            class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 #{I18n.locale == :kn ? 'bg-blue-100 text-blue-900' : ''}", 
-            role: "menuitem" do %>
-          <span class="mr-2">🇮🇳</span>
-          ಕನ್ನಡ
-        <% end %>
-        
-        <%= link_to change_language_path(:ta), 
-            class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 #{I18n.locale == :ta ? 'bg-blue-100 text-blue-900' : ''}", 
-            role: "menuitem" do %>
-          <span class="mr-2">🇮🇳</span>
-          தமிழ்
-        <% end %>
-        
-        <%= link_to change_language_path(:ml), 
-            class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 #{I18n.locale == :ml ? 'bg-blue-100 text-blue-900' : ''}", 
-            role: "menuitem" do %>
-          <span class="mr-2">🇮🇳</span>
-          മലയാളം
-        <% end %>
-      </div>
-    </div>
+    <%= link_to change_language_path(:hi), 
+        class: "dropdown-item #{I18n.locale == :hi ? 'active' : ''}", 
+        data: { turbo_method: :post, turbo_action: "replace" },
+        role: "menuitem" do %>
+      <span class="language-flag">🇮🇳</span>
+      <span class="language-name">हिंदी</span>
+      <% if I18n.locale == :hi %>
+        <span class="check-icon">✓</span>
+      <% end %>
+    <% end %>
+    
+    <%= link_to change_language_path(:te), 
+        class: "dropdown-item #{I18n.locale == :te ? 'active' : ''}", 
+        data: { turbo_method: :post, turbo_action: "replace" },
+        role: "menuitem" do %>
+      <span class="language-flag">🇮🇳</span>
+      <span class="language-name">తెలుగు</span>
+      <% if I18n.locale == :te %>
+        <span class="check-icon">✓</span>
+      <% end %>
+    <% end %>
+    
+    <%= link_to change_language_path(:kn), 
+        class: "dropdown-item #{I18n.locale == :kn ? 'active' : ''}", 
+        data: { turbo_method: :post, turbo_action: "replace" },
+        role: "menuitem" do %>
+      <span class="language-flag">🇮🇳</span>
+      <span class="language-name">ಕನ್ನಡ</span>
+      <% if I18n.locale == :kn %>
+        <span class="check-icon">✓</span>
+      <% end %>
+    <% end %>
+    
+    <%= link_to change_language_path(:ta), 
+        class: "dropdown-item #{I18n.locale == :ta ? 'active' : ''}", 
+        data: { turbo_method: :post, turbo_action: "replace" },
+        role: "menuitem" do %>
+      <span class="language-flag">🇮🇳</span>
+      <span class="language-name">தமிழ்</span>
+      <% if I18n.locale == :ta %>
+        <span class="check-icon">✓</span>
+      <% end %>
+    <% end %>
+    
+    <%= link_to change_language_path(:ml), 
+        class: "dropdown-item #{I18n.locale == :ml ? 'active' : ''}", 
+        data: { turbo_method: :post, turbo_action: "replace" },
+        role: "menuitem" do %>
+      <span class="language-flag">🇮🇳</span>
+      <span class="language-name">മലയാളം</span>
+      <% if I18n.locale == :ml %>
+        <span class="check-icon">✓</span>
+      <% end %>
+    <% end %>
   </div>
 </div>
 
-<script>
-function toggleLanguageMenu() {
-  const menu = document.getElementById('languageMenu');
-  if (menu.classList.contains('hidden')) {
-    menu.classList.remove('hidden');
-  } else {
-    menu.classList.add('hidden');
+<style>
+  .language-switcher {
+    position: relative;
   }
-}
-
-// Close menu when clicking outside
-document.addEventListener('click', function(event) {
-  const dropdown = document.getElementById('languageDropdown');
-  const menu = document.getElementById('languageMenu');
   
-  if (!dropdown.contains(event.target) && !menu.contains(event.target)) {
-    menu.classList.add('hidden');
+  .language-flag {
+    margin-right: 0.5rem;
+    font-size: 1.1em;
   }
-});
-</script>
-
+  
+  .language-name {
+    font-weight: 500;
+  }
+  
+  .dropdown-arrow {
+    margin-left: 0.5rem;
+    width: 1rem;
+    height: 1rem;
+    transition: transform 0.2s ease;
+  }
+  
+  .dropdown-menu {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    margin-top: 0.5rem;
+    min-width: 12rem;
+    background-color: white;
+    border: 1px solid var(--calm-gray-200);
+    border-radius: var(--calm-radius-md);
+    box-shadow: var(--calm-shadow-lg);
+    z-index: 50;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+  
+  .dropdown-menu:not(.hidden) {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    text-decoration: none;
+    color: var(--calm-gray-700);
+    transition: background-color 0.2s ease;
+    position: relative;
+  }
+  
+  .dropdown-item:hover {
+    background-color: var(--calm-gray-50);
+  }
+  
+  .dropdown-item.active {
+    background-color: var(--calm-primary-light);
+    background-color: rgba(91, 143, 185, 0.1);
+    color: var(--calm-primary);
+  }
+  
+  .dropdown-item:first-child {
+    border-top-left-radius: var(--calm-radius-md);
+    border-top-right-radius: var(--calm-radius-md);
+  }
+  
+  .dropdown-item:last-child {
+    border-bottom-left-radius: var(--calm-radius-md);
+    border-bottom-right-radius: var(--calm-radius-md);
+  }
+  
+  .check-icon {
+    margin-left: auto;
+    color: var(--calm-primary);
+    font-weight: bold;
+  }
+  
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    .language-name {
+      display: none;
+    }
+    
+    .dropdown-menu {
+      left: auto;
+      right: -1rem;
+    }
+  }
+</style>

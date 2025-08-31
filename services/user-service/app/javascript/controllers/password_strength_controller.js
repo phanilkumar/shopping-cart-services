@@ -1,141 +1,77 @@
 import { Controller } from "@hotwired/stimulus"
 
+// Password strength checker for peaceful UX
 export default class extends Controller {
-  static targets = ["password", "progress", "strength", "requirements"]
-  static values = { 
-    minLength: { type: Number, default: 8 },
-    maxLength: { type: Number, default: 16 }
-  }
-
+  static targets = ["input", "fill", "level", "indicator", "text"]
+  
   connect() {
-    console.log("Password strength controller connected!")
-    console.log("Password target:", this.passwordTarget)
-    console.log("Progress target:", this.progressTarget)
-    console.log("Strength target:", this.strengthTarget)
-    console.log("Requirements targets:", this.requirementsTargets)
-    
-    this.updatePasswordStrength()
+    this.checkStrength()
   }
-
-  updatePasswordStrength() {
-    console.log("updatePasswordStrength called")
-    const password = this.passwordTarget.value
-    console.log("Password value:", password)
+  
+  checkStrength() {
+    const password = this.inputTarget.value
+    const strength = this.calculateStrength(password)
     
-    const strength = this.calculatePasswordStrength(password)
-    console.log("Calculated strength:", strength)
-    
-    this.updateProgressBar(strength)
-    this.updateStrengthText(strength)
-    this.updateRequirements(password)
+    this.updateDisplay(strength)
   }
-
-  calculatePasswordStrength(password) {
+  
+  calculateStrength(password) {
     if (!password) return 0
-
-    let score = 0
-    const checks = {
-      length: password.length >= this.minLengthValue && password.length <= this.maxLengthValue,
-      letter: /[a-zA-Z]/.test(password),
-      number: /\d/.test(password),
-      special: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password),
-      validChars: /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+$/.test(password)
-    }
-
-    console.log("Password checks:", checks)
-
-    // Base score for each requirement met
-    Object.values(checks).forEach(check => {
-      if (check) score += 20
-    })
-
-    // Bonus for length (up to 20 points)
-    if (password.length >= 12) score += 20
-    else if (password.length >= 10) score += 10
-
-    return Math.min(score, 100)
-  }
-
-  updateProgressBar(strength) {
-    console.log("Updating progress bar to:", strength)
-    const progressBar = this.progressTarget
-    const percentage = strength
-
-    // Update width
-    progressBar.style.width = `${percentage}%`
-
-    // Update color based on strength
-    progressBar.className = this.getProgressBarClasses(strength)
-  }
-
-  getProgressBarClasses(strength) {
-    const baseClasses = "h-2 rounded-full transition-all duration-300 ease-in-out password-strength-bar"
     
-    if (strength >= 80) {
-      return `${baseClasses} very-strong`
-    } else if (strength >= 60) {
-      return `${baseClasses} strong`
-    } else if (strength >= 40) {
-      return `${baseClasses} medium`
-    } else if (strength >= 20) {
-      return `${baseClasses} weak`
-    } else {
-      return `${baseClasses} very-weak`
+    let strength = 0
+    
+    // Length check
+    if (password.length >= 8) strength++
+    if (password.length >= 12) strength++
+    
+    // Character variety checks
+    if (/[a-z]/.test(password)) strength += 0.5  // lowercase
+    if (/[A-Z]/.test(password)) strength += 0.5  // uppercase
+    if (/[0-9]/.test(password)) strength += 0.5  // numbers
+    if (/[^A-Za-z0-9]/.test(password)) strength += 0.5  // special chars
+    
+    // Penalize common patterns
+    if (/(.)\1{2,}/.test(password)) strength -= 0.5  // repeated chars
+    if (/^[0-9]+$/.test(password)) strength -= 0.5   // only numbers
+    if (/^[a-zA-Z]+$/.test(password)) strength -= 0.5 // only letters
+    
+    // Common passwords check
+    const commonPasswords = ['password', '12345678', 'qwerty', 'abc123', 'password123']
+    if (commonPasswords.includes(password.toLowerCase())) {
+      strength = 0
     }
+    
+    return Math.max(0, Math.min(4, Math.floor(strength)))
   }
-
-  updateStrengthText(strength) {
-    console.log("Updating strength text to:", strength)
-    const strengthText = this.strengthTarget
-    let text = ""
-    let textColor = ""
-
-    if (strength >= 80) {
-      text = "Very Strong"
-      textColor = "text-green-600"
-    } else if (strength >= 60) {
-      text = "Strong"
-      textColor = "text-blue-600"
-    } else if (strength >= 40) {
-      text = "Medium"
-      textColor = "text-yellow-600"
-    } else if (strength >= 20) {
-      text = "Weak"
-      textColor = "text-orange-600"
-    } else {
-      text = "Very Weak"
-      textColor = "text-red-600"
+  
+  updateDisplay(strength) {
+    const levels = [
+      { text: 'Too weak', color: 'danger' },
+      { text: 'Weak', color: 'danger' },
+      { text: 'Fair', color: 'warning' },
+      { text: 'Good', color: 'info' },
+      { text: 'Strong', color: 'success' }
+    ]
+    
+    const level = levels[strength]
+    
+    // Update fill
+    this.fillTarget.setAttribute('data-strength', strength)
+    
+    // Update text
+    if (this.hasLevelTarget) {
+      this.levelTarget.textContent = level.text
+      this.levelTarget.className = `calm-text-${level.color}`
     }
-
-    strengthText.textContent = text
-    strengthText.className = `text-xs font-medium ${textColor}`
-  }
-
-  updateRequirements(password) {
-    console.log("Updating requirements for password:", password)
-    const requirements = this.requirementsTargets
-    const checks = {
-      length: password.length >= this.minLengthValue && password.length <= this.maxLengthValue,
-      letter: /[a-zA-Z]/.test(password),
-      number: /\d/.test(password),
-      special: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password),
-      validChars: /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+$/.test(password)
+    
+    // Show/hide indicator
+    if (this.hasIndicatorTarget) {
+      this.indicatorTarget.hidden = !this.inputTarget.value
     }
-
-    requirements.forEach((requirement, index) => {
-      const check = Object.values(checks)[index]
-      const icon = requirement.querySelector('.requirement-icon')
-      const text = requirement.querySelector('.requirement-text')
-      
-      if (check) {
-        icon.innerHTML = '<svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>'
-        text.classList.remove('text-gray-400')
-        text.classList.add('text-green-600')
-      } else {
-        icon.innerHTML = '<svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"></path></svg>'
-        text.classList.remove('text-green-600')
-        text.classList.add('text-gray-400')
-      }
+    
+    // Dispatch event for form validation
+    this.dispatch('strengthChanged', {
+      detail: { strength, level: level.text }
     })
   }
 }

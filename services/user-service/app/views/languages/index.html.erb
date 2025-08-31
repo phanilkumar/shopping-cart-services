@@ -1,82 +1,299 @@
-<div class="max-w-4xl mx-auto py-8">
-  <div class="bg-white rounded-lg shadow-lg p-8">
-    <h1 class="text-3xl font-bold text-gray-900 mb-8 text-center">
-      <%= t('common.language') %> <%= t('common.settings') %>
-    </h1>
-    
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <% @available_locales.each do |locale| %>
-        <div class="border rounded-lg p-6 text-center hover:shadow-md transition-shadow">
-          <div class="text-4xl mb-4">
-            <% case locale %>
-            <% when :en %>
-              🇺🇸
-            <% when :hi %>
-              🇮🇳
-            <% when :te %>
-              🇮🇳
-            <% end %>
-          </div>
-          
-          <h3 class="text-xl font-semibold mb-2">
-            <% case locale %>
-            <% when :en %>
-              <%= t('common.english') %>
-            <% when :hi %>
-              <%= t('common.hindi') %>
-            <% when :te %>
-              <%= t('common.telugu') %>
-            <% end %>
-          </h3>
-          
-          <p class="text-gray-600 mb-4">
-            <% case locale %>
-            <% when :en %>
-              English language
-            <% when :hi %>
-              हिंदी भाषा
-            <% when :te %>
-              తెలుగు భాష
-            <% end %>
-          </p>
-          
-          <%= link_to change_language_path(locale), 
-              class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg #{@current_locale == locale ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}" do %>
-            <% if @current_locale == locale %>
-              <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-              </svg>
-              <%= t('common.selected') %>
-            <% else %>
-              <%= t('common.select') %>
-            <% end %>
+<% content_for :title, t('languages.title', default: 'Language Settings') %>
+
+<div class="calm-language-container">
+  <turbo-frame id="language-settings" class="calm-language-card animate-fade-in">
+    <div class="calm-card">
+      <div class="calm-card-header calm-text-center">
+        <h1 class="calm-language-title">
+          <span class="calm-language-icon">🌍</span>
+          <%= t('languages.heading', default: 'Choose Your Language') %>
+        </h1>
+        <p class="calm-language-subtitle">
+          <%= t('languages.subtitle', default: 'Select your preferred language for a personalized experience') %>
+        </p>
+      </div>
+      
+      <div class="calm-card-body">
+        <div class="calm-language-grid">
+          <% I18n.available_locales.each do |locale| %>
+            <turbo-frame id="language-<%= locale %>" class="calm-language-option <%= 'active' if I18n.locale == locale %>">
+              <%= link_to change_language_path(locale), 
+                         method: :post,
+                         class: "calm-language-link",
+                         data: { 
+                           turbo_method: :post,
+                           turbo_action: "replace"
+                         } do %>
+                
+                <div class="calm-language-flag">
+                  <%= language_flag(locale) %>
+                </div>
+                
+                <h3 class="calm-language-name">
+                  <%= language_name(locale) %>
+                </h3>
+                
+                <p class="calm-language-native">
+                  <%= native_language_name(locale) %>
+                </p>
+                
+                <% if I18n.locale == locale %>
+                  <div class="calm-language-selected">
+                    <span class="calm-check-icon">✓</span>
+                    <%= t('languages.current', default: 'Current') %>
+                  </div>
+                <% else %>
+                  <div class="calm-language-select">
+                    <%= t('languages.select', default: 'Select') %>
+                  </div>
+                <% end %>
+              <% end %>
+            </turbo-frame>
           <% end %>
         </div>
-      <% end %>
-    </div>
-    
-    <div class="mt-8 text-center">
-      <h2 class="text-xl font-semibold mb-4"><%= t('common.current_language') %></h2>
-      <p class="text-lg text-gray-700">
-        <% case @current_locale %>
-        <% when :en %>
-          <%= t('common.english') %>
-        <% when :hi %>
-          <%= t('common.hindi') %>
-        <% when :te %>
-          <%= t('common.telugu') %>
+        
+        <!-- Language Info -->
+        <div class="calm-language-info">
+          <h2 class="calm-info-title">
+            <%= t('languages.current_language', default: 'Current Language') %>
+          </h2>
+          <div class="calm-info-badge">
+            <span class="calm-info-flag"><%= language_flag(I18n.locale) %></span>
+            <span class="calm-info-text">
+              <%= language_name(I18n.locale) %> (<%= I18n.locale.to_s.upcase %>)
+            </span>
+          </div>
+          
+          <p class="calm-info-note">
+            <%= t('languages.note', default: 'Your language preference will be saved for future visits') %>
+          </p>
+        </div>
+      </div>
+      
+      <div class="calm-card-footer calm-text-center">
+        <%= link_to root_path, class: "calm-btn calm-btn-secondary", data: { turbo_action: "advance" } do %>
+          <span class="calm-btn-icon">←</span>
+          <%= t('languages.back_home', default: 'Back to Home') %>
         <% end %>
-      </p>
+      </div>
     </div>
-    
-    <div class="mt-8 text-center">
-      <%= link_to root_path, class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700" do %>
-        <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-        </svg>
-        <%= t('common.back_to_home') %>
-      <% end %>
-    </div>
-  </div>
+  </turbo-frame>
 </div>
 
+<%# Helper methods for language display %>
+<% 
+  def language_flag(locale)
+    flags = {
+      en: '🇺🇸',
+      hi: '🇮🇳',
+      te: '🇮🇳',
+      kn: '🇮🇳',
+      ta: '🇮🇳',
+      ml: '🇮🇳'
+    }
+    flags[locale] || '🌐'
+  end
+  
+  def language_name(locale)
+    names = {
+      en: 'English',
+      hi: 'Hindi',
+      te: 'Telugu',
+      kn: 'Kannada',
+      ta: 'Tamil',
+      ml: 'Malayalam'
+    }
+    names[locale] || locale.to_s.capitalize
+  end
+  
+  def native_language_name(locale)
+    native_names = {
+      en: 'English',
+      hi: 'हिंदी',
+      te: 'తెలుగు',
+      kn: 'ಕನ್ನಡ',
+      ta: 'தமிழ்',
+      ml: 'മലയാളം'
+    }
+    native_names[locale] || ''
+  end
+%>
+
+<style>
+  /* Language page specific styles */
+  .calm-language-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    background: linear-gradient(135deg, #F8F9FA 0%, #E9ECEF 100%);
+  }
+  
+  .calm-language-card {
+    width: 100%;
+    max-width: 800px;
+  }
+  
+  .calm-language-title {
+    font-family: var(--calm-font-serif);
+    font-size: 2rem;
+    color: var(--calm-gray-900);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+  }
+  
+  .calm-language-icon {
+    font-size: 2.5rem;
+  }
+  
+  .calm-language-subtitle {
+    color: var(--calm-gray-600);
+    font-size: 1rem;
+  }
+  
+  /* Language grid */
+  .calm-language-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+  
+  .calm-language-option {
+    background: var(--calm-gray-50);
+    border: 2px solid var(--calm-gray-200);
+    border-radius: 1rem;
+    transition: all 0.3s ease;
+    overflow: hidden;
+  }
+  
+  .calm-language-option:hover {
+    border-color: var(--calm-primary);
+    transform: translateY(-2px);
+    box-shadow: var(--calm-shadow-md);
+  }
+  
+  .calm-language-option.active {
+    border-color: var(--calm-primary);
+    background: rgba(91, 143, 185, 0.05);
+  }
+  
+  .calm-language-link {
+    display: block;
+    padding: 1.5rem;
+    text-decoration: none;
+    color: inherit;
+    text-align: center;
+  }
+  
+  .calm-language-flag {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+  
+  .calm-language-name {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--calm-gray-900);
+    margin-bottom: 0.25rem;
+  }
+  
+  .calm-language-native {
+    font-size: 0.875rem;
+    color: var(--calm-gray-600);
+    margin-bottom: 1rem;
+    min-height: 1.25rem;
+  }
+  
+  .calm-language-selected {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    background: var(--calm-primary);
+    color: white;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  
+  .calm-check-icon {
+    font-weight: bold;
+  }
+  
+  .calm-language-select {
+    padding: 0.25rem 0.75rem;
+    color: var(--calm-primary);
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  
+  /* Language info */
+  .calm-language-info {
+    text-align: center;
+    padding: 2rem;
+    background: var(--calm-gray-50);
+    border-radius: 0.75rem;
+  }
+  
+  .calm-info-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--calm-gray-900);
+    margin-bottom: 1rem;
+  }
+  
+  .calm-info-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    background: white;
+    border: 1px solid var(--calm-gray-200);
+    border-radius: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .calm-info-flag {
+    font-size: 1.5rem;
+  }
+  
+  .calm-info-text {
+    font-weight: 500;
+    color: var(--calm-gray-700);
+  }
+  
+  .calm-info-note {
+    font-size: 0.875rem;
+    color: var(--calm-gray-600);
+    margin-top: 1rem;
+  }
+  
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    .calm-language-grid {
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+    }
+    
+    .calm-language-option {
+      border-radius: 0.75rem;
+    }
+    
+    .calm-language-link {
+      padding: 1rem;
+    }
+    
+    .calm-language-flag {
+      font-size: 2.5rem;
+    }
+    
+    .calm-language-name {
+      font-size: 1rem;
+    }
+  }
+</style>
