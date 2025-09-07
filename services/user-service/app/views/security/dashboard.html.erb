@@ -1,0 +1,400 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900">Security Dashboard</h1>
+      <p class="mt-2 text-gray-600">Manage your account security settings and monitor security status</p>
+    </div>
+
+    <!-- Security Status Overview -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <!-- Account Status -->
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">Account Status</dt>
+                <dd class="text-lg font-medium text-gray-900">
+                  <span id="account-status" class="text-green-600">Active</span>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Two-Factor Authentication -->
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">2FA Status</dt>
+                <dd class="text-lg font-medium text-gray-900">
+                  <span id="2fa-status" class="text-red-600">Disabled</span>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Last Login -->
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">Last Login</dt>
+                <dd class="text-lg font-medium text-gray-900">
+                  <span id="last-login">Loading...</span>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Security Settings -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <!-- Two-Factor Authentication Setup -->
+      <div class="bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+            Two-Factor Authentication
+          </h3>
+          
+          <div id="2fa-setup-container" class="space-y-4">
+            <div class="bg-yellow-50 border border-yellow-200 rounded-md p-4">
+              <div class="flex">
+                <div class="flex-shrink-0">
+                  <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                  </svg>
+                </div>
+                <div class="ml-3">
+                  <h3 class="text-sm font-medium text-yellow-800">Security Recommendation</h3>
+                  <div class="mt-2 text-sm text-yellow-700">
+                    <p>Enable two-factor authentication to add an extra layer of security to your account.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <button id="enable-2fa-btn" 
+                    class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+              Enable Two-Factor Authentication
+            </button>
+          </div>
+
+          <div id="2fa-qr-container" class="hidden space-y-4">
+            <div class="text-center">
+              <h4 class="text-md font-medium text-gray-900 mb-2">Scan QR Code</h4>
+              <p class="text-sm text-gray-600 mb-4">Use your authenticator app to scan this QR code</p>
+              <div id="qrcode" class="inline-block p-4 bg-white border rounded-lg"></div>
+            </div>
+            
+            <div class="bg-gray-50 p-4 rounded-md">
+              <h4 class="text-sm font-medium text-gray-900 mb-2">Manual Setup</h4>
+              <p class="text-sm text-gray-600 mb-2">If you can't scan the QR code, enter this code manually:</p>
+              <code id="2fa-secret" class="bg-white px-2 py-1 rounded border text-sm font-mono"></code>
+            </div>
+
+            <div class="space-y-3">
+              <label for="otp-verification" class="block text-sm font-medium text-gray-700">
+                Enter verification code
+              </label>
+              <input type="text" 
+                     id="otp-verification" 
+                     name="otp_verification" 
+                     maxlength="6" 
+                     class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                     placeholder="000000">
+              <button id="verify-otp-btn" 
+                      class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                Verify and Enable
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Security Activity -->
+      <div class="bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+            Recent Security Activity
+          </h3>
+          
+          <div class="space-y-4">
+            <div class="border-l-4 border-green-400 bg-green-50 p-4">
+              <div class="flex">
+                <div class="flex-shrink-0">
+                  <svg class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                  </svg>
+                </div>
+                <div class="ml-3">
+                  <p class="text-sm text-green-700">
+                    <span class="font-medium">Successful login</span> from IP: <span id="last-login-ip">Loading...</span>
+                  </p>
+                  <p class="text-xs text-green-600 mt-1" id="last-login-time">Loading...</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="border-l-4 border-blue-400 bg-blue-50 p-4">
+              <div class="flex">
+                <div class="flex-shrink-0">
+                  <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                  </svg>
+                </div>
+                <div class="ml-3">
+                  <p class="text-sm text-blue-700">
+                    <span class="font-medium">Account created</span> successfully
+                  </p>
+                  <p class="text-xs text-blue-600 mt-1" id="account-created-time">Loading...</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Security Recommendations -->
+    <div class="mt-8 bg-white shadow rounded-lg">
+      <div class="px-4 py-5 sm:p-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+          Security Recommendations
+        </h3>
+        
+        <div class="space-y-4">
+          <div class="flex items-start">
+            <div class="flex-shrink-0">
+              <svg class="h-6 w-6 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+              </svg>
+            </div>
+            <div class="ml-3">
+              <h4 class="text-sm font-medium text-gray-900">Enable Two-Factor Authentication</h4>
+              <p class="text-sm text-gray-600 mt-1">Add an extra layer of security to your account by enabling 2FA.</p>
+            </div>
+          </div>
+
+          <div class="flex items-start">
+            <div class="flex-shrink-0">
+              <svg class="h-6 w-6 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+              </svg>
+            </div>
+            <div class="ml-3">
+              <h4 class="text-sm font-medium text-gray-900">Use a Strong Password</h4>
+              <p class="text-sm text-gray-600 mt-1">Your password meets our security requirements.</p>
+            </div>
+          </div>
+
+          <div class="flex items-start">
+            <div class="flex-shrink-0">
+              <svg class="h-6 w-6 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+              </svg>
+            </div>
+            <div class="ml-3">
+              <h4 class="text-sm font-medium text-gray-900">Monitor Login Activity</h4>
+              <p class="text-sm text-gray-600 mt-1">Regularly check your login history for any suspicious activity.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Load security status
+  loadSecurityStatus();
+  
+  // Setup 2FA button
+  document.getElementById('enable-2fa-btn').addEventListener('click', enableTwoFactor);
+  
+  // Setup OTP verification
+  document.getElementById('verify-otp-btn').addEventListener('click', verifyOTP);
+});
+
+async function loadSecurityStatus() {
+  try {
+    const response = await fetch('/security/status', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('[name="csrf-token"]')?.content
+      }
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      updateSecurityDashboard(data.data);
+    }
+  } catch (error) {
+    console.error('Error loading security status:', error);
+  }
+}
+
+function updateSecurityDashboard(status) {
+  // Update account status
+  const accountStatus = document.getElementById('account-status');
+  if (status.account_locked) {
+    accountStatus.textContent = 'Locked';
+    accountStatus.className = 'text-red-600';
+  } else {
+    accountStatus.textContent = 'Active';
+    accountStatus.className = 'text-green-600';
+  }
+
+  // Update 2FA status
+  const twoFactorStatus = document.getElementById('2fa-status');
+  if (status.two_factor_enabled) {
+    twoFactorStatus.textContent = 'Enabled';
+    twoFactorStatus.className = 'text-green-600';
+    document.getElementById('2fa-setup-container').classList.add('hidden');
+  } else {
+    twoFactorStatus.textContent = 'Disabled';
+    twoFactorStatus.className = 'text-red-600';
+  }
+
+  // Update last login
+  const lastLogin = document.getElementById('last-login');
+  const lastLoginTime = document.getElementById('last-login-time');
+  const lastLoginIp = document.getElementById('last-login-ip');
+  
+  if (status.last_sign_in_at) {
+    lastLogin.textContent = new Date(status.last_sign_in_at).toLocaleDateString();
+    lastLoginTime.textContent = new Date(status.last_sign_in_at).toLocaleString();
+    lastLoginIp.textContent = status.last_sign_in_ip || 'Unknown';
+  } else {
+    lastLogin.textContent = 'Never';
+    lastLoginTime.textContent = 'No login history';
+    lastLoginIp.textContent = 'N/A';
+  }
+
+  // Update account created time
+  const accountCreatedTime = document.getElementById('account-created-time');
+  accountCreatedTime.textContent = 'Account created successfully';
+}
+
+async function enableTwoFactor() {
+  try {
+    const response = await fetch('/security/enable-2fa', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('[name="csrf-token"]')?.content
+      }
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      showTwoFactorSetup(data.data);
+    } else {
+      const error = await response.json();
+      showError(error.message);
+    }
+  } catch (error) {
+    console.error('Error enabling 2FA:', error);
+    showError('Failed to enable two-factor authentication');
+  }
+}
+
+function showTwoFactorSetup(data) {
+  document.getElementById('2fa-setup-container').classList.add('hidden');
+  document.getElementById('2fa-qr-container').classList.remove('hidden');
+  document.getElementById('2fa-secret').textContent = data.secret;
+  
+  // Generate QR code if library is available
+  if (typeof QRCode !== 'undefined') {
+    new QRCode(document.getElementById('qrcode'), data.qr_code_uri);
+  }
+}
+
+async function verifyOTP() {
+  const otpCode = document.getElementById('otp-verification').value;
+  
+  if (!otpCode || otpCode.length !== 6) {
+    showError('Please enter a valid 6-digit code');
+    return;
+  }
+
+  try {
+    const response = await fetch('/security/verify-otp', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('[name="csrf-token"]')?.content
+      },
+      body: JSON.stringify({ otp_code: otpCode })
+    });
+
+    if (response.ok) {
+      showSuccess('Two-factor authentication enabled successfully!');
+      loadSecurityStatus(); // Refresh status
+    } else {
+      const error = await response.json();
+      showError(error.message);
+    }
+  } catch (error) {
+    console.error('Error verifying OTP:', error);
+    showError('Failed to verify OTP code');
+  }
+}
+
+function showError(message) {
+  showNotification(message, 'error');
+}
+
+function showSuccess(message) {
+  showNotification(message, 'success');
+}
+
+function showNotification(message, type) {
+  const notification = document.createElement('div');
+  notification.className = `fixed top-4 right-4 px-4 py-2 rounded shadow-lg z-50 ${
+    type === 'error' ? 'bg-red-500 text-white' : 'bg-green-500 text-white'
+  }`;
+  notification.textContent = message;
+  
+  document.body.appendChild(notification);
+  
+  setTimeout(() => {
+    notification.remove();
+  }, 5000);
+}
+</script>
+
+
+
