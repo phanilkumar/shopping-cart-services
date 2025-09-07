@@ -85,21 +85,34 @@ class BaseApplicationController < ActionController::API
   def authenticate_user!
     token = extract_token_from_header
     
+    Rails.logger.info "Token extracted: #{token&.first(20)}..." if token
+    Rails.logger.info "JWT secret key: #{jwt_secret_key&.first(10)}..."
+    
     if token.blank?
+      Rails.logger.info "Token is blank"
       error_response(ERROR_MESSAGES[:unauthorized], [], :unauthorized)
       return
     end
     
     begin
       decoded_token = JWT.decode(token, jwt_secret_key, true, { algorithm: 'HS256' })
+      Rails.logger.info "Token decoded successfully: #{decoded_token[0]}"
       user_id = decoded_token[0]['user_id']
       @current_user = User.find(user_id)
       
+      Rails.logger.info "User found: #{@current_user.email}"
+      
       unless @current_user.active?
+        Rails.logger.info "User is not active"
         error_response('Account is not active', [], :forbidden)
         return
       end
-    rescue JWT::DecodeError, ActiveRecord::RecordNotFound
+    rescue JWT::DecodeError => e
+      Rails.logger.error "JWT decode error: #{e.message}"
+      error_response(ERROR_MESSAGES[:unauthorized], [], :unauthorized)
+      return
+    rescue ActiveRecord::RecordNotFound => e
+      Rails.logger.error "User not found: #{e.message}"
       error_response(ERROR_MESSAGES[:unauthorized], [], :unauthorized)
       return
     end

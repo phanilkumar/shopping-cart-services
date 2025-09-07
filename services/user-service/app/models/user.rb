@@ -2,7 +2,11 @@ class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable
+         :recoverable, :rememberable, :validatable,
+         :lockable, :trackable, :timeoutable
+
+  # Audit logging with sensitive data exclusion
+  # audited except: [:password, :encrypted_password, :reset_password_token, :unlock_token, :confirmation_token, :two_factor_secret]
 
   # Callbacks
   before_create :set_default_values
@@ -39,6 +43,11 @@ class User < ApplicationRecord
 
   # Password validation (custom validation for Devise)
   validate :password_complexity
+  validate :password_not_common
+
+  # Two-factor authentication fields
+  attr_accessor :otp_code
+  validates :two_factor_secret, presence: true, if: :two_factor_enabled?
 
   # Override to prevent duplicate attribute names in error messages
   def errors
@@ -111,15 +120,97 @@ class User < ApplicationRecord
       {
         user_id: id,
         email: email,
-        exp: 24.hours.from_now.to_i
+        exp: 24.hours.from_now.to_i,
+        jti: SecureRandom.uuid
       },
-      Rails.application.credentials.secret_key_base,
+      jwt_secret_key,
       'HS256'
     )
   end
-
+  
   def generate_refresh_token
     SecureRandom.hex(32)
+  end
+  
+  private
+  
+  def jwt_secret_key
+    ENV['JWT_SECRET_KEY'] || 'default-secret-key'
+  end
+  
+  public
+  
+  # Two-factor authentication methods
+  def enable_two_factor!
+    update!(
+      two_factor_secret: ROTP::Base32.random,
+      two_factor_enabled: true
+    )
+  end
+
+  def disable_two_factor!
+    update!(
+      two_factor_secret: nil,
+      two_factor_enabled: false
+    )
+  end
+
+  def two_factor_qr_code
+    return nil unless two_factor_secret.present?
+    
+    totp = ROTP::TOTP.new(two_factor_secret, issuer: 'User Service')
+    totp.provisioning_uri(email)
+  end
+
+  def verify_otp(code)
+    return false unless two_factor_secret.present?
+    
+    totp = ROTP::TOTP.new(two_factor_secret)
+    totp.verify(code, drift_behind: 30)
+  end
+
+  # Security methods
+  def lock_account!
+    update!(locked_at: Time.current)
+    AuditLog.log_account_locked(self, Current.request) if Current.request
+    Rails.logger.warn "Account locked for user #{id} (#{email})"
+  end
+
+  def unlock_account!
+    update!(locked_at: nil, failed_attempts: 0)
+    AuditLog.log_account_unlocked(self, Current.request) if Current.request
+    Rails.logger.info "Account unlocked for user #{id} (#{email})"
+  end
+
+  def account_locked?
+    locked_at.present?
+  end
+
+  def increment_failed_attempts!
+    new_attempts = (failed_attempts || 0) + 1
+    update!(failed_attempts: new_attempts)
+    
+    # Lock account after 5 failed attempts
+    if new_attempts >= 5
+      lock_account!
+    end
+  end
+
+  def reset_failed_attempts!
+    update!(failed_attempts: 0)
+  end
+
+  # Password security
+  def password_compromised?
+    return false unless password.present?
+    
+    # Check against common passwords
+    common_passwords = [
+      'password', '123456', '123456789', 'qwerty', 'abc123',
+      'password123', 'admin', 'letmein', 'welcome', 'monkey'
+    ]
+    
+    common_passwords.include?(password.downcase)
   end
 
   private
@@ -127,6 +218,12 @@ class User < ApplicationRecord
   def set_default_values
     self.status ||= 1  # Set to active by default
     self.role ||= 0    # Set to user by default
+    self.failed_attempts ||= 0
+    self.two_factor_enabled ||= false
+  end
+  
+  def jwt_secret_key
+    ENV['JWT_SECRET_KEY'] || 'default-secret-key'
   end
 
   def normalize_email
@@ -180,5 +277,25 @@ class User < ApplicationRecord
     unless password.match?(/\A[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+\z/)
       errors.add(:password, 'can only contain letters, numbers, and special characters')
     end
+  end
+
+  def password_not_common
+    return if password.blank?
+    
+    if password_compromised?
+      errors.add(:password, 'is too common. Please choose a more secure password.')
+    end
+  end
+
+  def log_failed_login
+    Rails.logger.warn "Failed login attempt for user #{id} (#{email}) from IP: #{Current.request&.remote_ip}"
+    
+    # You could also send this to your monitoring service
+    # Sentry.capture_message("Failed login attempt", level: :warning, extra: { user_id: id, email: email, ip: Current.request&.remote_ip }) if defined?(Sentry)
+  end
+
+  def log_successful_login
+    Rails.logger.info "Successful login for user #{id} (#{email}) from IP: #{Current.request&.remote_ip}"
+    update_last_login
   end
 end
