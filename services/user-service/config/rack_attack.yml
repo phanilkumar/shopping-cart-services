@@ -1,0 +1,123 @@
+# Rack Attack Configuration Reference
+# This file documents the rate limiting and security policies
+
+default: &default
+  # Rate limiting configuration
+  rate_limits:
+    # Authentication endpoints
+    login:
+      limit: 5
+      period: 20  # seconds
+      description: "Prevent brute force attacks on login"
+    
+    registration:
+      limit: 3
+      period: 3600  # 1 hour
+      description: "Prevent spam account creation"
+    
+    password_reset:
+      limit: 3
+      period: 3600  # 1 hour
+      description: "Prevent password reset abuse"
+    
+    otp:
+      limit: 5
+      period: 3600  # 1 hour
+      description: "Prevent OTP spam"
+    
+    # API endpoints
+    api_general:
+      limit: 100
+      period: 60  # 1 minute
+      description: "General API rate limiting"
+    
+    api_authenticated:
+      limit: 300
+      period: 60  # 1 minute
+      description: "Higher limits for authenticated users"
+    
+    # Sensitive operations
+    exports:
+      limit: 5
+      period: 3600  # 1 hour
+      description: "Limit data export requests"
+    
+    admin:
+      limit: 20
+      period: 60  # 1 minute
+      description: "Admin panel access"
+
+  # Security patterns to block
+  attack_patterns:
+    sql_injection:
+      - "union.*select"
+      - "select.*from.*where"
+      - "drop\\s+(table|database)"
+    
+    xss:
+      - "<script[^>]*>"
+      - "javascript:"
+      - "on\\w+\\s*="
+    
+    command_injection:
+      - ";\\s*(ls|cat|rm|mkdir)"
+      - "\\|\\s*(ls|cat|rm|mkdir)"
+      - "`.*`"
+    
+    path_traversal:
+      - "\\.\\.\\/|\\.\\.\\\\"
+      - "%2e%2e"
+      - "/etc/passwd"
+
+development:
+  <<: *default
+  # Development environment relaxations
+  rate_limit_multiplier: 10  # 10x more lenient
+  time_period_divisor: 10    # 10x shorter periods
+  
+  # Disable security features for easier testing
+  disable_attack_patterns: true
+  disable_user_agent_blocking: true
+  
+  # Whitelisted IPs
+  safe_ips:
+    - "127.0.0.1"
+    - "::1"
+    - "10.0.0.0/8"
+    - "172.16.0.0/12"
+    - "192.168.0.0/16"
+
+test:
+  <<: *default
+  # Test environment configuration
+  rate_limit_multiplier: 100  # Very lenient for tests
+  disable_all_blocking: true
+
+staging:
+  <<: *default
+  # Staging uses production-like settings with slight relaxations
+  rate_limit_multiplier: 2    # 2x more lenient than production
+
+production:
+  <<: *default
+  # Production uses strict settings
+  
+  # Additional production-only limits
+  additional_limits:
+    account_enumeration:
+      limit: 10
+      period: 300  # 5 minutes
+      description: "Prevent user enumeration attacks"
+  
+  # Monitoring configuration
+  monitoring:
+    alert_on_block: true
+    alert_on_repeated_throttle: true
+    repeated_throttle_threshold: 10
+    
+  # Redis configuration
+  redis:
+    namespace: "rack_attack"
+    expires_in: 3600  # 1 hour
+    pool_size: 5
+    pool_timeout: 5
