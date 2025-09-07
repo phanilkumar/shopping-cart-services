@@ -8,6 +8,10 @@ class SecurityController < ApplicationController
     # Render the security dashboard view
   end
 
+  def rate_limit_test
+    # Render the rate limiting test page
+  end
+
   # Enable two-factor authentication
   def enable_2fa
     if current_user.two_factor_enabled?
@@ -78,7 +82,10 @@ class SecurityController < ApplicationController
         last_sign_in_at: current_user.last_sign_in_at,
         last_sign_in_ip: current_user.last_sign_in_ip,
         sign_in_count: current_user.sign_in_count || 0,
-        password_changed_at: current_user.password_changed_at
+        password_changed_at: current_user.password_changed_at,
+        lockout_remaining_time: current_user.lockout_remaining_time,
+        lockout_expires_at: current_user.lockout_expires_at,
+        auto_unlock_enabled: true
       }
     }
   end
@@ -139,10 +146,16 @@ class SecurityController < ApplicationController
 
   def ensure_user_not_locked
     if current_user.account_locked?
+      remaining_time = current_user.lockout_remaining_time
+      expires_at = current_user.lockout_expires_at
+      
       render json: {
         status: 'error',
-        message: 'Account is locked due to multiple failed login attempts. Please contact support.',
-        locked_until: current_user.locked_at
+        message: "Account is locked due to multiple failed login attempts. Will automatically unlock in #{remaining_time} seconds.",
+        locked_until: current_user.locked_at,
+        expires_at: expires_at,
+        remaining_seconds: remaining_time,
+        auto_unlock: true
       }, status: :locked
     end
   end

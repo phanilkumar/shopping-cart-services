@@ -182,8 +182,22 @@ class User < ApplicationRecord
     Rails.logger.info "Account unlocked for user #{id} (#{email})"
   end
 
+  def auto_unlock_account!
+    update!(locked_at: nil, failed_attempts: 0)
+    AuditLog.log_account_auto_unlocked(self, Current.request) if Current.request
+    Rails.logger.info "Account automatically unlocked for user #{id} (#{email}) after 10 minutes"
+  end
+
   def account_locked?
-    locked_at.present?
+    return false unless locked_at.present?
+    
+    # Check if account should be automatically unlocked after 10 minutes
+    if locked_at < 10.minutes.ago
+      auto_unlock_account!
+      return false
+    end
+    
+    true
   end
 
   def increment_failed_attempts!
@@ -198,6 +212,18 @@ class User < ApplicationRecord
 
   def reset_failed_attempts!
     update!(failed_attempts: 0)
+  end
+
+  def lockout_remaining_time
+    return 0 unless locked_at.present?
+    
+    remaining = 10.minutes - (Time.current - locked_at)
+    remaining > 0 ? remaining.to_i : 0
+  end
+
+  def lockout_expires_at
+    return nil unless locked_at.present?
+    locked_at + 10.minutes
   end
 
   # Password security

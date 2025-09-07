@@ -175,6 +175,21 @@ class Api::V1::OtpController < ApplicationController
       }, status: :not_found
     end
 
+    # Check if account is locked (same as email login)
+    if user.account_locked?
+      remaining_time = user.lockout_remaining_time
+      expires_at = user.lockout_expires_at
+      
+      return render json: {
+        status: 'error',
+        message: "Account is locked due to multiple failed login attempts. Will automatically unlock in #{remaining_time} seconds.",
+        locked_until: user.locked_at,
+        expires_at: expires_at,
+        remaining_seconds: remaining_time,
+        auto_unlock: true
+      }, status: :locked
+    end
+
     # Check if user is active
     unless user.active?
       return render json: {
@@ -203,17 +218,47 @@ class Api::V1::OtpController < ApplicationController
     end
 
     if stored_otp != otp
+      # Increment failed attempts for OTP failures (same as email login)
+      user.increment_failed_attempts!
+      
+      # Log failed OTP attempt
+      AuditLog.log_login_failure(user.email, request) if defined?(AuditLog)
+      Rails.logger.warn "Failed OTP attempt for user #{user.id} (#{user.email}) from IP: #{request.remote_ip}"
+      
+      # Check if account should be locked after failed OTP attempt
+      if user.account_locked?
+        remaining_time = user.lockout_remaining_time
+        expires_at = user.lockout_expires_at
+        
+        return render json: {
+          status: 'error',
+          message: "Account locked due to multiple failed login attempts. Will automatically unlock in #{remaining_time} seconds.",
+          locked_until: user.locked_at,
+          expires_at: expires_at,
+          remaining_seconds: remaining_time,
+          auto_unlock: true
+        }, status: :locked
+      end
+      
+      # Show remaining attempts
+      remaining_attempts = 5 - (user.failed_attempts || 0)
       return render json: {
         status: 'error',
-        message: 'Incorrect verification code. Verify and retry.'
+        message: "Incorrect verification code. #{remaining_attempts} attempts remaining.",
+        remaining_attempts: remaining_attempts
       }, status: :bad_request
     end
 
     # OTP is valid - clear it from cache
     Rails.cache.delete("otp_#{phone}") # Clear OTP after verification
 
-    # Update last login
+    # Reset failed attempts on successful login (same as email login)
+    user.reset_failed_attempts!
     user.update_last_login
+    
+    # Log successful login
+    AuditLog.log_login_success(user, request) if defined?(AuditLog)
+    Rails.logger.info "Successful OTP login for user #{user.id} (#{user.email}) from IP: #{request.remote_ip}"
 
     # Generate JWT token
     token = JWT.encode(

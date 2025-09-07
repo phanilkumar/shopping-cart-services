@@ -13,8 +13,7 @@ class AuditLog < ApplicationRecord
   scope :login_events, -> { where(action: ['login_success', 'login_failure', 'logout']) }
   scope :security_events, -> { where(action: ['account_locked', 'account_unlocked', 'password_changed', 'two_factor_enabled', 'two_factor_disabled']) }
   
-  # Serialization
-  serialize :details, JSON
+  # Serialization - JSON columns are automatically serialized in Rails 7+
   
   # Instance methods
   def resource
@@ -108,6 +107,23 @@ class AuditLog < ApplicationRecord
         email: user.email,
         user_id: user.id,
         unlocked_at: Time.current,
+        timestamp: Time.current
+      }
+    )
+  end
+
+  def self.log_account_auto_unlocked(user, request)
+    create!(
+      user: user,
+      action: 'account_auto_unlocked',
+      ip_address: request&.remote_ip,
+      user_agent: request&.user_agent,
+      session_id: request&.session&.id,
+      request_id: request&.request_id,
+      details: {
+        email: user.email,
+        user_id: user.id,
+        auto_unlocked_at: Time.current,
         timestamp: Time.current
       }
     )

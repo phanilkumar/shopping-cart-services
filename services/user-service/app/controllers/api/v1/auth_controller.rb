@@ -1,11 +1,46 @@
 class Api::V1::AuthController < Api::V1::BaseController
   
   def login
-    user = User.find_by(email: params[:email])
+    email = params[:email]
+    password = params[:password]
     
-    if user&.valid_password?(params[:password])
+    # Add parameter validation
+    unless email
+      return error_response('Email is required', [], :bad_request)
+    end
+    
+    unless password
+      return error_response('Password is required', [], :bad_request)
+    end
+    
+    user = User.find_by(email: email)
+    
+    # Check if account is locked
+    if user&.account_locked?
+      remaining_time = user.lockout_remaining_time
+      expires_at = user.lockout_expires_at
+      
+      render json: {
+        status: 'error',
+        message: "Account is locked due to multiple failed login attempts. Will automatically unlock in #{remaining_time} seconds.",
+        locked_until: user.locked_at,
+        expires_at: expires_at,
+        remaining_seconds: remaining_time,
+        auto_unlock: true
+      }, status: :locked
+      return
+    end
+    
+    if user&.valid_password?(password)
       if user.active?
+        # Reset failed attempts on successful login
+        user.reset_failed_attempts!
         user.update_last_login
+        
+        # Log successful login
+        AuditLog.log_login_success(user, request)
+        Rails.logger.info "Successful login for user #{user.id} (#{user.email}) from IP: #{request.remote_ip}"
+        
         success_response(
           {
             user: user_serializer(user),
@@ -18,7 +53,36 @@ class Api::V1::AuthController < Api::V1::BaseController
         error_response('Account is not active', [], :unauthorized)
       end
     else
-      error_response('Invalid email or password', [], :unauthorized)
+      # Increment failed attempts
+      if user
+        user.increment_failed_attempts!
+        
+        # Log failed login attempt
+        AuditLog.log_login_failure(user.email, request)
+        Rails.logger.warn "Failed login attempt for user #{user.id} (#{user.email}) from IP: #{request.remote_ip}"
+        
+        # Check if account should be locked
+        if user.account_locked?
+          remaining_time = user.lockout_remaining_time
+          expires_at = user.lockout_expires_at
+          
+          render json: {
+            status: 'error',
+            message: "Account locked due to multiple failed login attempts. Will automatically unlock in #{remaining_time} seconds.",
+            locked_until: user.locked_at,
+            expires_at: expires_at,
+            remaining_seconds: remaining_time,
+            auto_unlock: true
+          }, status: :locked
+          return
+        end
+        
+        # Show remaining attempts
+        remaining_attempts = 5 - (user.failed_attempts || 0)
+        error_response("Invalid email or password. #{remaining_attempts} attempts remaining.", [], :unauthorized)
+      else
+        error_response('Invalid email or password', [], :unauthorized)
+      end
     end
   end
   

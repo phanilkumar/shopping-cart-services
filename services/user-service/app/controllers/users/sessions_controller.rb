@@ -11,6 +11,33 @@ class Users::SessionsController < Devise::SessionsController
 
   # POST /users/sign_in
   def create
+    # Check if user exists and is locked before attempting login
+    email = params[:user]&.dig(:email) || params[:email]
+    if email.present?
+      user = User.find_by(email: email)
+      if user&.account_locked?
+        if request.format.json?
+          remaining_time = user.lockout_remaining_time
+          expires_at = user.lockout_expires_at
+          
+          render json: {
+            status: 'error',
+            message: "Account is locked due to multiple failed login attempts. Will automatically unlock in #{remaining_time} seconds.",
+            locked_until: user.locked_at,
+            expires_at: expires_at,
+            remaining_seconds: remaining_time,
+            auto_unlock: true
+          }, status: :locked
+          return
+        else
+          # For HTML requests, show flash message
+          flash[:alert] = "Account is locked due to multiple failed login attempts. Will automatically unlock in #{user.lockout_remaining_time} seconds."
+          redirect_to new_user_session_path
+          return
+        end
+      end
+    end
+    
     super
   end
 
@@ -43,9 +70,23 @@ class Users::SessionsController < Devise::SessionsController
           }
         }
       else
-        render json: {
-          status: { code: 401, message: 'Invalid email or password.' }
-        }, status: :unauthorized
+        # Check if the resource (user) is locked
+        if resource&.account_locked?
+          remaining_time = resource.lockout_remaining_time
+          expires_at = resource.lockout_expires_at
+          
+          render json: {
+            status: { code: 423, message: "Account is locked due to multiple failed login attempts. Will automatically unlock in #{remaining_time} seconds." },
+            locked_until: resource.locked_at,
+            expires_at: expires_at,
+            remaining_seconds: remaining_time,
+            auto_unlock: true
+          }, status: :locked
+        else
+          render json: {
+            status: { code: 401, message: 'Invalid email or password.' }
+          }, status: :unauthorized
+        end
       end
     else
       # For HTML requests, redirect to congratulations page after successful login

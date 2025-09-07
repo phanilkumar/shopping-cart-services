@@ -1,0 +1,684 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900">Rate Limiting Test Dashboard</h1>
+      <p class="mt-2 text-gray-600">Test and monitor rate limiting functionality for login attempts and API requests</p>
+    </div>
+
+    <!-- Rate Limiting Status -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <!-- Login Rate Limit Status -->
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">Login Rate Limit</dt>
+                <dd class="text-lg font-medium text-gray-900">
+                  <span id="login-status" class="text-green-600">Active</span>
+                </dd>
+                <dd class="text-sm text-gray-500">5 attempts per 20 seconds</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- API Rate Limit Status -->
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">API Rate Limit</dt>
+                <dd class="text-lg font-medium text-gray-900">
+                  <span id="api-status" class="text-green-600">Active</span>
+                </dd>
+                <dd class="text-sm text-gray-500">100 requests per minute</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Current IP -->
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">Your IP</dt>
+                <dd class="text-lg font-medium text-gray-900" id="current-ip">Loading...</dd>
+                <dd class="text-sm text-gray-500">Rate limits apply per IP</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Test Results -->
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">Tests Run</dt>
+                <dd class="text-lg font-medium text-gray-900" id="tests-run">0</dd>
+                <dd class="text-sm text-gray-500">Rate limit tests</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Test Controls -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+      <!-- Login Rate Limiting Test -->
+      <div class="bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+            🔐 Login Rate Limiting Test
+          </h3>
+          <p class="text-sm text-gray-600 mb-4">
+            Test login rate limiting (5 attempts per 20 seconds). Use wrong credentials to trigger rate limiting.
+          </p>
+          
+          <div class="space-y-4">
+            <div>
+              <label for="test-email" class="block text-sm font-medium text-gray-700">Email</label>
+              <input type="email" 
+                     id="test-email" 
+                     value="phanilkumar@gmail.com"
+                     class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            </div>
+            
+            <div>
+              <label for="test-password" class="block text-sm font-medium text-gray-700">Password (use wrong password)</label>
+              <input type="password" 
+                     id="test-password" 
+                     value="wrongpassword"
+                     class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            </div>
+            
+            <div class="flex space-x-3">
+              <button id="test-login-btn" 
+                      class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                Test Login (1 attempt)
+              </button>
+              <button id="test-login-multiple-btn" 
+                      class="flex-1 bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                Test 6 Attempts
+              </button>
+            </div>
+            
+            <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+              <div class="flex items-center">
+                <svg class="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <div>
+                  <h4 class="text-sm font-medium text-blue-800">Auto-Unlock Feature</h4>
+                  <p class="text-sm text-blue-700 mt-1">
+                    After 5 failed attempts, account locks for 10 minutes and automatically unlocks.
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            <div id="login-test-results" class="mt-4 space-y-2">
+              <!-- Test results will appear here -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- API Rate Limiting Test -->
+      <div class="bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+            🌐 API Rate Limiting Test
+          </h3>
+          <p class="text-sm text-gray-600 mb-4">
+            Test API rate limiting (100 requests per minute). This will make multiple API calls to trigger rate limiting.
+          </p>
+          
+          <div class="space-y-4">
+            <div>
+              <label for="api-requests-count" class="block text-sm font-medium text-gray-700">Number of Requests</label>
+              <select id="api-requests-count" 
+                      class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                <option value="10">10 requests</option>
+                <option value="50">50 requests</option>
+                <option value="105" selected>105 requests (should trigger rate limit)</option>
+                <option value="200">200 requests</option>
+              </select>
+            </div>
+            
+            <div>
+              <label for="api-delay" class="block text-sm font-medium text-gray-700">Delay between requests (ms)</label>
+              <input type="number" 
+                     id="api-delay" 
+                     value="100"
+                     min="10"
+                     max="1000"
+                     class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            </div>
+            
+            <button id="test-api-btn" 
+                    class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+              Start API Rate Limit Test
+            </button>
+            
+            <div id="api-test-progress" class="hidden">
+              <div class="bg-gray-200 rounded-full h-2.5">
+                <div id="api-progress-bar" class="bg-green-600 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+              </div>
+              <p id="api-progress-text" class="text-sm text-gray-600 mt-1">Starting test...</p>
+            </div>
+            
+            <div id="api-test-results" class="mt-4 space-y-2">
+              <!-- Test results will appear here -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Attack Pattern Testing -->
+    <div class="bg-white shadow rounded-lg mb-8">
+      <div class="px-4 py-5 sm:p-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+          🚨 Attack Pattern Testing
+        </h3>
+        <p class="text-sm text-gray-600 mb-4">
+          Test security pattern blocking (SQL injection, XSS, path traversal). These should return 403 Forbidden.
+        </p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <button id="test-sql-injection" 
+                  class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+            Test SQL Injection
+          </button>
+          <button id="test-xss" 
+                  class="bg-orange-600 hover:bg-orange-700 text-white font-medium py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
+            Test XSS Attack
+          </button>
+          <button id="test-path-traversal" 
+                  class="bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+            Test Path Traversal
+          </button>
+        </div>
+        
+        <div id="attack-test-results" class="mt-4 space-y-2">
+          <!-- Attack test results will appear here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Rate Limit Information -->
+    <div class="bg-white shadow rounded-lg">
+      <div class="px-4 py-5 sm:p-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+          📋 Rate Limiting Configuration
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <h4 class="text-md font-medium text-gray-900 mb-2">Current Limits</h4>
+            <ul class="space-y-2 text-sm text-gray-600">
+              <li>• <strong>Login attempts:</strong> 5 per 20 seconds</li>
+              <li>• <strong>Account lockout:</strong> 5 failed attempts → 10 minutes auto-unlock</li>
+              <li>• <strong>API requests:</strong> 100 per minute</li>
+              <li>• <strong>Registration:</strong> 3 per hour</li>
+              <li>• <strong>Password reset:</strong> 3 per hour</li>
+              <li>• <strong>OTP requests:</strong> 5 per hour</li>
+              <li>• <strong>Security dashboard:</strong> 20 per minute</li>
+            </ul>
+          </div>
+          
+          <div>
+            <h4 class="text-md font-medium text-gray-900 mb-2">Expected Responses</h4>
+            <ul class="space-y-2 text-sm text-gray-600">
+              <li>• <strong>Rate Limited:</strong> 429 Too Many Requests</li>
+              <li>• <strong>Attack Blocked:</strong> 403 Forbidden</li>
+              <li>• <strong>Normal Request:</strong> 200/401/404</li>
+              <li>• <strong>Headers:</strong> X-RateLimit-*, Retry-After</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-md">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+              </svg>
+            </div>
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-yellow-800">Important Notes</h3>
+              <div class="mt-2 text-sm text-yellow-700">
+                <ul class="list-disc list-inside space-y-1">
+                  <li>Rate limits are applied per IP address</li>
+                  <li>In development, limits may be higher (1000 vs 100 for API)</li>
+                  <li>Attack pattern detection may be disabled in development</li>
+                  <li>Use <code>ENABLE_ATTACK_PATTERNS=true</code> to enable security features</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Initialize the page
+  loadCurrentIP();
+  setupEventListeners();
+});
+
+function loadCurrentIP() {
+  // Get current IP (this would normally come from the server)
+  document.getElementById('current-ip').textContent = '127.0.0.1 (localhost)';
+}
+
+function setupEventListeners() {
+  // Login test buttons
+  document.getElementById('test-login-btn').addEventListener('click', testSingleLogin);
+  document.getElementById('test-login-multiple-btn').addEventListener('click', testMultipleLogins);
+  
+  // API test button
+  document.getElementById('test-api-btn').addEventListener('click', testAPIRateLimit);
+  
+  // Attack pattern test buttons
+  document.getElementById('test-sql-injection').addEventListener('click', () => testAttackPattern('sql'));
+  document.getElementById('test-xss').addEventListener('click', () => testAttackPattern('xss'));
+  document.getElementById('test-path-traversal').addEventListener('click', () => testAttackPattern('path'));
+}
+
+async function testSingleLogin() {
+  const email = document.getElementById('test-email').value;
+  const password = document.getElementById('test-password').value;
+  
+  if (!email || !password) {
+    showNotification('Please enter email and password', 'error');
+    return;
+  }
+  
+  const resultsDiv = document.getElementById('login-test-results');
+  const testResult = document.createElement('div');
+  testResult.className = 'p-3 bg-blue-50 border border-blue-200 rounded-md';
+  testResult.innerHTML = `
+    <div class="flex items-center">
+      <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
+      <span class="text-sm text-blue-700">Testing login attempt...</span>
+    </div>
+  `;
+  resultsDiv.appendChild(testResult);
+  
+  try {
+    const response = await fetch('/users/sign_in', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('[name="csrf-token"]')?.content
+      },
+      body: JSON.stringify({
+        user: { email: email, password: password }
+      })
+    });
+    
+    const status = response.status;
+    const data = await response.json().catch(() => ({}));
+    
+    testResult.className = `p-3 border rounded-md ${
+      status === 401 ? 'bg-yellow-50 border-yellow-200' :
+      status === 423 ? 'bg-orange-50 border-orange-200' :
+      status === 429 ? 'bg-red-50 border-red-200' :
+      'bg-gray-50 border-gray-200'
+    }`;
+    
+    testResult.innerHTML = `
+      <div class="flex items-center justify-between">
+        <div>
+          <span class="text-sm font-medium ${
+            status === 401 ? 'text-yellow-700' :
+            status === 423 ? 'text-orange-700' :
+            status === 429 ? 'text-red-700' :
+            'text-gray-700'
+          }">
+            Login Attempt: ${status === 401 ? 'Unauthorized (Expected)' : 
+                           status === 423 ? 'Account Locked (Auto-unlock in 10 min)' :
+                           status === 429 ? 'Rate Limited!' : 
+                           `Status ${status}`}
+          </span>
+          ${data.error ? `<div class="text-xs text-gray-600 mt-1">${data.error}</div>` : ''}
+          ${data.remaining_seconds ? `<div class="text-xs text-orange-600 mt-1">Auto-unlock in ${data.remaining_seconds} seconds</div>` : ''}
+        </div>
+        <span class="text-xs text-gray-500">${new Date().toLocaleTimeString()}</span>
+      </div>
+    `;
+    
+    updateTestsRun();
+    
+  } catch (error) {
+    testResult.className = 'p-3 bg-red-50 border border-red-200 rounded-md';
+    testResult.innerHTML = `
+      <div class="text-sm text-red-700">
+        Error: ${error.message}
+      </div>
+    `;
+  }
+}
+
+async function testMultipleLogins() {
+  const email = document.getElementById('test-email').value;
+  const password = document.getElementById('test-password').value;
+  
+  if (!email || !password) {
+    showNotification('Please enter email and password', 'error');
+    return;
+  }
+  
+  const resultsDiv = document.getElementById('login-test-results');
+  resultsDiv.innerHTML = '<div class="text-sm text-blue-700 mb-2">Testing 6 login attempts...</div>';
+  
+  let rateLimited = false;
+  
+  for (let i = 1; i <= 6; i++) {
+    const testResult = document.createElement('div');
+    testResult.className = 'p-2 bg-blue-50 border border-blue-200 rounded-md mb-2';
+    testResult.innerHTML = `
+      <div class="flex items-center">
+        <div class="animate-spin rounded-full h-3 w-3 border-b-2 border-blue-600 mr-2"></div>
+        <span class="text-sm text-blue-700">Attempt ${i}...</span>
+      </div>
+    `;
+    resultsDiv.appendChild(testResult);
+    
+    try {
+      const response = await fetch('/users/sign_in', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('[name="csrf-token"]')?.content
+        },
+        body: JSON.stringify({
+          user: { email: email, password: password }
+        })
+      });
+      
+      const status = response.status;
+      const data = await response.json().catch(() => ({}));
+      
+      testResult.className = `p-2 border rounded-md mb-2 ${
+        status === 401 ? 'bg-yellow-50 border-yellow-200' :
+        status === 423 ? 'bg-orange-50 border-orange-200' :
+        status === 429 ? 'bg-red-50 border-red-200' :
+        'bg-gray-50 border-gray-200'
+      }`;
+      
+      testResult.innerHTML = `
+        <div class="flex items-center justify-between">
+          <div>
+            <span class="text-sm font-medium ${
+              status === 401 ? 'text-yellow-700' :
+              status === 423 ? 'text-orange-700' :
+              status === 429 ? 'text-red-700' :
+              'text-gray-700'
+            }">
+              Attempt ${i}: ${status === 401 ? 'Unauthorized' : 
+                             status === 423 ? 'Account Locked!' :
+                             status === 429 ? 'Rate Limited!' : 
+                             `Status ${status}`}
+            </span>
+            ${data.error ? `<div class="text-xs text-gray-600 mt-1">${data.error}</div>` : ''}
+            ${data.remaining_seconds ? `<div class="text-xs text-orange-600 mt-1">Auto-unlock in ${data.remaining_seconds} seconds</div>` : ''}
+          </div>
+          <span class="text-xs text-gray-500">${new Date().toLocaleTimeString()}</span>
+        </div>
+      `;
+      
+      if (status === 423) {
+        rateLimited = true;
+        showNotification('Account locked! Will automatically unlock in 10 minutes.', 'success');
+        break;
+      } else if (status === 429) {
+        rateLimited = true;
+        showNotification('Rate limiting triggered! Login attempts are now blocked.', 'success');
+        break;
+      }
+      
+      // Small delay between requests
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+    } catch (error) {
+      testResult.className = 'p-2 bg-red-50 border border-red-200 rounded-md mb-2';
+      testResult.innerHTML = `
+        <div class="text-sm text-red-700">
+          Attempt ${i}: Error - ${error.message}
+        </div>
+      `;
+    }
+  }
+  
+  if (!rateLimited) {
+    showNotification('Rate limiting was not triggered. Check configuration.', 'error');
+  }
+  
+  updateTestsRun();
+}
+
+async function testAPIRateLimit() {
+  const requestCount = parseInt(document.getElementById('api-requests-count').value);
+  const delay = parseInt(document.getElementById('api-delay').value);
+  
+  const progressDiv = document.getElementById('api-test-progress');
+  const progressBar = document.getElementById('api-progress-bar');
+  const progressText = document.getElementById('api-progress-text');
+  const resultsDiv = document.getElementById('api-test-results');
+  
+  progressDiv.classList.remove('hidden');
+  resultsDiv.innerHTML = '';
+  
+  let successCount = 0;
+  let rateLimited = false;
+  
+  for (let i = 1; i <= requestCount; i++) {
+    const progress = (i / requestCount) * 100;
+    progressBar.style.width = `${progress}%`;
+    progressText.textContent = `Request ${i} of ${requestCount}...`;
+    
+    try {
+      const response = await fetch('/api/v1/users/1', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('[name="csrf-token"]')?.content
+        }
+      });
+      
+      const status = response.status;
+      
+      if (status !== 429) {
+        successCount++;
+      } else {
+        rateLimited = true;
+        progressText.textContent = `Rate limited at request ${i}!`;
+        break;
+      }
+      
+      if (i % 10 === 0 || i === requestCount) {
+        progressText.textContent = `Completed ${i} requests, ${successCount} successful`;
+      }
+      
+    } catch (error) {
+      console.error(`Request ${i} failed:`, error);
+    }
+    
+    // Delay between requests
+    if (i < requestCount) {
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+  
+  // Show results
+  const resultDiv = document.createElement('div');
+  resultDiv.className = `p-4 border rounded-md ${
+    rateLimited ? 'bg-red-50 border-red-200' : 'bg-yellow-50 border-yellow-200'
+  }`;
+  
+  resultDiv.innerHTML = `
+    <div class="text-sm">
+      <div class="font-medium ${
+        rateLimited ? 'text-red-700' : 'text-yellow-700'
+      }">
+        ${rateLimited ? 'Rate Limiting Triggered!' : 'Rate Limiting Not Triggered'}
+      </div>
+      <div class="text-gray-600 mt-1">
+        Made ${successCount} successful requests before ${rateLimited ? 'being rate limited' : 'completing all requests'}
+      </div>
+    </div>
+  `;
+  
+  resultsDiv.appendChild(resultDiv);
+  updateTestsRun();
+  
+  if (rateLimited) {
+    showNotification('API rate limiting is working correctly!', 'success');
+  } else {
+    showNotification('API rate limiting may not be working. Check configuration.', 'error');
+  }
+}
+
+async function testAttackPattern(type) {
+  const resultsDiv = document.getElementById('attack-test-results');
+  const testResult = document.createElement('div');
+  testResult.className = 'p-3 bg-blue-50 border border-blue-200 rounded-md mb-2';
+  testResult.innerHTML = `
+    <div class="flex items-center">
+      <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
+      <span class="text-sm text-blue-700">Testing ${type.toUpperCase()} attack pattern...</span>
+    </div>
+  `;
+  resultsDiv.appendChild(testResult);
+  
+  let url, expectedStatus;
+  
+  switch (type) {
+    case 'sql':
+      url = '/api/v1/users?id=1 OR 1=1';
+      expectedStatus = 403;
+      break;
+    case 'xss':
+      url = '/api/v1/users?name=<script>alert(1)</script>';
+      expectedStatus = 403;
+      break;
+    case 'path':
+      url = '/api/v1/files?path=../../etc/passwd';
+      expectedStatus = 403;
+      break;
+  }
+  
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('[name="csrf-token"]')?.content
+      }
+    });
+    
+    const status = response.status;
+    const data = await response.json().catch(() => ({}));
+    
+    const isBlocked = status === expectedStatus;
+    
+    testResult.className = `p-3 border rounded-md mb-2 ${
+      isBlocked ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
+    }`;
+    
+    testResult.innerHTML = `
+      <div class="flex items-center justify-between">
+        <div>
+          <span class="text-sm font-medium ${
+            isBlocked ? 'text-green-700' : 'text-red-700'
+          }">
+            ${type.toUpperCase()} Attack: ${isBlocked ? 'Blocked (403)' : `Not Blocked (${status})`}
+          </span>
+          <div class="text-xs text-gray-600 mt-1">URL: ${url}</div>
+          ${data.error ? `<div class="text-xs text-gray-600 mt-1">${data.error}</div>` : ''}
+        </div>
+        <span class="text-xs text-gray-500">${new Date().toLocaleTimeString()}</span>
+      </div>
+    `;
+    
+    updateTestsRun();
+    
+    if (isBlocked) {
+      showNotification(`${type.toUpperCase()} attack pattern blocked successfully!`, 'success');
+    } else {
+      showNotification(`${type.toUpperCase()} attack pattern not blocked. Check configuration.`, 'error');
+    }
+    
+  } catch (error) {
+    testResult.className = 'p-3 bg-red-50 border border-red-200 rounded-md mb-2';
+    testResult.innerHTML = `
+      <div class="text-sm text-red-700">
+        ${type.toUpperCase()} Test Error: ${error.message}
+      </div>
+    `;
+  }
+}
+
+function updateTestsRun() {
+  const currentCount = parseInt(document.getElementById('tests-run').textContent);
+  document.getElementById('tests-run').textContent = currentCount + 1;
+}
+
+function showNotification(message, type) {
+  const notification = document.createElement('div');
+  notification.className = `fixed top-4 right-4 px-4 py-2 rounded shadow-lg z-50 ${
+    type === 'error' ? 'bg-red-500 text-white' : 'bg-green-500 text-white'
+  }`;
+  notification.textContent = message;
+  
+  document.body.appendChild(notification);
+  
+  setTimeout(() => {
+    notification.remove();
+  }, 5000);
+}
+</script>

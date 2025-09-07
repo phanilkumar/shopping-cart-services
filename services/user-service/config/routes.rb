@@ -32,6 +32,7 @@ Rails.application.routes.draw do
   
   # Security routes
   get '/security', to: 'security#dashboard'
+  get '/security/rate-limit-test', to: 'security#rate_limit_test'
   get '/security/status', to: 'security#security_status'
   post '/security/enable-2fa', to: 'security#enable_2fa'
   post '/security/disable-2fa', to: 'security#disable_2fa'

@@ -10,6 +10,9 @@ class ApplicationController < ActionController::Base
   # Set the layout
   layout 'application'
   
+  # Set Current.request for use in models
+  before_action :set_current_request
+  
   # Devise authentication helpers - temporarily commented out
   # before_action :authenticate_user!, unless: :devise_controller?
 
@@ -44,6 +47,10 @@ class ApplicationController < ActionController::Base
   end
 
   private
+
+  def set_current_request
+    Current.request = request
+  end
 
   def json_request?
     request.format.json?

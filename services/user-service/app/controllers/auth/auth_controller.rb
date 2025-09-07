@@ -2,6 +2,7 @@ class Api::V1::AuthController < ApplicationController
   skip_before_action :authenticate_user!, only: [:login, :register]
   
   def login
+    Rails.logger.info "=== AUTH CONTROLLER LOGIN METHOD CALLED ==="
     # Handle both nested and direct parameter structures
     email = params.dig(:user, :email) || params[:email]
     password = params.dig(:user, :password) || params[:password]
@@ -22,13 +23,20 @@ class Api::V1::AuthController < ApplicationController
     end
     
     user = User.find_by(email: email)
+    Rails.logger.info "Login attempt for email: #{email}, User found: #{user.present?}"
     
     # Check if account is locked
     if user&.account_locked?
+      remaining_time = user.lockout_remaining_time
+      expires_at = user.lockout_expires_at
+      
       render json: {
         status: 'error',
-        message: 'Account is locked due to multiple failed login attempts. Please contact support.',
-        locked_until: user.locked_at
+        message: "Account is locked due to multiple failed login attempts. Will automatically unlock in #{remaining_time} seconds.",
+        locked_until: user.locked_at,
+        expires_at: expires_at,
+        remaining_seconds: remaining_time,
+        auto_unlock: true
       }, status: :locked
       return
     end
@@ -70,10 +78,16 @@ class Api::V1::AuthController < ApplicationController
         
         # Check if account should be locked
         if user.account_locked?
+          remaining_time = user.lockout_remaining_time
+          expires_at = user.lockout_expires_at
+          
           render json: {
             status: 'error',
-            message: 'Account locked due to multiple failed login attempts. Please contact support.',
-            locked_until: user.locked_at
+            message: "Account locked due to multiple failed login attempts. Will automatically unlock in #{remaining_time} seconds.",
+            locked_until: user.locked_at,
+            expires_at: expires_at,
+            remaining_seconds: remaining_time,
+            auto_unlock: true
           }, status: :locked
           return
         end
