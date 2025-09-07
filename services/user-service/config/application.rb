@@ -45,6 +45,9 @@ module UserService
     config.middleware.use ActionDispatch::Cookies
     config.middleware.use ActionDispatch::Session::CookieStore
     
+    # Add Rack::Attack for rate limiting and security
+    config.middleware.use Rack::Attack
+    
     # Internationalization (i18n) Configuration
     config.i18n.default_locale = :en
     config.i18n.available_locales = [:en, :hi, :te, :kn, :ta, :ml]
